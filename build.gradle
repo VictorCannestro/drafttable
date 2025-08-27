@@ -1,0 +1,81 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7"
+        classpath 'net.researchgate:gradle-release:2.6.0'
+        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:4.33.1'
+        classpath "gradle.plugin.net.foragerr.jmeter:jmeter-gradle-plugin:1.0.10-3.3"
+    }
+}
+plugins {
+    id('java')
+    id('maven-publish')
+    id('java-library')
+}
+
+group = "$basePackage"
+version = "$version"
+description = 'Draft Table library'
+
+repositories {
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    implementation "ch.qos.logback:logback-classic:$logbackClassicVersion"
+    implementation "org.hamcrest:hamcrest:$hamcrestVersion"
+    implementation "org.apache.commons:commons-collections4:$apacheCommonsCollections4Version"
+    implementation "org.apache.commons:commons-lang3:$apacheCommonsLang3Version"
+    implementation "org.apache.commons:commons-math3:$apacheCommonsMath"
+    implementation "org.paumard:streams-utils:$streamsUtilsVersion"
+    implementation "com.opencsv:opencsv:$opencsvVersion"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.google.guava:guava:$guavaVersion"
+    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonDataformatXmlVersion"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatypeVersion"
+
+    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    testImplementation group: 'org.testng', name: 'testng', version: "$testngVersion"
+}
+
+test {
+    useTestNG() {
+        useDefaultListeners = true
+        outputDirectory = file("$buildRoot/test-output")
+
+        includeGroups 'component'
+        includeGroups 'unit'
+    }
+}
+
+def generatedSrcRoot = "$buildRoot/generated_sources"
+
+sourceSets {
+    main {
+        java {
+            srcDirs generatedSrcRoot
+        }
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+}
+
+jar {
+    enabled = true
+}
