@@ -8,7 +8,6 @@ import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
 import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
 import com.cannestro.drafttable.utils.DraftTableUtils;
-import com.cannestro.drafttable.core.assumptions.DraftTableAssumptions;
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -20,6 +19,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.IntStream;
 
+import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeDataTypesMatch;
 import static com.cannestro.drafttable.core.options.StatisticName.*;
 import static com.cannestro.drafttable.utils.ListUtils.firstElementOf;
 import static com.cannestro.drafttable.utils.NullDetector.hasNullIn;
@@ -196,7 +196,7 @@ public class FlexibleColumn implements Column {
     @Override
     public <T> Column append(T element) {
         if (!isEmpty() && !hasNulls() && !isNull(element)) {
-            DraftTableAssumptions.assumeDataTypesMatch(dataType(), element.getClass());
+            assumeDataTypesMatch(dataType(), element.getClass());
         }
         List<T> newValues = (List<T>) new ArrayList<>(getValues());
         newValues.add(element);
@@ -206,7 +206,7 @@ public class FlexibleColumn implements Column {
     @Override
     public <T> Column append(List<T> otherCollection) {
         if (!isEmpty() && !hasNulls()) {
-            otherCollection.forEach(element -> DraftTableAssumptions.assumeDataTypesMatch(dataType(), element.getClass()));
+            otherCollection.forEach(element -> assumeDataTypesMatch(dataType(), element.getClass()));
         }
         List<T> newValues = (List<T>) new ArrayList<>(getValues());
         newValues.addAll(otherCollection);
@@ -216,7 +216,7 @@ public class FlexibleColumn implements Column {
     @Override
     public Column append(Column otherColumn) {
         if (!this.hasNulls() && !otherColumn.isEmpty() && !otherColumn.hasNulls()) {
-            DraftTableAssumptions.assumeDataTypesMatch(dataType(), otherColumn.dataType());
+            assumeDataTypesMatch(dataType(), otherColumn.dataType());
         }
         List<?> newValues = new ArrayList<>(getValues());
         newValues.addAll(otherColumn.getValues());
@@ -234,7 +234,7 @@ public class FlexibleColumn implements Column {
     @Override
     public <T> Column fillNullsWith(T fillValue) {
         if (!hasNulls()) {
-            DraftTableAssumptions.assumeDataTypesMatch(dataType(), fillValue.getClass());
+            assumeDataTypesMatch(dataType(), fillValue.getClass());
         }
         return new FlexibleColumn(
                 getLabel(),
