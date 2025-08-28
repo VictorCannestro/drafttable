@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.google.common.annotations.Beta;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
-import com.cannestro.drafttable.core.aggregations.ColumnGrouping;
+import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
 import lombok.NonNull;
 import org.hamcrest.Matcher;
 
@@ -258,7 +258,7 @@ public interface Column {
                        BiFunction<R, ? super T, R> accumulator,
                        BinaryOperator<R> combiner);
 
-    ColumnGrouping group();
+    FlexibleColumnGrouping group();
 
     Map<StatisticName, Number> descriptiveStats();
 

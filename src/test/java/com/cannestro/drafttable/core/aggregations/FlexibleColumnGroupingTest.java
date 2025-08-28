@@ -14,14 +14,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.cannestro.drafttable.core.aggregations.ColumnGrouping.*;
+import static com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping.*;
 import static java.util.Arrays.asList;
 import static java.util.Objects.isNull;
 import static org.hamcrest.Matchers.*;
 
 
 @Test(groups = "component")
-public class ColumnGroupingTest {
+public class FlexibleColumnGroupingTest {
 
     @Test
     public void valueCountsOfDistinctValuesAre1() {

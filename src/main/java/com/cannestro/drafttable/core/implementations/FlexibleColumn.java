@@ -6,9 +6,9 @@ import com.google.common.annotations.Beta;
 import com.google.gson.reflect.TypeToken;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
-import com.cannestro.drafttable.core.aggregations.ColumnGrouping;
+import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
 import com.cannestro.drafttable.utils.DraftTableUtils;
-import com.cannestro.drafttable.core.assumptions.DataframeAssumptions;
+import com.cannestro.drafttable.core.assumptions.DraftTableAssumptions;
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -196,7 +196,7 @@ public class FlexibleColumn implements Column {
     @Override
     public <T> Column append(T element) {
         if (!isEmpty() && !hasNulls() && !isNull(element)) {
-            DataframeAssumptions.assumeDataTypesMatch(dataType(), element.getClass());
+            DraftTableAssumptions.assumeDataTypesMatch(dataType(), element.getClass());
         }
         List<T> newValues = (List<T>) new ArrayList<>(getValues());
         newValues.add(element);
@@ -206,7 +206,7 @@ public class FlexibleColumn implements Column {
     @Override
     public <T> Column append(List<T> otherCollection) {
         if (!isEmpty() && !hasNulls()) {
-            otherCollection.forEach(element -> DataframeAssumptions.assumeDataTypesMatch(dataType(), element.getClass()));
+            otherCollection.forEach(element -> DraftTableAssumptions.assumeDataTypesMatch(dataType(), element.getClass()));
         }
         List<T> newValues = (List<T>) new ArrayList<>(getValues());
         newValues.addAll(otherCollection);
@@ -216,7 +216,7 @@ public class FlexibleColumn implements Column {
     @Override
     public Column append(Column otherColumn) {
         if (!this.hasNulls() && !otherColumn.isEmpty() && !otherColumn.hasNulls()) {
-            DataframeAssumptions.assumeDataTypesMatch(dataType(), otherColumn.dataType());
+            DraftTableAssumptions.assumeDataTypesMatch(dataType(), otherColumn.dataType());
         }
         List<?> newValues = new ArrayList<>(getValues());
         newValues.addAll(otherColumn.getValues());
@@ -234,7 +234,7 @@ public class FlexibleColumn implements Column {
     @Override
     public <T> Column fillNullsWith(T fillValue) {
         if (!hasNulls()) {
-            DataframeAssumptions.assumeDataTypesMatch(dataType(), fillValue.getClass());
+            DraftTableAssumptions.assumeDataTypesMatch(dataType(), fillValue.getClass());
         }
         return new FlexibleColumn(
                 getLabel(),
@@ -310,8 +310,8 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public ColumnGrouping group() {
-        return new ColumnGrouping(this);
+    public FlexibleColumnGrouping group() {
+        return new FlexibleColumnGrouping(this);
     }
 
     @Override

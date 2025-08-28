@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Victor Cannestro
  */
-public record ColumnGrouping(Column column) {
+public record FlexibleColumnGrouping(Column column) {
 
     public static final String VALUE = "Value";
     public static final String VALUE_AGGREGATION = "ValueAggregation";

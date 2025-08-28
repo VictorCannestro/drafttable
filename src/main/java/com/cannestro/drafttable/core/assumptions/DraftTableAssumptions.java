@@ -13,9 +13,9 @@ import java.util.List;
 /**
  * @author Victor Cannestro
  */
-public class DataframeAssumptions {
+public class DraftTableAssumptions {
 
-    private DataframeAssumptions() {}
+    private DraftTableAssumptions() {}
 
     public static void assumeDataTypesMatch(Type type, Type otherType) {
         if (!type.equals(otherType)) {

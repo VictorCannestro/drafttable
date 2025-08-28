@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.*;
 import java.util.stream.IntStream;
 
-import static com.cannestro.drafttable.core.assumptions.DataframeAssumptions.*;
+import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.*;
 import static com.cannestro.drafttable.core.options.Items.using;
 import static com.cannestro.drafttable.core.options.Items.these;
 import static com.cannestro.drafttable.csv.CsvDataParser.csvBeanBuilder;
