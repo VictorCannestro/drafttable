@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.core.aggregations;
 
 import com.cannestro.drafttable.core.Column;
+import com.cannestro.drafttable.core.ColumnGrouping;
 import com.cannestro.drafttable.core.DraftTable;
 import com.cannestro.drafttable.core.implementations.FlexibleColumn;
 import com.cannestro.drafttable.core.implementations.FlexibleDraftTable;
@@ -20,7 +21,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Victor Cannestro
  */
-public record FlexibleColumnGrouping(Column column) {
+public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
 
     public static final String VALUE = "Value";
     public static final String VALUE_AGGREGATION = "ValueAggregation";
@@ -36,6 +37,7 @@ public record FlexibleColumnGrouping(Column column) {
      *
      * @return A new {@code DraftTable}
      */
+    @Override
     public DraftTable byValueCounts(SortingOrderType orderType) {
         return byValueCounts().orderBy(COUNT, orderType);
     }
@@ -49,6 +51,7 @@ public record FlexibleColumnGrouping(Column column) {
      *
      * @return A new {@code DraftTable}
      */
+    @Override
     public DraftTable byValueCounts() {
         return byCountsOf(Function.identity());
     }
@@ -67,6 +70,7 @@ public record FlexibleColumnGrouping(Column column) {
      * @param <B> Input mapping type
      * @param <R> Output mapping type
      */
+    @Override
     public <B, R> DraftTable byCountsOf(Function<? super B, ? extends R> mapping) {
         DraftTable grouping = by(mapping, Collectors.counting());
         Column valueColumn = grouping.select(VALUE).conditionalAction(
@@ -98,6 +102,7 @@ public record FlexibleColumnGrouping(Column column) {
      * @param <A> The mutable accumulation type of the reduction operation (often hidden as an implementation detail)
      * @param <D> The result type of the reduction operation
      */
+    @Override
     public <R, A, D> DraftTable byValuesUsing(Collector<? super R, A, D> aggregation) {
         DraftTable grouping = by(Function.identity(), aggregation);
         Column valueColumn = grouping.select(VALUE).conditionalAction(
@@ -128,6 +133,7 @@ public record FlexibleColumnGrouping(Column column) {
      * @param <A> The mutable accumulation type of the reduction operation (often hidden as an implementation detail)
      * @param <D> The result type of the reduction operation
      */
+    @Override
     public <B, R, A, D> DraftTable by(Function<? super B, ? extends R> mapping, Collector<? super B, A, D> aggregation) {
         List<B> nonNullValues = column().where(notNullValue())
                 .where((Function<? super B, R>) mapping, (Matcher<R>) notNullValue())
