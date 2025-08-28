@@ -5,7 +5,6 @@ import com.cannestro.drafttable.core.ColumnGrouping;
 import com.cannestro.drafttable.core.DraftTable;
 import com.cannestro.drafttable.core.implementations.FlexibleColumn;
 import com.cannestro.drafttable.core.implementations.FlexibleDraftTable;
-import com.cannestro.drafttable.core.options.SortingOrderType;
 import org.hamcrest.Matcher;
 
 import java.util.List;
@@ -23,53 +22,6 @@ import static org.hamcrest.Matchers.*;
  */
 public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
 
-    public static final String VALUE = "Value";
-    public static final String VALUE_AGGREGATION = "ValueAggregation";
-    public static final String COUNT = "Count";
-
-
-    /**
-     * <p> Creates an aggregation of unique values by frequency of occurrence, in ascending or descending order as
-     * designated by the user. The resulting object will be a new {@code DraftTable} with column names {@code "Value"}
-     * and {@code "Count"} of the originating type and of type Long, respectively. </p>
-     * <br>
-     * <p> Null values are handled, and will appear in the null count, if present. </p>
-     *
-     * @return A new {@code DraftTable}
-     */
-    @Override
-    public DraftTable byValueCounts(SortingOrderType orderType) {
-        return byValueCounts().orderBy(COUNT, orderType);
-    }
-
-    /**
-     * <p> Creates an aggregation of unique values by frequency of occurrence. The resulting object will be a new
-     * {@code DraftTable} with column names  {@code "Value"} and {@code "Count"} of the originating type and of type
-     * Long, respectively.</p>
-     * <br>
-     * <p> Null values are handled, and will appear in the null count, if present. </p>
-     *
-     * @return A new {@code DraftTable}
-     */
-    @Override
-    public DraftTable byValueCounts() {
-        return byCountsOf(Function.identity());
-    }
-
-    /**
-     * <p> Creates an aggregation of unique values by frequency of occurrence. The resulting object will be a new
-     * {@code DraftTable} with column names {@code "Value"} and {@code "Count"} of the type designated in the
-     * user-provided function and of type Long, respectively. The total count over all counts will equal the row count
-     * of the originating {@code DraftTable}. </p>
-     * <br>
-     * <p> Pre-mapping null values and post-mapping null values are handled, and will appear in the null count, if
-     * present. </p>
-     *
-     * @param mapping A user-defined data mapping
-     * @return A new {@code DraftTable}
-     * @param <B> Input mapping type
-     * @param <R> Output mapping type
-     */
     @Override
     public <B, R> DraftTable byCountsOf(Function<? super B, ? extends R> mapping) {
         DraftTable grouping = by(mapping, Collectors.counting());
@@ -89,19 +41,6 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
         return FlexibleDraftTable.fromColumns(List.of(valueColumn, aggregationColumn));
     }
 
-    /**
-     * <p> Creates an aggregation of unique values according to a user-defined reduction operation. The resulting object
-     * will be a new {@code DraftTable} with column names {@code "Value"} and {@code "ValueAggregation"} of the
-     * originating type and type designated by the user-provided reduction operation, respectively.  </p>
-     * <br>
-     * <p> Null values are handled, and will appear in the aggregation as null, if present. </p>
-     *
-     * @param aggregation A user-defined reduction operation
-     * @return A new {@code DraftTable}
-     * @param <R> The type of input elements to the reduction operation
-     * @param <A> The mutable accumulation type of the reduction operation (often hidden as an implementation detail)
-     * @param <D> The result type of the reduction operation
-     */
     @Override
     public <R, A, D> DraftTable byValuesUsing(Collector<? super R, A, D> aggregation) {
         DraftTable grouping = by(Function.identity(), aggregation);
@@ -118,28 +57,13 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
         return FlexibleDraftTable.fromColumns(List.of(valueColumn, aggregationColumn));
     }
 
-    /**
-     * <p> Creates an aggregation of unique values according to a user-defined aggregation mapping. The resulting object
-     * will be a new {@code DraftTable} with column names {@code "Value"} and {@code "ValueAggregation"} of the type
-     * designated in the user-provided function and reduction operation, respectively. </p>
-     * <br>
-     * <p> Null values are filtered out, if present. </p>
-     *
-     * @param mapping  A user-defined data mapping
-     * @param aggregation A user-defined reduction operation
-     * @return A new {@code DraftTable}
-     * @param <B> The data type of the input column
-     * @param <R> The type of input elements to the reduction operation
-     * @param <A> The mutable accumulation type of the reduction operation (often hidden as an implementation detail)
-     * @param <D> The result type of the reduction operation
-     */
     @Override
     public <B, R, A, D> DraftTable by(Function<? super B, ? extends R> mapping, Collector<? super B, A, D> aggregation) {
-        List<B> nonNullValues = column().where(notNullValue())
+        List<B> nonNullValues = column()
+                .where(notNullValue())
                 .where((Function<? super B, R>) mapping, (Matcher<R>) notNullValue())
                 .getValues();
-        Map<R, D> valueAggregationMap = nonNullValues.stream()
-                .collect(Collectors.groupingBy(mapping, aggregation));
+        Map<R, D> valueAggregationMap = nonNullValues.stream().collect(Collectors.groupingBy(mapping, aggregation));
         List<R> values = valueAggregationMap.keySet().stream().toList();
         return FlexibleDraftTable.fromColumns(List.of(
                 FlexibleColumn.from(VALUE, values),
