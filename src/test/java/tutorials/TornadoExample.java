@@ -199,7 +199,7 @@ public class TornadoExample {
                 .group()
                 .by((PlaceInTime pit) -> pit.localDateTime().getYear(), Collectors.groupingBy(PlaceInTime::place, Collectors.counting()))
                 .write()
-                .prettyPrint();
+                .prettyPrint(30);
 
     }
 
