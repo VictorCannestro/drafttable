@@ -26,8 +26,10 @@ public record DraftTableOutput(DraftTable draftTable) {
 
     public static final String JSON_ROOT_KEY = "data";
     public static final String DIVIDER = "=";
+    public static final String EMPTY = "";
     public static final String PRETTY_DELIMITER = " | ";
     public static final String PRETTY_FORMAT_STRING = "| %s |";
+    public static final String NULL_STRING = "null";
 
 
     public DraftTableOutput {
@@ -112,9 +114,13 @@ public record DraftTableOutput(DraftTable draftTable) {
     /**
      * <p> Prints a highly readable table representation of the {@code DraftTable} to the console. <b>Row order is
      * preserved</b> when pretty printing, however <b>column order is not guaranteed</b>. Non-primitive objects will
-     * be represented by their {@code toString()} output. </p>
+     * be represented by their {@code toString()} output.
+     * <br><br>
+     * Printed columns will be <b>at least</b> as wide as their column names, respectively. A
+     * {@code characterLimitPerColumn} may be specified to truncate the displayed output of every column. This is useful
+     * for columns whose values have large {@code toString()} outputs. </p>
      *
-     * @param characterLimitPerColumn A non-negative integer. Passing "0" corresponds to no limit outside of String representation limits.
+     * @param characterLimitPerColumn A non-negative integer.
      * @return An iterator observable containing the header, divider, and contents (if present)
      */
     public Iterator<String> prettyPrint(int characterLimitPerColumn) {
@@ -130,42 +136,42 @@ public record DraftTableOutput(DraftTable draftTable) {
         return fullDimensionalPrettyPrintOf(draftTable(), characterLimitPerColumn);
     }
 
-    Iterator<String> zeroDimensionalPrettyPrintOf(DraftTable df) {
-        System.out.println(df.shape());
-        return List.of(df.shape()).listIterator();
+    Iterator<String> zeroDimensionalPrettyPrintOf(DraftTable draftTable) {
+        System.out.println(draftTable.shape());
+        return List.of(draftTable.shape()).listIterator();
     }
 
-    Iterator<String> oneDimensionalPrettyPrintOf(DraftTable df) {
-        String header = String.format(PRETTY_FORMAT_STRING, String.join(PRETTY_DELIMITER, df.columnNames()));
-        String divider = String.join("", Collections.nCopies(header.length(), DIVIDER));
+    Iterator<String> oneDimensionalPrettyPrintOf(DraftTable draftTable) {
+        String header = String.format(PRETTY_FORMAT_STRING, String.join(PRETTY_DELIMITER, draftTable.columnNames()));
+        String divider = String.join(EMPTY, Collections.nCopies(header.length(), DIVIDER));
         System.out.println(header);
         System.out.println(divider);
         return List.of(header, divider).listIterator();
     }
 
-    Iterator<String> fullDimensionalPrettyPrintOf(DraftTable df, int characterLimitPerColumn) {
-        Map<String, Integer> lengthLimitsPerColumn = calculateStringLengthsPerColumnGiven(characterLimitPerColumn, df);
+    Iterator<String> fullDimensionalPrettyPrintOf(DraftTable draftTable, int characterLimitPerColumn) {
+        Map<String, Integer> lengthLimitsPerColumn = calculateStringLengthsPerColumnGiven(characterLimitPerColumn, draftTable);
         String joinedAndPaddedHeaders = lengthLimitsPerColumn.keySet().stream().toList()
                 .stream()
                 .map(columnName -> StringUtils.center(columnName, lengthLimitsPerColumn.get(columnName)))
                 .collect(Collectors.joining(PRETTY_DELIMITER));
         String header = String.format(PRETTY_FORMAT_STRING, joinedAndPaddedHeaders);
-        String divider = String.join("", Collections.nCopies(header.length(), DIVIDER));
+        String divider = String.join(EMPTY, Collections.nCopies(header.length(), DIVIDER));
         List<String> tableWithHeaders = new ArrayList<>(List.of(header, divider));
-        tableWithHeaders.addAll(formattedRowContentAccordingTo(lengthLimitsPerColumn, df));
+        tableWithHeaders.addAll(formattedRowContentAccordingTo(lengthLimitsPerColumn, draftTable));
         tableWithHeaders.forEach(System.out::println);
         return tableWithHeaders.listIterator();
     }
 
-    List<String> formattedRowContentAccordingTo(Map<String, Integer> lengthLimitsPerColumn, DraftTable df) {
-        return df.rows().stream()
+    List<String> formattedRowContentAccordingTo(Map<String, Integer> lengthLimitsPerColumn, DraftTable draftTable) {
+        return draftTable.rows().stream()
                 .map(Row::valueMap)
                 .map(valueMap -> valueMap.keySet().stream().toList().stream()
                         .map(Object::toString)
                         .map(columnName -> {
                             int lengthLimit = lengthLimitsPerColumn.get(columnName);
                             if (isNull(valueMap.get(columnName))) {
-                                return StringUtils.leftPad("null", lengthLimit);
+                                return StringUtils.leftPad(NULL_STRING, lengthLimit);
                             }
                             return StringUtils.leftPad(
                                     substringIfLengthLimitReached(valueMap.get(columnName).toString(), lengthLimit),
@@ -184,29 +190,29 @@ public record DraftTableOutput(DraftTable draftTable) {
         return string.substring(0, lengthLimit);
     }
 
-    Map<String, Integer> calculateStringLengthsPerColumnGiven(int characterLimitPerColumn, DraftTable df) {
-        Map<String, Integer> columnNameLengths = columnNameLengths(df);
-        Map<String, Integer> columnDataMaxLengths = maxDataStringLengthByColumns(df);
+    Map<String, Integer> calculateStringLengthsPerColumnGiven(int characterLimitPerColumn, DraftTable draftTable) {
+        Map<String, Integer> columnNameLengths = columnNameLengths(draftTable);
+        Map<String, Integer> columnDataMaxLengths = maxDataStringLengthByColumns(draftTable);
         ToIntFunction<String> maxDataLimitRule = (String label) -> characterLimitPerColumn == Integer.MAX_VALUE
                 ? columnDataMaxLengths.get(label)
                 : Math.min(columnDataMaxLengths.get(label), characterLimitPerColumn);
         Map<String, Integer> overallMaxLengths = new HashMap<>();
-        df.columnNames().forEach(label -> overallMaxLengths.put(
+        draftTable.columnNames().forEach(label -> overallMaxLengths.put(
                 label,
                 Math.max(columnNameLengths.get(label), maxDataLimitRule.applyAsInt(label))
         ));
         return overallMaxLengths;
     }
 
-    Map<String, Integer> columnNameLengths(DraftTable df) {
+    Map<String, Integer> columnNameLengths(DraftTable draftTable) {
         Map<String, Integer> columnNameLengths = new HashMap<>();
-        df.columnNames().forEach(label -> columnNameLengths.put(label, label.length()));
+        draftTable.columnNames().forEach(label -> columnNameLengths.put(label, label.length()));
         return columnNameLengths;
     }
 
-    Map<String, Integer> maxDataStringLengthByColumns(DraftTable df) {
+    Map<String, Integer> maxDataStringLengthByColumns(DraftTable draftTable) {
         Map<String, Integer> columnDataMaxLengths = new HashMap<>();
-        df.columns().forEach(column -> columnDataMaxLengths.put(
+        draftTable.columns().forEach(column -> columnDataMaxLengths.put(
                 column.getLabel(),
                 column.getValues().stream()
                         .map(Objects::toString)
