@@ -4,7 +4,6 @@ buildscript {
             url "https://plugins.gradle.org/m2/"
         }
     }
-
     dependencies {
         classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.7"
         classpath 'net.researchgate:gradle-release:2.6.0'
@@ -12,6 +11,7 @@ buildscript {
         classpath "gradle.plugin.net.foragerr.jmeter:jmeter-gradle-plugin:1.0.10-3.3"
     }
 }
+
 plugins {
     id('java')
     id('maven-publish')
@@ -29,25 +29,25 @@ repositories {
 }
 
 dependencies {
-    compileOnly "org.projectlombok:lombok:$lombokVersion"
-    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    implementation "ch.qos.logback:logback-classic:$logbackClassicVersion"
-    implementation "org.hamcrest:hamcrest:$hamcrestVersion"
-    implementation "org.apache.commons:commons-collections4:$apacheCommonsCollections4Version"
-    implementation "org.apache.commons:commons-lang3:$apacheCommonsLang3Version"
-    implementation "org.apache.commons:commons-math3:$apacheCommonsMath"
-    implementation "org.paumard:streams-utils:$streamsUtilsVersion"
-    implementation "com.opencsv:opencsv:$opencsvVersion"
-    implementation "com.google.code.gson:gson:$gsonVersion"
-    implementation "com.google.guava:guava:$guavaVersion"
-    implementation "com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonDataformatXmlVersion"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatypeVersion"
+    implementation("ch.qos.logback:logback-classic:$logbackClassicVersion")
+    implementation("org.hamcrest:hamcrest:$hamcrestVersion")
+    implementation("org.apache.commons:commons-collections4:$apacheCommonsCollections4Version")
+    implementation("org.apache.commons:commons-lang3:$apacheCommonsLang3Version")
+    implementation("org.apache.commons:commons-math3:$apacheCommonsMath")
+    implementation("org.paumard:streams-utils:$streamsUtilsVersion")
+    implementation("com.opencsv:opencsv:$opencsvVersion")
+    implementation("com.google.code.gson:gson:$gsonVersion")
+    implementation("com.google.guava:guava:$guavaVersion")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonDataformatXmlVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatypeVersion")
 
-    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
-    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    testCompileOnly("org.projectlombok:lombok:$lombokVersion")
+    testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    testImplementation group: 'org.testng', name: 'testng', version: "$testngVersion"
+    testImplementation(group: 'org.testng', name: 'testng', version: "$testngVersion")
 }
 
 test {
