@@ -19,11 +19,4 @@ public class NullDetector {
         return objectList.stream().anyMatch(Objects::isNull);
     }
 
-    public static <T> T notNull(T object) {
-        if (object == null) {
-            throw new IllegalStateException("Parameter cannot be null");
-        }
-        return object;
-    }
-
 }

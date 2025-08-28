@@ -95,8 +95,7 @@ public class ListUtils {
         if (list.isEmpty()) {
             throw new IllegalArgumentException("Input list cannot be empty");
         }
-        List<T> defensiveCopyOfList = List.copyOf(NullDetector.notNull(list));
-        return NullDetector.notNull(defensiveCopyOfList.get(0));
+        return List.copyOf(list).get(0);
     }
 
     /**
@@ -127,9 +126,7 @@ public class ListUtils {
         if (list.isEmpty()) {
             throw new IllegalArgumentException("Input list cannot be empty");
         }
-        List<T> defensiveCopyOfList = List.copyOf(NullDetector.notNull(list));
-        int indexOfLastElement = defensiveCopyOfList.size() - 1;
-        return NullDetector.notNull(defensiveCopyOfList.get(indexOfLastElement));
+        return List.copyOf(list).get(list.size() - 1);
     }
 
     /**

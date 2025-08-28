@@ -10,11 +10,6 @@ import java.util.List;
 @Test(groups = "unit")
 public class TestNullDetector {
 
-    @Test(expectedExceptions = IllegalStateException.class)
-    public void notNullThrowsExceptionWhenNull() {
-        NullDetector.notNull(null);
-    }
-
     @Test
     public void hasNullsIsTrueWhenHasNulls() {
         List<String> list = new ArrayList<>();
