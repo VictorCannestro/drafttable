@@ -15,6 +15,9 @@ import java.util.*;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
+import static java.lang.String.join;
+import static java.util.Collections.nCopies;
 import static java.util.Objects.isNull;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -26,7 +29,7 @@ public record DraftTableOutput(DraftTable draftTable) {
 
     public static final String JSON_ROOT_KEY = "data";
     public static final String DIVIDER = "=";
-    public static final String EMPTY = "";
+    public static final String EMPTY_DELIMITER = "";
     public static final String PRETTY_DELIMITER = " | ";
     public static final String PRETTY_FORMAT_STRING = "| %s |";
     public static final String NULL_STRING = "null";
@@ -142,21 +145,21 @@ public record DraftTableOutput(DraftTable draftTable) {
     }
 
     Iterator<String> oneDimensionalPrettyPrintOf(DraftTable draftTable) {
-        String header = String.format(PRETTY_FORMAT_STRING, String.join(PRETTY_DELIMITER, draftTable.columnNames()));
-        String divider = String.join(EMPTY, Collections.nCopies(header.length(), DIVIDER));
+        String header = format(PRETTY_FORMAT_STRING, join(PRETTY_DELIMITER, draftTable.columnNames()));
+        String divider = join(EMPTY_DELIMITER, nCopies(header.length(), DIVIDER));
         System.out.println(header);
         System.out.println(divider);
         return List.of(header, divider).listIterator();
     }
 
     Iterator<String> fullDimensionalPrettyPrintOf(DraftTable draftTable, int characterLimitPerColumn) {
-        Map<String, Integer> lengthLimitsPerColumn = calculateStringLengthsPerColumnGiven(characterLimitPerColumn, draftTable);
+        Map<String, Integer> lengthLimitsPerColumn = calculateAppropriateWidthPerColumnGiven(characterLimitPerColumn, draftTable);
         String joinedAndPaddedHeaders = lengthLimitsPerColumn.keySet().stream().toList()
                 .stream()
                 .map(columnName -> StringUtils.center(columnName, lengthLimitsPerColumn.get(columnName)))
                 .collect(Collectors.joining(PRETTY_DELIMITER));
-        String header = String.format(PRETTY_FORMAT_STRING, joinedAndPaddedHeaders);
-        String divider = String.join(EMPTY, Collections.nCopies(header.length(), DIVIDER));
+        String header = format(PRETTY_FORMAT_STRING, joinedAndPaddedHeaders);
+        String divider = join(EMPTY_DELIMITER, nCopies(header.length(), DIVIDER));
         List<String> tableWithHeaders = new ArrayList<>(List.of(header, divider));
         tableWithHeaders.addAll(formattedRowContentAccordingTo(lengthLimitsPerColumn, draftTable));
         tableWithHeaders.forEach(System.out::println);
@@ -174,25 +177,25 @@ public record DraftTableOutput(DraftTable draftTable) {
                                 return StringUtils.leftPad(NULL_STRING, lengthLimit);
                             }
                             return StringUtils.leftPad(
-                                    substringIfLengthLimitReached(valueMap.get(columnName).toString(), lengthLimit),
+                                    truncateIfNecessary(valueMap.get(columnName).toString(), lengthLimit),
                                     lengthLimit
                             );
                         })
                         .toList())
-                .map(valueList -> String.format(PRETTY_FORMAT_STRING, String.join(PRETTY_DELIMITER, valueList)))
+                .map(valueList -> format(PRETTY_FORMAT_STRING, join(PRETTY_DELIMITER, valueList)))
                 .toList();
     }
 
-    String substringIfLengthLimitReached(String string, int lengthLimit){
+    String truncateIfNecessary(String string, int lengthLimit){
         if (string.length() == Math.min(string.length(), lengthLimit)) {
             return string;
         }
         return string.substring(0, lengthLimit);
     }
 
-    Map<String, Integer> calculateStringLengthsPerColumnGiven(int characterLimitPerColumn, DraftTable draftTable) {
+    Map<String, Integer> calculateAppropriateWidthPerColumnGiven(int characterLimitPerColumn, DraftTable draftTable) {
         Map<String, Integer> columnNameLengths = columnNameLengths(draftTable);
-        Map<String, Integer> columnDataMaxLengths = maxDataStringLengthByColumns(draftTable);
+        Map<String, Integer> columnDataMaxLengths = widestEntryLengthPerColumn(draftTable);
         ToIntFunction<String> maxDataLimitRule = (String label) -> characterLimitPerColumn == Integer.MAX_VALUE
                 ? columnDataMaxLengths.get(label)
                 : Math.min(columnDataMaxLengths.get(label), characterLimitPerColumn);
@@ -210,7 +213,7 @@ public record DraftTableOutput(DraftTable draftTable) {
         return columnNameLengths;
     }
 
-    Map<String, Integer> maxDataStringLengthByColumns(DraftTable draftTable) {
+    Map<String, Integer> widestEntryLengthPerColumn(DraftTable draftTable) {
         Map<String, Integer> columnDataMaxLengths = new HashMap<>();
         draftTable.columns().forEach(column -> columnDataMaxLengths.put(
                 column.getLabel(),
