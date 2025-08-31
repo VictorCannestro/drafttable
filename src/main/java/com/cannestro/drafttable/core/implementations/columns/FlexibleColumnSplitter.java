@@ -1,13 +1,17 @@
-package com.cannestro.drafttable.core.implementations;
+package com.cannestro.drafttable.core.implementations.columns;
 
 import com.cannestro.drafttable.core.Column;
 import com.cannestro.drafttable.core.ColumnSplitter;
 import com.cannestro.drafttable.core.DraftTable;
+import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
 import lombok.NonNull;
 
 import java.util.function.Function;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public class FlexibleColumnSplitter implements ColumnSplitter {
 
     private final Column column;
@@ -25,7 +29,10 @@ public class FlexibleColumnSplitter implements ColumnSplitter {
     }
 
     @Override
-    public DraftTable asNewTable() {
+    public DraftTable gatherIntoNewTable() {
+        if (outputTable.isCompletelyEmpty()) {
+            return outputTable.addColumn(column);
+        }
         return outputTable;
     }
 

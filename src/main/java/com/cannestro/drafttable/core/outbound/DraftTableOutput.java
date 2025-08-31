@@ -2,8 +2,8 @@ package com.cannestro.drafttable.core.outbound;
 
 import com.cannestro.drafttable.core.DraftTable;
 import com.cannestro.drafttable.core.Row;
-import com.cannestro.drafttable.core.implementations.FlexibleDraftTable;
-import com.cannestro.drafttable.core.implementations.HashMapRow;
+import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.core.implementations.rows.HashMapRow;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.cannestro.drafttable.csv.CsvDataWriter;

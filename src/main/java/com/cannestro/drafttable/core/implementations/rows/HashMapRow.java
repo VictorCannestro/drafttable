@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.core.implementations;
+package com.cannestro.drafttable.core.implementations.rows;
 
 import com.cannestro.drafttable.core.Row;
 import com.google.common.annotations.Beta;

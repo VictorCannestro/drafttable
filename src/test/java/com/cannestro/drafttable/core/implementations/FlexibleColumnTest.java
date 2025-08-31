@@ -1,8 +1,7 @@
 package com.cannestro.drafttable.core.implementations;
 
 import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.options.Item;
-import com.cannestro.drafttable.core.options.Items;
+import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.Column;
 import org.hamcrest.MatcherAssert;
@@ -16,10 +15,7 @@ import java.time.Month;
 import java.time.Period;
 import java.util.*;
 import java.util.function.BinaryOperator;
-import java.util.function.Function;
 
-import static com.cannestro.drafttable.core.options.Item.into;
-import static com.cannestro.drafttable.core.options.Items.*;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -544,13 +540,24 @@ public class FlexibleColumnTest {
                 .intoColumn("day", LocalDate::getDayOfMonth)
                 .intoColumn("month", LocalDate::getMonth)
                 .intoColumn("year", LocalDate::getYear)
-                .asNewTable();
+                .gatherIntoNewTable();
 
         MatcherAssert.assertThat(dates.columnNames(), containsInAnyOrder("day", "month", "year"));
-        Assert.assertEquals(dates.rowCount(), dateCollectionHelper().size());
+        Assert.assertEquals(dates.rowCount(), c.size());
         Assert.assertEquals(dates.select("day").dataType(), Integer.class);
         Assert.assertEquals(dates.select("month").dataType(), Month.class);
         Assert.assertEquals(dates.select("year").dataType(), Integer.class);
+    }
+
+    @Test
+    public void whenSplittingColumnIntoItselfTheDraftTableContainsItself() {
+        Column c = new FlexibleColumn("localDates", dateCollectionHelper());
+        DraftTable dates = c.split().gatherIntoNewTable();
+
+        MatcherAssert.assertThat(dates.columnNames(), containsInAnyOrder("localDates"));
+        Assert.assertEquals(dates.rowCount(), c.size());
+        Assert.assertEquals(dates.select("localDates").dataType(), LocalDate.class);
+        Assert.assertEquals(c, dates.select("localDates"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -559,7 +566,7 @@ public class FlexibleColumnTest {
                 .split()
                 .intoColumn("day", LocalDate::getDayOfMonth)
                 .intoColumn("day", LocalDate::getDayOfYear)
-                .asNewTable();
+                .gatherIntoNewTable();
     }
 
     @Test(expectedExceptions = IllegalStateException.class)
@@ -567,7 +574,7 @@ public class FlexibleColumnTest {
         new FlexibleColumn("empty", List.of())
                 .split()
                 .intoColumn("day", LocalDate::getDayOfMonth)
-                .asNewTable();
+                .gatherIntoNewTable();
     }
 
 

@@ -1,8 +1,10 @@
-package com.cannestro.drafttable.core.implementations;
+package com.cannestro.drafttable.core.implementations.tables;
 
 import com.cannestro.drafttable.core.Column;
 import com.cannestro.drafttable.core.DraftTable;
 import com.cannestro.drafttable.core.Row;
+import com.cannestro.drafttable.core.implementations.rows.HashMapRow;
+import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.options.Item;
 import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;

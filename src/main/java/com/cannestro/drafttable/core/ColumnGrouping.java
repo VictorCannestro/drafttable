@@ -6,6 +6,9 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface ColumnGrouping {
 
     String VALUE = "Value";

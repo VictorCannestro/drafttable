@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.core.implementations;
+package com.cannestro.drafttable.core.implementations.columns;
 
 import com.cannestro.drafttable.core.Column;
 import com.cannestro.drafttable.core.options.SortingOrderType;

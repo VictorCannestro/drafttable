@@ -1,7 +1,7 @@
 package com.cannestro.drafttable.csv;
 
 import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.implementations.FlexibleDraftTable;
+import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.utils.FileUtils;
 import com.cannestro.drafttable.utils.helper.Pay;
 import org.testng.Assert;

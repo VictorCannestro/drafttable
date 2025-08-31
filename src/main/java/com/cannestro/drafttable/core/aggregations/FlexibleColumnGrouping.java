@@ -3,8 +3,8 @@ package com.cannestro.drafttable.core.aggregations;
 import com.cannestro.drafttable.core.Column;
 import com.cannestro.drafttable.core.ColumnGrouping;
 import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.implementations.FlexibleColumn;
-import com.cannestro.drafttable.core.implementations.FlexibleDraftTable;
+import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
+import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
 import org.hamcrest.Matcher;
 
 import java.util.List;

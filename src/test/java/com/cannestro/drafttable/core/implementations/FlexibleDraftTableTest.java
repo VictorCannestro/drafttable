@@ -1,5 +1,8 @@
 package com.cannestro.drafttable.core.implementations;
 
+import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
+import com.cannestro.drafttable.core.implementations.rows.HashMapRow;
+import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.utils.mappers.GsonSupplier;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.cannestro.drafttable.core.Column;
