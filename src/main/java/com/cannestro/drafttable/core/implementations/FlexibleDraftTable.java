@@ -128,11 +128,9 @@ public class FlexibleDraftTable implements DraftTable {
         assumeUnique(columnNames);
         assumeUniformityOf(table);
         return new FlexibleDraftTable(
-                Streams.zip(columnNames.stream(), table.stream(),
-                        FlexibleColumn::new
-                )
-                .map(Column.class::cast)
-                .toList()
+                Streams.zip(columnNames.stream(), table.stream(), FlexibleColumn::new)
+                        .map(Column.class::cast)
+                        .toList()
         );
     }
 

@@ -1,7 +1,11 @@
 package com.cannestro.drafttable.core.implementations;
 
+import com.cannestro.drafttable.core.DraftTable;
+import com.cannestro.drafttable.core.options.Item;
+import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.Column;
+import org.hamcrest.MatcherAssert;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -12,7 +16,10 @@ import java.time.Month;
 import java.time.Period;
 import java.util.*;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 
+import static com.cannestro.drafttable.core.options.Item.into;
+import static com.cannestro.drafttable.core.options.Items.*;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -528,6 +535,39 @@ public class FlexibleColumnTest {
         ).rename("jobs");
 
         Assert.assertEquals(c.getLabel(), "jobs");
+    }
+
+    @Test
+    public void canSplitColumnIntoDraftTable() {
+        Column c = new FlexibleColumn("localDates", dateCollectionHelper());
+        DraftTable dates = c.split()
+                .intoColumn("day", LocalDate::getDayOfMonth)
+                .intoColumn("month", LocalDate::getMonth)
+                .intoColumn("year", LocalDate::getYear)
+                .asNewTable();
+
+        MatcherAssert.assertThat(dates.columnNames(), containsInAnyOrder("day", "month", "year"));
+        Assert.assertEquals(dates.rowCount(), dateCollectionHelper().size());
+        Assert.assertEquals(dates.select("day").dataType(), Integer.class);
+        Assert.assertEquals(dates.select("month").dataType(), Month.class);
+        Assert.assertEquals(dates.select("year").dataType(), Integer.class);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void splitColumnIntoDraftTableThrowsExceptionWhenGivenDuplicateLabels() {
+        new FlexibleColumn("localDates", dateCollectionHelper())
+                .split()
+                .intoColumn("day", LocalDate::getDayOfMonth)
+                .intoColumn("day", LocalDate::getDayOfYear)
+                .asNewTable();
+    }
+
+    @Test(expectedExceptions = IllegalStateException.class)
+    public void splitColumnIntoDraftTableThrowsExceptionWhenEmpty() {
+        new FlexibleColumn("empty", List.of())
+                .split()
+                .intoColumn("day", LocalDate::getDayOfMonth)
+                .asNewTable();
     }
 
 

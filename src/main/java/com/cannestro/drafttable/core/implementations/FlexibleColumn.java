@@ -281,6 +281,14 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
+    public FlexibleColumnSplitter split() {
+        if (isEmpty()) {
+            throw new IllegalStateException("Cannot split an empty column.");
+        }
+        return new FlexibleColumnSplitter(this);
+    }
+
+    @Override
     public <T> Optional<T> aggregate(BinaryOperator<T> accumulator) {
         try {
             return ((List<T>) getValues()).stream().reduce(accumulator);

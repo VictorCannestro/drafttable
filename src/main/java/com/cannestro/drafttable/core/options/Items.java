@@ -1,7 +1,5 @@
 package com.cannestro.drafttable.core.options;
 
-import lombok.EqualsAndHashCode;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -9,19 +7,7 @@ import java.util.List;
 /**
  * @author Victor Cannestro
  */
-@EqualsAndHashCode
-public class Items<T> {
-
-    private final List<T> params;
-
-
-    private Items(List<T> params) {
-        this.params = params;
-    }
-
-    public List<T> params() {
-        return this.params;
-    }
+public record Items<T>(List<T> params) {
 
     @SafeVarargs
     public static <T> Items<T> of(T... params) {

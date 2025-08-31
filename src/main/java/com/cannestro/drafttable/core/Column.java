@@ -1,10 +1,9 @@
 package com.cannestro.drafttable.core;
 
 import com.cannestro.drafttable.core.options.SortingOrderType;
-import com.google.common.annotations.Beta;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
-import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
+import com.google.common.annotations.Beta;
 import lombok.NonNull;
 import org.hamcrest.Matcher;
 
@@ -258,7 +257,9 @@ public interface Column {
                        BiFunction<R, ? super T, R> accumulator,
                        BinaryOperator<R> combiner);
 
-    FlexibleColumnGrouping group();
+    ColumnSplitter split();
+
+    ColumnGrouping group();
 
     Map<StatisticName, Number> descriptiveStats();
 

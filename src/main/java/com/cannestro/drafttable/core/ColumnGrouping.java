@@ -1,6 +1,5 @@
-package com.cannestro.drafttable.core.aggregations;
+package com.cannestro.drafttable.core;
 
-import com.cannestro.drafttable.core.DraftTable;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 
 import java.util.function.Function;
