@@ -225,6 +225,9 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Column dropNulls() {
+        if (!hasNulls()) {
+            return this;
+        }
         return new FlexibleColumn(
                 getLabel(),
                 getValues().stream().filter(Objects::nonNull).toList()
@@ -232,28 +235,24 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Column fillNullsWith(T fillValue) {
+    public <T> Column fillNullsWith(@NonNull T fillValue) {
         if (!hasNulls()) {
-            assumeDataTypesMatch(dataType(), fillValue.getClass());
+            return this;
         }
         return new FlexibleColumn(
                 getLabel(),
-                getValues().stream().map(value -> {
-                    if (isNull(value)) {
-                        return fillValue;
-                    }
-                    return value;
-                }).toList()
+                getValues().stream().map(value -> isNull(value) ? fillValue : value).toList()
         );
     }
 
     @Override
-    public <T> void apply(@NonNull Consumer<T> consumer) {
+    public <T> Column apply(@NonNull Consumer<T> consumer) {
         try {
             getValues().forEach(value -> consumer.accept((T) value));
         } catch (ClassCastException e) {
             throw new IllegalArgumentException(String.format(EXCEPTION_FORMAT_STRING, dataType()));
         }
+        return this;
     }
 
     @Override

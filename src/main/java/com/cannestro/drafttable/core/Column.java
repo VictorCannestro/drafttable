@@ -23,21 +23,21 @@ public interface Column {
 
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine the type of its values. </p>
-     * <br>
+     *
      * @return The {@code Type} of the underlying column data
      */
     Type dataType();
 
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine the column label. </p>
-     * <br>
+     *
      * @return The column label or name
      */
     String getLabel();
 
     /**
      * <p><b>Guarantees</b>: The list of underlying values within the current state of the column. </p>
-     * <br>
+     *
      * @return The values of the underlying column data
      * @param <T> The homogenous type of the value list
      */
@@ -45,7 +45,7 @@ public interface Column {
 
     /**
      * <p><b>Guarantees</b>: The first value within the underlying values of the column, if it exists. </p>
-     * <br>
+     *
      * @return The first value of the underlying column data
      * @param <T> Any type
      * @throws IndexOutOfBoundsException if empty
@@ -54,7 +54,7 @@ public interface Column {
 
     /**
      * <p><b>Guarantees</b>: The last value within the underlying values of the column, if it exists. </p>
-     * <br>
+     *
      * @return The last value of the underlying column data
      * @param <T> Any type
      * @throws IndexOutOfBoundsException if empty
@@ -64,28 +64,28 @@ public interface Column {
     /**
      * <p><b>Guarantees</b>: The cardinality of the column. If the column contains more than Integer.MAX_VALUE values,
      * it will return Integer.MAX_VALUE. </p>
-     * <br>
+     *
      * @return The number of elements in this column
      */
     int size();
 
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine if it does not contain any values. </p>
-     * <br>
+     *
      * @return True if and only if the column does not contain any values
      */
     boolean isEmpty();
 
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine if it contains any null values. </p>
-     * <br>
+     *
      * @return True if and only if the column contains at least one null
      */
     boolean hasNulls();
 
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine if it contains the provided value. </p>
-     * <br>
+     *
      * @return True if and only if the column contains the provided non-null value
      */
     <T> boolean has(T element);
@@ -183,15 +183,13 @@ public interface Column {
     /**
      * <p> <b>Requires</b>: Null safe comparator behavior must be specified if relevant. To ensure compilation, a casting
      *                     operation to the underlying data type must be performed. </p>
-     * <br>
      * <p> <b>Guarantees</b>: The column data will be ordered according to the specified comparator. </p>
-     * <br>
      * <p> Example usage with a {@code FlexibleColumn} implementation:
      * <pre>{@code
      *      Column c = new FlexibleColumn("hireDates", employeeHireDates)
      *                   .orderBy(Comparator.comparing(data -> ((LocalDate) data).getMonth()));
      * }</pre> </p>
-     * <br>
+     *
      * @param comparator Any compatible comparator
      * @return A new {@code Column}
      * @param <T> Type of the underlying column data
@@ -201,9 +199,8 @@ public interface Column {
     /**
      * <p><b>Requires</b>: This method assumes that the provided value is of an arbitrary, yet homogeneous type
      *                     consistent with the current column type. </p>
-     * <br>
      * <p><b>Guarantees</b>: A new instance of {@code Column} containing the provided element as it's last  value. </p>
-     * <br>
+     *
      * @param element An object or primitive
      * @return A new instance of {@code Column}
      * @param <T> An arbitrary type, consistent with the current column type
@@ -214,10 +211,9 @@ public interface Column {
      * <p><b>Requires</b>: This method assumes that the provided list is non-null and contains values of an arbitrary,
      *                     yet homogeneous type consistent with the current column type. Appending an empty list is
      *                     allowed but is inconsequential. </p>
-     * <br>
      * <p><b>Guarantees</b>: A new instance of {@code Column} containing the provided element(s) as it's last
      *                       value(s). </p>
-     * <br>
+     *
      * @param otherCollection A non-null list of type {@code T}
      * @return A new instance of {@code Column}
      * @param <T> An arbitrary type, consistent with the current column type
@@ -228,20 +224,52 @@ public interface Column {
      * <p><b>Requires</b>: This method assumes that the provided column is non-null and contains values of an arbitrary,
      *                     yet homogeneous type consistent with the calling column's type. Appending an empty column is
      *                     allowed but is inconsequential. </p>
-     * <br>
      * <p><b>Guarantees</b>: A new instance of {@code Column} containing the provided element(s) as it's last
      *                       value(s). </p>
-     * <br>
+     *
      * @param otherColumn A column of an arbitrary type, consistent with the calling column's type
      * @return A new instance of {@code Column}
      */
     Column append(Column otherColumn);
 
+    /**
+     * <p><b>Requires</b>: This method assumes that the provided column contains a mix of zero-or-more null values
+     *                     and/or zero-or-more values of an arbitrary, yet homogeneous type consistent with the
+     *                     calling column's type. </p>
+     * <p><b>Guarantees</b>: A {@code Column} that does not contain null values. It may be empty. It may be the same
+     *                       reference. </p>
+     *
+     * @return An instance of {@code Column}. It may be the same reference.
+     */
     Column dropNulls();
 
-    <T> Column fillNullsWith(T fillValue);
+    /**
+     * <p><b>Requires</b>: This method assumes that the provided column contains a mix of zero-or-more null values
+     *                     and/or zero-or-more values of an arbitrary, yet homogeneous type consistent with the
+     *                     calling column's type. </p>
+     * <p><b>Guarantees</b>: A {@code Column} that does not contain null values. It may be empty. It may be the same
+     *                       reference.
+     *
+     * @param fillValue An object or primitive
+     * @return An instance of {@code Column}. It may be the same reference.
+     * @param <T> Type of the underlying column data
+     */
+    <T> Column fillNullsWith(@NonNull T fillValue);
 
-    <T> void apply(@NonNull Consumer<T> consumer);
+    /**
+     * <p> <b>Requires</b>: A {@code Consumer} of compatible type. Users are expected to handle null values, if
+     *                      relevant. </p>
+     * <p> <b>Guarantees</b>: The {@code Consumer} is applied to <b>every value</b> in the {@code Column}, if there are
+     *                        values present. </p>
+     * <p> Example usage:
+     * <pre>{@code
+     *     products().apply(Product::enableBuyOneGetOnePromotion);  // Assuming Product contains the relevant void method
+     * }</pre> </p>
+     *
+     * @param consumer An operation that accepts a single input argument and returns no result. It may produce side effects.
+     * @param <T> Type of the underlying column data
+     */
+    <T> Column apply(@NonNull Consumer<T> consumer);
 
     Column rename(String newLabel);
 

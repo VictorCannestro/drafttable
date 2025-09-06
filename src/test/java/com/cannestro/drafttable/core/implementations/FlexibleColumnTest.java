@@ -4,6 +4,7 @@ import com.cannestro.drafttable.core.DraftTable;
 import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.Column;
+import com.cannestro.drafttable.utils.helper.Library;
 import org.hamcrest.MatcherAssert;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
@@ -17,6 +18,7 @@ import java.util.*;
 import java.util.function.BinaryOperator;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.testng.Assert.*;
@@ -45,13 +47,13 @@ public class FlexibleColumnTest {
 
     @Test
     public void dataTypeWhenIEmptyIsObject() {
-        Column c = new FlexibleColumn("data", Collections.emptyList());
+        Column c = new FlexibleColumn("data", emptyList());
         assertEquals(c.dataType(), Object.class);
     }
 
     @Test
     public void isEmptyIsTrueWhenEmpty() {
-        Column c = new FlexibleColumn("data", Collections.emptyList());
+        Column c = new FlexibleColumn("data", emptyList());
         assertTrue(c.isEmpty());
     }
 
@@ -70,7 +72,7 @@ public class FlexibleColumnTest {
 
     @Test
     public void sizeMatchesInputDataWhenEmpty() {
-        Column c = new FlexibleColumn("data", Collections.emptyList());
+        Column c = new FlexibleColumn("data", emptyList());
         assertEquals(c.size(), 0);
         assertFalse(c.hasNulls());
 
@@ -145,14 +147,14 @@ public class FlexibleColumnTest {
 
     @Test
     public void afterFillNullsWithFillValueColumnWithNullsContainsFillValue() {
-        List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>(List.of("rules", "laws"));
         list.add(null);
         list.add(null);
         Column c = new FlexibleColumn("policies", list);
 
         assertThat(
                 c.fillNullsWith("INVALID").getValues(),
-                contains("INVALID", "INVALID")
+                contains("rules", "laws", "INVALID", "INVALID")
         );
     }
 
@@ -165,7 +167,22 @@ public class FlexibleColumnTest {
                 c.fillNullsWith("INVALID").getValues(),
                 not(hasItem("INVALID"))
         );
-        Assert.assertEquals(FlexibleColumn.from("letters", list), c);
+        Assert.assertEquals(c.fillNullsWith("INVALID"), c);
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void cannotFillNullsWithValueOfMismatchedType() {
+        List<Integer> list = new ArrayList<>(List.of(1,2,3));
+        list.add(null);
+        new FlexibleColumn("num_list", list).fillNullsWith("zero");
+    }
+
+    @Test(expectedExceptions = NullPointerException.class)
+    public void cannotFillNullsWithNull() {
+        List<Integer> list = new ArrayList<>();
+        list.add(null);
+        list.add(null);
+        new FlexibleColumn("data", list).fillNullsWith(null);
     }
 
     @Test
@@ -176,6 +193,14 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn("data", list);
 
         assertEquals(c.dropNulls().size(), 0);
+        assertEquals(c.dropNulls().getValues(), emptyList());
+    }
+
+    @Test
+    public void afterCallingDropNullsOnEmptyColumnThenAnEmptyColumnIsReturned() {
+        Column c = new FlexibleColumn("data", emptyList());
+
+        assertEquals(c.isEmpty(), c.dropNulls().isEmpty());
     }
 
     @Test
@@ -191,17 +216,17 @@ public class FlexibleColumnTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotAppendMismatchingType() {
-        Column c = new FlexibleColumn("data", Collections.emptyList())
+        Column c = new FlexibleColumn("data", emptyList())
                 .append(1)
                 .append("INVALID");
     }
 
     @Test
     public void overloadedAppendsProducesNewColumnWithAllProvidedElements() {
-        Column c = new FlexibleColumn("data", Collections.emptyList())
+        Column c = new FlexibleColumn("data", emptyList())
                 .append(1)
                 .append(asList(0, 0, 0))
-                .append(new FlexibleColumn("other data", Collections.singletonList(1000)));
+                .append(new FlexibleColumn("other data", List.of(1000)));
 
         assertEquals(c.size(), 5);
         assertThat(c.getValues(), contains(1, 0, 0, 0, 1000));
@@ -209,7 +234,7 @@ public class FlexibleColumnTest {
 
     @Test
     public void appendingAListProducesNewColumnWithAllProvidedElements() {
-        Column c = new FlexibleColumn("data", Collections.emptyList())
+        Column c = new FlexibleColumn("data", emptyList())
                 .append(asList(
                         LocalDate.now(),
                         LocalDate.of(2023, 1, 1)
@@ -226,8 +251,8 @@ public class FlexibleColumnTest {
 
     @Test
     public void appendingAColumnProducesNewColumnWithAllProvidedElements() {
-        Column c = new FlexibleColumn("data", Collections.singletonList("barista"))
-                .append(new FlexibleColumn("other data", Collections.emptyList()));
+        Column c = new FlexibleColumn("data", List.of("barista"))
+                .append(new FlexibleColumn("other data", emptyList()));
         assertEquals(c.size(), 1);
         assertThat(c.getValues(), contains("barista"));
     }
@@ -236,7 +261,7 @@ public class FlexibleColumnTest {
     public void transformingLocalDateColumnIntoIntegerColumn() {
         Column c = new FlexibleColumn(
                 "dates",
-                Collections.singletonList(LocalDate.of(2023, 1, 1))
+                List.of(LocalDate.of(2023, 1, 1))
         );
         assertEquals(c.dataType(), LocalDate.class);
 
@@ -267,7 +292,7 @@ public class FlexibleColumnTest {
     }
 
     @Test
-    public void applyingConsumerToNonPrimitiveColumnMutatesItsUnderlyingState() {
+    public void applyingConsumerToNonPrimitiveColumnCanMutateItsUnderlyingState() {
         Column c = new FlexibleColumn(
                 "job names",
                 asList(new ArrayList<>(asList("BAR", "SSV")), new ArrayList<>(asList("ASM", "SM")))
@@ -276,8 +301,17 @@ public class FlexibleColumnTest {
 
         assertThat(
                 c.getValues(),
-                contains(Collections.singletonList("SSV"), Collections.singletonList("SM"))
+                contains(List.of("SSV"), List.of("SM"))
         );
+    }
+
+    @Test
+    public void usingApplyMayMutateTheStateOfAUserDefinedObject() {
+        Column c = FlexibleColumn.from("New Libraries", List.of(new Library(), new Library()));
+        assertEquals(c.transform(Library::numberOfBooks).getValues(), List.of(0, 0));
+
+        c.apply(Library::addSomething);
+        assertEquals(c.transform(Library::numberOfBooks).getValues(), List.of(1, 1));
     }
 
     @Test
@@ -286,6 +320,13 @@ public class FlexibleColumnTest {
         c.apply((String name) -> name.toLowerCase());
 
         assertThat(c.getValues(), contains("BAR", "SSV"));
+    }
+
+    @Test
+    public void applyFunctionToEmptyColumnHasNoMaterialEffect() {
+        Column c = FlexibleColumn.from("data", List.of());
+
+        c.apply((String name) -> name.toLowerCase());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -477,7 +518,7 @@ public class FlexibleColumnTest {
 
     @Test
     public void canAggregateToIdentityWhenEmpty(){
-        Integer sum = new FlexibleColumn("data", Collections.emptyList())
+        Integer sum = new FlexibleColumn("data", emptyList())
                 .aggregate(0, Integer::sum);
 
         assertThat(sum, is(0));
