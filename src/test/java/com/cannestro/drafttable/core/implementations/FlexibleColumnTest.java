@@ -36,7 +36,7 @@ public class FlexibleColumnTest {
     public void shouldStoreUnderlyingValuesInList() {
         List<Integer> list = asList(1, 2, 3, 4, 5);
         Column c = new FlexibleColumn("data", list);
-        assertEquals(c.getValues(), list);
+        assertEquals(c.values(), list);
     }
 
     @Test(dataProvider = "parameterizedListsWithTypes")
@@ -124,7 +124,7 @@ public class FlexibleColumnTest {
                                    c -> c.transform("Square", (Integer x) -> x*x));
 
         assertThat(
-                column.getValues(),
+                column.values(),
                 contains(1,4,9,16,25)
         );
     }
@@ -140,7 +140,7 @@ public class FlexibleColumnTest {
 
         assertEquals(column.size(), asList(1,2,3,4,5).size());
         assertThat(
-                column.getValues(),
+                column.values(),
                 contains(1,2,3,4,5)
         );
     }
@@ -153,7 +153,7 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn("policies", list);
 
         assertThat(
-                c.fillNullsWith("INVALID").getValues(),
+                c.fillNullsWith("INVALID").values(),
                 contains("rules", "laws", "INVALID", "INVALID")
         );
     }
@@ -164,7 +164,7 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn("letters", list);
 
         assertThat(
-                c.fillNullsWith("INVALID").getValues(),
+                c.fillNullsWith("INVALID").values(),
                 not(hasItem("INVALID"))
         );
         Assert.assertEquals(c.fillNullsWith("INVALID"), c);
@@ -193,7 +193,7 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn("data", list);
 
         assertEquals(c.dropNulls().size(), 0);
-        assertEquals(c.dropNulls().getValues(), emptyList());
+        assertEquals(c.dropNulls().values(), emptyList());
     }
 
     @Test
@@ -229,7 +229,7 @@ public class FlexibleColumnTest {
                 .append(new FlexibleColumn("other data", List.of(1000)));
 
         assertEquals(c.size(), 5);
-        assertThat(c.getValues(), contains(1, 0, 0, 0, 1000));
+        assertThat(c.values(), contains(1, 0, 0, 0, 1000));
     }
 
     @Test
@@ -241,7 +241,7 @@ public class FlexibleColumnTest {
                 ));
         assertEquals(c.size(), 2);
         assertThat(
-                c.getValues(),
+                c.values(),
                 contains(
                     LocalDate.now(),
                     LocalDate.of(2023, 1, 1)
@@ -254,7 +254,7 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn("data", List.of("barista"))
                 .append(new FlexibleColumn("other data", emptyList()));
         assertEquals(c.size(), 1);
-        assertThat(c.getValues(), contains("barista"));
+        assertThat(c.values(), contains("barista"));
     }
 
     @Test
@@ -267,7 +267,7 @@ public class FlexibleColumnTest {
 
         c = c.transform("transformedColumn", LocalDate::getYear);
         assertEquals(c.dataType(), Integer.class);
-        assertThat(c.getValues(), contains(2023));
+        assertThat(c.values(), contains(2023));
     }
 
     @Test
@@ -280,7 +280,7 @@ public class FlexibleColumnTest {
 
         c = c.transform("nameLength", String::length);
         assertEquals(c.dataType(), Integer.class);
-        assertThat(c.getValues(), contains(14, 7, 16));
+        assertThat(c.values(), contains(14, 7, 16));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -300,7 +300,7 @@ public class FlexibleColumnTest {
         c.apply((List<String> list) -> list.removeIf(name -> name.contains("A")));
 
         assertThat(
-                c.getValues(),
+                c.values(),
                 contains(List.of("SSV"), List.of("SM"))
         );
     }
@@ -308,10 +308,10 @@ public class FlexibleColumnTest {
     @Test
     public void usingApplyMayMutateTheStateOfAUserDefinedObject() {
         Column c = FlexibleColumn.from("New Libraries", List.of(new Library(), new Library()));
-        assertEquals(c.transform(Library::numberOfBooks).getValues(), List.of(0, 0));
+        assertEquals(c.transform(Library::numberOfBooks).values(), List.of(0, 0));
 
         c.apply(Library::addSomething);
-        assertEquals(c.transform(Library::numberOfBooks).getValues(), List.of(1, 1));
+        assertEquals(c.transform(Library::numberOfBooks).values(), List.of(1, 1));
     }
 
     @Test
@@ -319,7 +319,7 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn("job names", asList("BAR", "SSV"));
         c.apply((String name) -> name.toLowerCase());
 
-        assertThat(c.getValues(), contains("BAR", "SSV"));
+        assertThat(c.values(), contains("BAR", "SSV"));
     }
 
     @Test
@@ -341,7 +341,7 @@ public class FlexibleColumnTest {
                 asList("cafe attendant", "barista", "shift supervisor")
         ).top(2);
         assertEquals(c.size(), 2);
-        assertThat(c.getValues(), contains("cafe attendant", "barista"));
+        assertThat(c.values(), contains("cafe attendant", "barista"));
     }
 
     @Test
@@ -351,7 +351,7 @@ public class FlexibleColumnTest {
                 asList("cafe attendant", "barista", "shift supervisor")
         ).top(10);
         assertEquals(c.size(), 3);
-        assertThat(c.getValues(), contains("cafe attendant", "barista", "shift supervisor"));
+        assertThat(c.values(), contains("cafe attendant", "barista", "shift supervisor"));
     }
 
     @Test
@@ -361,7 +361,7 @@ public class FlexibleColumnTest {
                 asList("cafe attendant", "barista", "shift supervisor")
         ).bottom(2);
         assertEquals(c.size(), 2);
-        assertThat(c.getValues(), contains("barista", "shift supervisor"));
+        assertThat(c.values(), contains("barista", "shift supervisor"));
     }
 
     @Test
@@ -371,7 +371,7 @@ public class FlexibleColumnTest {
                 asList("cafe attendant", "barista", "shift supervisor")
         ).bottom(10);
         assertEquals(c.size(), 3);
-        assertThat(c.getValues(), contains("cafe attendant", "barista", "shift supervisor"));
+        assertThat(c.values(), contains("cafe attendant", "barista", "shift supervisor"));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -411,7 +411,7 @@ public class FlexibleColumnTest {
 
         assertEquals(c.size(), 2);
         assertThat(
-                c.getValues(),
+                c.values(),
                 contains(
                         LocalDate.of(2016, 12, 14),
                         LocalDate.of(2023, 1, 1)
@@ -440,7 +440,7 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn("testData", data)
                 .orderBy(SortingOrderType.ASCENDING);
 
-        assertEquals(c.getValues(), expectedOrder);
+        assertEquals(c.values(), expectedOrder);
     }
 
     @Test
@@ -455,7 +455,7 @@ public class FlexibleColumnTest {
                 .orderBy(SortingOrderType.DESCENDING);
 
         assertThat(
-                c.getValues(),
+                c.values(),
                 contains(
                         LocalDate.of(2023, 1, 1),
                         LocalDate.of(2016, 12, 14),
@@ -471,7 +471,7 @@ public class FlexibleColumnTest {
                 .orderBy(Comparator.comparing(data -> ((LocalDate) data).getMonth()));
 
         assertThat(
-                c.getValues(),
+                c.values(),
                 contains(
                         LocalDate.of(2023, 1, 1),
                         LocalDate.of(2016, 4, 14),
@@ -569,9 +569,9 @@ public class FlexibleColumnTest {
         Column c = new FlexibleColumn(
                 "job names",
                 asList("cafe attendant", "barista", "shift supervisor")
-        ).rename("jobs");
+        ).renameAs("jobs");
 
-        Assert.assertEquals(c.getLabel(), "jobs");
+        Assert.assertEquals(c.label(), "jobs");
     }
 
     @Test

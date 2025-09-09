@@ -11,6 +11,8 @@ import org.hamcrest.Matcher;
 import java.util.*;
 import java.util.function.*;
 
+import static com.cannestro.drafttable.core.options.Items.these;
+
 
 /**
  * @author Victor Cannestro
@@ -390,9 +392,9 @@ public interface DraftTable {
      * @param operationToApply The function to apply to the values of columnName
      * @return A new {@code DraftTable}
      */
-    DraftTable deriveNewColumn(@NonNull String columnName,
-                               @NonNull Item<String> newColumnName,
-                               @NonNull Function<?, ?> operationToApply);
+    DraftTable deriveNewColumnFrom(@NonNull String columnName,
+                                   @NonNull Item<String> newColumnName,
+                                   @NonNull Function<?, ?> operationToApply);
 
     /**
      * Creates a new column derived from the two specified columns via a mapping by the provided function. The specified
@@ -411,10 +413,10 @@ public interface DraftTable {
      * @param <X> A type compatible with the first column
      * @param <Y> A type compatible with the second column
      */
-    <X, Y> DraftTable deriveNewColumn(@NonNull String firstColumnName,
-                                      @NonNull String secondColumnName,
-                                      @NonNull Item<String> newColumnName,
-                                      @NonNull BiFunction<X, Y, ?> operationToApply);
+    <X, Y> DraftTable deriveNewColumnFrom(@NonNull String firstColumnName,
+                                          @NonNull String secondColumnName,
+                                          @NonNull Item<String> newColumnName,
+                                          @NonNull BiFunction<X, Y, ?> operationToApply);
 
     /**
      * Applies the provided consumer to the selected {@code Column}. May mutate underlying state if the {@code Column}
@@ -457,7 +459,7 @@ public interface DraftTable {
      * Terminates the pipeline from further processing by switching control to an {@code Output}. From here, users may
      * export the contents of the {@code DraftTable} to a supported format: CSV, JSON, etc.
      *
-     * @return An {@code Output}
+     * @return A {@code DraftTableOutput}
      */
     DraftTableOutput write();
 
@@ -500,7 +502,7 @@ public interface DraftTable {
     default DraftTable transform(@NonNull String columnName,
                                  @NonNull Item<String> newColumnName,
                                  @NonNull Function<?, ?> operationToApply)  {
-        return deriveNewColumn(
+        return deriveNewColumnFrom(
                 columnName, newColumnName, operationToApply
         ).dropColumn(columnName);
     }
@@ -535,9 +537,9 @@ public interface DraftTable {
                                    @NonNull String secondColumnName,
                                    @NonNull Item<String> newColumnName,
                                    @NonNull BiFunction<X, Y, ?> operationToApply)  {
-        return deriveNewColumn(
+        return deriveNewColumnFrom(
                 firstColumnName, secondColumnName, newColumnName, operationToApply
-        ).dropColumns(Items.these(firstColumnName, secondColumnName));
+        ).dropColumns(these(firstColumnName, secondColumnName));
     }
 
 }

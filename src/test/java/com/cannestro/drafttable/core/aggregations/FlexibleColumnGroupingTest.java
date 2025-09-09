@@ -30,7 +30,7 @@ public class FlexibleColumnGroupingTest {
         column.group()
                 .byValueCounts()
                 .select(ColumnGrouping.COUNT)
-                .getValues()
+                .values()
                 .forEach(count -> Assert.assertEquals(count, 1L));
     }
 
@@ -90,7 +90,7 @@ public class FlexibleColumnGroupingTest {
                         .where(ColumnGrouping.VALUE, notNullValue())
                         .where(ColumnGrouping.VALUE, (BareBonesPojo pojo) -> "Rex".equals(pojo.getName()) && List.of(1, 2, 3).equals(pojo.getNumberOfBones()), is(true))
                         .select(ColumnGrouping.VALUE)
-                        .getValues()
+                        .values()
                         .size(), // i.e., Getting the size of matching VALUES
                 2 // i.e., Produces duplicates!
         );
@@ -99,7 +99,7 @@ public class FlexibleColumnGroupingTest {
                         .where(ColumnGrouping.VALUE, notNullValue())
                         .where(ColumnGrouping.VALUE, (BareBonesPojo pojo) -> isNull(pojo.getName()) && isNull(pojo.getNumberOfBones()), is(true))
                         .select(ColumnGrouping.VALUE)
-                        .getValues()
+                        .values()
                         .size(),
                 2 // i.e., Produces duplicates!
         );
@@ -201,7 +201,7 @@ public class FlexibleColumnGroupingTest {
 
         DraftTable grouping = column.group().by(Pay::getType, Collectors.toList());
 
-        Assert.assertEqualsNoOrder(grouping.select(ColumnGrouping.VALUE).getValues(), List.of("Hourly", "Salary"));
+        Assert.assertEqualsNoOrder(grouping.select(ColumnGrouping.VALUE).values(), List.of("Hourly", "Salary"));
         Assert.assertEquals(
                 grouping.where(ColumnGrouping.VALUE, is("Salary"))
                         .select(ColumnGrouping.VALUE_AGGREGATION)

@@ -9,7 +9,6 @@ import com.cannestro.drafttable.core.options.Item;
 import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.google.common.annotations.Beta;
-import com.google.common.collect.Streams;
 import com.cannestro.drafttable.csv.beans.CsvBean;
 import com.cannestro.drafttable.core.outbound.DraftTableOutput;
 import com.cannestro.drafttable.utils.ListUtils;
@@ -22,6 +21,7 @@ import lombok.NonNull;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hamcrest.Matcher;
+import org.paumard.streams.StreamsUtils;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -29,8 +29,6 @@ import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.*;
-import static com.cannestro.drafttable.core.options.Items.using;
-import static com.cannestro.drafttable.core.options.Items.these;
 import static com.cannestro.drafttable.csv.CsvDataParser.csvBeanBuilder;
 import static com.cannestro.drafttable.csv.CsvDataParser.readAllLines;
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniformityOf;
@@ -88,9 +86,9 @@ public class FlexibleDraftTable implements DraftTable {
      */
     public static DraftTable fromColumns(@NonNull List<Column> columns) {
         if(columns.isEmpty()) {
-            return FlexibleDraftTable.emptyDraftTable();
+            return emptyDraftTable();
         }
-        assumeUnique(columns.stream().map(Column::getLabel).toList());
+        assumeUnique(columns.stream().map(Column::label).toList());
         assumeColumnsHaveUniformSize(columns);
         return new FlexibleDraftTable(columns);
     }
@@ -103,7 +101,7 @@ public class FlexibleDraftTable implements DraftTable {
      */
     public static DraftTable fromRows(@NonNull List<Row> listOfRows) {
         if(listOfRows.isEmpty()) {
-            return FlexibleDraftTable.emptyDraftTable();
+            return emptyDraftTable();
         }
         assumeRowsHaveEquivalentKeySet(listOfRows);
         return new FlexibleDraftTable(
@@ -130,7 +128,7 @@ public class FlexibleDraftTable implements DraftTable {
         assumeUnique(columnNames);
         assumeUniformityOf(table);
         return new FlexibleDraftTable(
-                Streams.zip(columnNames.stream(), table.stream(), FlexibleColumn::new)
+                StreamsUtils.zip(columnNames.stream(), table.stream(), FlexibleColumn::new)
                         .map(Column.class::cast)
                         .toList()
         );
@@ -210,7 +208,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public List<String> columnNames() {
-        return new ArrayList<>(getListOfColumns().stream().map(Column::getLabel).toList());
+        return new ArrayList<>(getListOfColumns().stream().map(Column::label).toList());
     }
 
     @Override
@@ -218,8 +216,8 @@ public class FlexibleDraftTable implements DraftTable {
         return fromColumns(
                 columns().stream()
                         .map(column -> {
-                            if (targetColumnNames.params().contains(column.getLabel())) {
-                                return column.rename(newColumnNames.params().get(targetColumnNames.params().indexOf(column.getLabel())));
+                            if (targetColumnNames.params().contains(column.label())) {
+                                return column.renameAs(newColumnNames.params().get(targetColumnNames.params().indexOf(column.label())));
                             }
                             return column;
                         })
@@ -229,7 +227,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public boolean hasColumn(String name) {
-        return getListOfColumns().stream().anyMatch(column -> column.getLabel().equals(name));
+        return getListOfColumns().stream().anyMatch(column -> column.label().equals(name));
     }
 
     @Override
@@ -241,8 +239,8 @@ public class FlexibleDraftTable implements DraftTable {
     public List<Row> rows() {
         return IntStream.range(0, rowCount())
                  .mapToObj(rowIndex -> MapUtils.zip(
-                             columns().stream().map(Column::getLabel).toList(),
-                             columns().stream().map(column -> column.getValues().get(rowIndex)).toList()
+                             columns().stream().map(Column::label).toList(),
+                             columns().stream().map(column -> column.values().get(rowIndex)).toList()
                  ))
                 .map(HashMapRow::new)
                 .map(Row.class::cast)
@@ -269,7 +267,7 @@ public class FlexibleDraftTable implements DraftTable {
         columnNames.params().forEach(columnName -> assumeColumnExists(columnName, this));
         return new FlexibleDraftTable(
                 getListOfColumns().stream()
-                        .filter(column -> in(columnNames.params()).matches(column.getLabel()))
+                        .filter(column -> in(columnNames.params()).matches(column.label()))
                         .toList()
         );
     }
@@ -314,7 +312,7 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public DraftTable where(@NonNull String columnName, @NonNull Matcher<?> matcher) {
         assumeColumnExists(columnName, this);
-        List<?> columnValues = select(columnName).getValues();
+        List<?> columnValues = select(columnName).values();
         List<Integer> matchingIndices = DraftTableUtils.findMatchingIndices(rowCount(), columnValues::get, matcher);
         return FlexibleDraftTable.fromColumns(
                 columns().stream().map(column -> column.where(matchingIndices)).toList()
@@ -324,7 +322,7 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public <T, R> DraftTable where(@NonNull String columnName, @NonNull Function<T, R> columnAspect, @NonNull Matcher<R> matcher) {
         assumeColumnExists(columnName, this);
-        List<T> columnValues = select(columnName).getValues();
+        List<T> columnValues = select(columnName).values();
         return where(
                 DraftTableUtils.findMatchingIndices(rowCount(), idx -> columnAspect.apply(columnValues.get(idx)), matcher)
         );
@@ -345,7 +343,7 @@ public class FlexibleDraftTable implements DraftTable {
         }
         return fromColumns(
                 columns().stream()
-                        .map(column -> column.transform(column.getLabel(), value -> Objects.equals(value, target) ? replacement : value))
+                        .map(column -> column.transform(column.label(), value -> Objects.equals(value, target) ? replacement : value))
                         .toList()
         );
     }
@@ -438,7 +436,7 @@ public class FlexibleDraftTable implements DraftTable {
         List<Column> copyOfCurrentState = getListOfColumns();
         return new FlexibleDraftTable(
                 copyOfCurrentState.stream()
-                        .map(column -> column.append(otherDraftTable.select(column.getLabel())))
+                        .map(column -> column.append(otherDraftTable.select(column.label())))
                         .toList()
         );
     }
@@ -466,7 +464,7 @@ public class FlexibleDraftTable implements DraftTable {
         if (isCompletelyEmpty()) {
             return FlexibleDraftTable.fromColumns(Collections.singletonList(newColumn));
         }
-        return addColumn(newColumn.getLabel(), newColumn.getValues(), fillValue);
+        return addColumn(newColumn.label(), newColumn.values(), fillValue);
     }
 
     @Override
@@ -489,7 +487,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public DraftTable addColumns(@NonNull Items<Column> newColumns) {
-        newColumns.params().forEach(newColumn -> assumeColumnDoesNotExist(newColumn.getLabel(), this));
+        newColumns.params().forEach(newColumn -> assumeColumnDoesNotExist(newColumn.label(), this));
         assumeColumnsHaveCompatibleSize(newColumns.params(), this);
         List<Column> updatedColumnList = new ArrayList<>(getListOfColumns());
         updatedColumnList.addAll(newColumns.params());
@@ -500,11 +498,11 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable dropColumn(@NonNull String columnToDrop) {
         assumeColumnExists(columnToDrop, this);
         if (columnNames().equals(List.of(columnToDrop))) {
-            return FlexibleDraftTable.emptyDraftTable();
+            return emptyDraftTable();
         }
         return new FlexibleDraftTable(
                 getListOfColumns().stream()
-                        .filter(column -> !column.getLabel().equals(columnToDrop))
+                        .filter(column -> !column.label().equals(columnToDrop))
                         .toList()
         );
     }
@@ -513,11 +511,11 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable dropColumns(@NonNull Items<String> columnsToDrop) {
         columnsToDrop.params().forEach(columnName -> assumeColumnExists(columnName, this));
         if (columnNames().equals(columnsToDrop.params())) {
-            return FlexibleDraftTable.emptyDraftTable();
+            return emptyDraftTable();
         }
         return new FlexibleDraftTable(
                 getListOfColumns().stream()
-                        .filter(column -> not(in(columnsToDrop.params())).matches(column.getLabel()))
+                        .filter(column -> not(in(columnsToDrop.params())).matches(column.label()))
                         .toList()
         );
     }
@@ -530,9 +528,9 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable deriveNewColumn(@NonNull String columnName,
-                                      @NonNull Item<String> newColumnName,
-                                      @NonNull Function<?, ?> operationToApply) {
+    public DraftTable deriveNewColumnFrom(@NonNull String columnName,
+                                          @NonNull Item<String> newColumnName,
+                                          @NonNull Function<?, ?> operationToApply) {
         return addColumn(
                 select(columnName).transform(newColumnName.value(), operationToApply),
                 null
@@ -540,13 +538,13 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public <X, Y> DraftTable deriveNewColumn(@NonNull String firstColumnName,
-                                             @NonNull String secondColumnName,
-                                             @NonNull Item<String> newColumnName,
-                                             @NonNull BiFunction<X, Y, ?> operationToApply) {
-        List<?> combinedColumnValues = Streams.zip(
-                ((List<X>) select(firstColumnName).getValues()).stream(),
-                ((List<Y>) select(secondColumnName).getValues()).stream(),
+    public <X, Y> DraftTable deriveNewColumnFrom(@NonNull String firstColumnName,
+                                                 @NonNull String secondColumnName,
+                                                 @NonNull Item<String> newColumnName,
+                                                 @NonNull BiFunction<X, Y, ?> operationToApply) {
+        List<?> combinedColumnValues = StreamsUtils.zip(
+                ((List<X>) select(firstColumnName).values()).stream(),
+                ((List<Y>) select(secondColumnName).values()).stream(),
                 operationToApply
         ).toList();
         return addColumn(newColumnName.value(), combinedColumnValues, null);
@@ -557,7 +555,7 @@ public class FlexibleDraftTable implements DraftTable {
         assumeColumnExists(columnName, this);
         getListOfColumns().get(
                  IntStream.range(0, columnCount())
-                         .filter(idx -> getListOfColumns().get(idx).getLabel().equals(columnName))
+                         .filter(idx -> getListOfColumns().get(idx).label().equals(columnName))
                          .findFirst()
                          .orElseThrow()
         ).apply(consumer);

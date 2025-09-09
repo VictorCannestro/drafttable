@@ -92,7 +92,7 @@ public record DraftTableOutput(DraftTable draftTable) {
     public void structure() {
         record Structure(String ColumnName, String Type, double NullCount) {}
         FlexibleDraftTable.fromRows(draftTable().columns().stream()
-                        .map(column -> new Structure(column.getLabel(),
+                        .map(column -> new Structure(column.label(),
                                                      column.dataType().getTypeName(),
                                                      column.where(nullValue()).size()))
                         .sorted(Comparator.comparing(Structure::ColumnName))
@@ -216,8 +216,8 @@ public record DraftTableOutput(DraftTable draftTable) {
     Map<String, Integer> widestEntryLengthPerColumn(DraftTable draftTable) {
         Map<String, Integer> columnDataMaxLengths = new HashMap<>();
         draftTable.columns().forEach(column -> columnDataMaxLengths.put(
-                column.getLabel(),
-                column.getValues().stream()
+                column.label(),
+                column.values().stream()
                         .map(Objects::toString)
                         .map(String::length)
                         .max(Comparator.naturalOrder())

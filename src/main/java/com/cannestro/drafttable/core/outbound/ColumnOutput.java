@@ -37,8 +37,8 @@ public record ColumnOutput(Column column) {
     public String toJson() {
         JsonObject jsonObject = new JsonObject();
         JsonArray jsonArray = new JsonArray();
-        column().getValues().forEach(value -> jsonArray.add(GsonSupplier.DEFAULT_GSON.toJson(value)));
-        jsonObject.add(column().getLabel(), jsonArray);
+        column().values().forEach(value -> jsonArray.add(GsonSupplier.DEFAULT_GSON.toJson(value)));
+        jsonObject.add(column().label(), jsonArray);
         return jsonObject.toString();
     }
 
@@ -68,7 +68,7 @@ public record ColumnOutput(Column column) {
      */
     public void describe() {
         if (column().descriptiveStats().isEmpty()) {
-            System.out.printf("Cannot describe non-numeric Column: '%s'%n", column().getLabel());
+            System.out.printf("Cannot describe non-numeric Column: '%s'%n", column().label());
         } else {
             List<Map.Entry<StatisticName, Number>> entries = column().descriptiveStats().entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())

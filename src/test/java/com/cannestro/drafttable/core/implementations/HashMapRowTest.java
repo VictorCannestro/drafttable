@@ -6,7 +6,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.time.LocalDate;
-import java.util.Collections;
+
+import static java.util.Collections.emptyMap;
 
 
 @Test(groups = {"component"})
@@ -23,7 +24,7 @@ public class HashMapRowTest {
     @Test
     public void isEmptyTrueWhenEmpty() {
         Assert.assertTrue(
-                HashMapRow.from(Collections.emptyMap()).isEmpty()
+                HashMapRow.from(emptyMap()).isEmpty()
         );
     }
 
@@ -33,6 +34,7 @@ public class HashMapRowTest {
                 new DailyHireCount(100, LocalDate.of(2023, 1, 1))
         );
 
+        Assert.assertTrue(row.hasKey("n"));
         Assert.assertTrue(row.hasKey("timeStamp"));
     }
 

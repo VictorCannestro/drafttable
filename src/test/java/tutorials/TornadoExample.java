@@ -75,7 +75,7 @@ public class TornadoExample {
             case "WA", "OR", "CA" -> "Pacific";
             default ->  null;
         };
-        tornadoes = tornadoes.deriveNewColumn("State", as("Region"), censusBureauDivisions);
+        tornadoes = tornadoes.deriveNewColumnFrom("State", as("Region"), censusBureauDivisions);
         System.out.println("Should contain new column 'Region': " + tornadoes.columnNames());
         System.out.println();
 
@@ -111,7 +111,7 @@ public class TornadoExample {
 
         List<PhysicalMeasurements> physicalMeasurements = tornadoes.gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
                 .select("Measurements")
-                .getValues();
+                .values();
         System.out.println(physicalMeasurements.get(0));
         System.out.println();
 

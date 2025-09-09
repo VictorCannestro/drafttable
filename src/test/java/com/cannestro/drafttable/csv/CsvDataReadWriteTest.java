@@ -93,7 +93,7 @@ public class CsvDataReadWriteTest {
         );
         CsvDataWriter.exportBeansToCsv(
                 TEST_CSV_DIRECTORY.concat("temp_4.csv"),
-                FlexibleDraftTable.from2DCollectionOfRowValues(headers, lines).gatherInto(Pay.class, as("pay")).getValues()
+                FlexibleDraftTable.from2DCollectionOfRowValues(headers, lines).gatherInto(Pay.class, as("pay")).values()
         );
         DraftTable df = FlexibleDraftTable.fromCSV("csv/temp_4.csv");
         Assert.assertEqualsNoOrder(

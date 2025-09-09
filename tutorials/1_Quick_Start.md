@@ -1,5 +1,5 @@
 # Exploring the Tornado Dataset
-*Note: Special thanks to the TableSaw project for providing the inspiration for this document. Our goal here is to
+*Note: Special thanks to the TableSaw project for being the inspiration for this document. Our goal here is to
 showcase the DraftTable library and provide a basis of comparison for users interested in adapting Java dataframe
 capabilities.*
 
@@ -10,7 +10,7 @@ the NOAA. These tornado statistics are limited to the contiguous U.S. and are pr
 Center (SPC). In doing so we’ll cover a variety of functionality provided by this library, including:
 - Reading/writing from/to input/output sources (CSV, JSON, etc.)
 - Viewing table metadata
-- Peaking at the top n or bottom n rows
+- Peaking at the `top(n)` or `bottom(n)` rows
 - Generating descriptive statistics on columns
 - Performing mapping operations over columns
 - Adding and removing columns
@@ -233,7 +233,7 @@ entries will be padded with a user defined fill value. Attempting to add a colum
 `DraftTable` will result in an exception.
 
 More often, however, we're interested in deriving or updating a column based on the existing data. To accomplish
-these tasks we can call a flavor of `deriveNewColumn`, `transform`, `melt`, or `gatherInto`. We've already seen an
+these tasks we can call a flavor of `deriveNewColumnFrom`, `transform`, `melt`, or `gatherInto`. We've already seen an
 example of this after reading in the tornado CSV file, when we cast several `String` columns into numeric types.
 
 Now let's look at a few examples. Suppose we want to introduce a new column containing information about whether the
@@ -252,7 +252,7 @@ Function<String, String> toCensusBureauDivision = (String state) -> switch (stat
     case "WA", "OR", "CA" -> "Pacific"; // Minus AK and HI - we're considering the mainland US
     default -> null;
 };
-tornadoes = tornadoes.deriveNewColumn("State", as("Region"), toCensusBureauDivision);
+tornadoes = tornadoes.deriveNewColumnFrom("State", as("Region"), toCensusBureauDivision);
 ```
 
 Next, suppose we're interested in assigning a severity category to each tornado based on rules around its `Length` and
@@ -266,7 +266,7 @@ BiFunction<Double, Double, String> categorize = (Double length, Double width) ->
     else
         return "Low";
 };
-tornadoes = tornadoes.deriveNewColumn("Length", "Width", into("Category"), categorize);
+tornadoes = tornadoes.deriveNewColumnFrom("Length", "Width", into("Category"), categorize);
 ```
 
 **Note:** If the explicit type reference looks cumbersome, there is the option of using Java 17+ syntax. For example,
@@ -373,8 +373,11 @@ tornadoes.orderBy(Comparator.comparing((Row row) -> ((LocalDateTime) row.valueOf
 |    -91.07 |    0.1 |    MS |          0 | East South Central |   1.0 |     11.0 |  10.0 |        0 |     31.73 | 1950-05-01T05:00 |
 ```
 
-**Note:** Sorting without using a user-defined rule will be performed in "natural" order.
-
+**Notes:** 
+- Sorting without using a user-defined rule will be performed in "natural" order.
+- Notice the casting performed in the `Comparator<Row>` example highlighted in this snippet: 
+`((LocalDateTime) row.valueOf("DateTime"))`. This casting is *required* to be able to access the native methods of a 
+particular `Row` value. It is the price we pay paid to enable further customization.
 
 ## Saving your data
 ### To CSV
@@ -534,7 +537,7 @@ FlexibleDraftTable.fromCSV("csv/tornadoes_1950-2014.csv")
                  .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                  .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
                  .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
-                 .deriveNewColumn("State", as("Region"), toCensusBureauDivision)
+                 .deriveNewColumnFrom("State", as("Region"), toCensusBureauDivision)
                  .where("DateTime", isInSummer, is(true))
                  .where("Region", is("Middle Atlantic"))
                  .orderBy(ASCENDING)

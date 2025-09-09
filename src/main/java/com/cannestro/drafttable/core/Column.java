@@ -33,15 +33,15 @@ public interface Column {
      *
      * @return The column label or name
      */
-    String getLabel();
+    String label();
 
     /**
-     * <p><b>Guarantees</b>: The list of underlying values within the current state of the column. </p>
+     * <p> <b>Guarantees</b>: The list of underlying values within the column. </p>
      *
      * @return The values of the underlying column data
      * @param <T> The homogenous type of the value list
      */
-    <T> List<T> getValues();
+    <T> List<T> values();
 
     /**
      * <p><b>Guarantees</b>: The first value within the underlying values of the column, if it exists. </p>
@@ -93,7 +93,7 @@ public interface Column {
     /**
      * <p> Can be used to inspect and access the current state of the pipeline inline without using intermediate
      *     variables. </p>
-     * <br>
+     *
      * @param action The function to apply
      * @return A new {@code Column}
      */
@@ -112,31 +112,31 @@ public interface Column {
                              UnaryOperator<Column> actionIfFalse);
 
     /**
-     * <p> Produces a new {@code Column} by selecting rows, from the top, up to {@code nRows} or the total row count,
+     * <p> Produces a new {@code Column} by selecting rows, from the top, up to {@code n} or the total row count,
      *     whichever is smaller. </p>
      *
-     * @param nRows A non-negative integer
+     * @param n A non-negative integer
      * @return A new {@code Column}
      */
-    Column top(int nRows);
+    Column top(int n);
 
     /**
-     * <p> Produces a new {@code Column} by selecting rows, from the bottom, up to {@code nRows} or the total row count,
+     * <p> Produces a new {@code Column} by selecting rows, from the bottom, up to {@code n} or the total row count,
      *     whichever is smaller. </p>
      *
-     * @param nRows A non-negative integer
+     * @param n A non-negative integer
      * @return A new {@code Column}
      */
-    Column bottom(int nRows);
+    Column bottom(int n);
 
     /**
-     * <p> Produces a new {@code Column} by selecting entries at random, up to {@code nRows} or the total row count,
+     * <p> Produces a new {@code Column} by selecting entries at random, up to {@code n} or the total row count,
      *     whichever is smaller. </p>
      *
-     * @param nRows A non-negative integer
+     * @param n A non-negative integer
      * @return A new {@code Column}
      */
-    Column randomDraw(int nRows);
+    Column randomDraw(int n);
 
     /**
      * Selects the subset of the {@code Column} that matches the specified selection criteria. It may be empty.
@@ -271,7 +271,13 @@ public interface Column {
      */
     <T> Column apply(@NonNull Consumer<T> consumer);
 
-    Column rename(String newLabel);
+    /**
+     * <p> <b>Guarantees</b>: The current label assigned to the {@code Column} is replaced with the provided label. </p>
+     *
+     * @param newLabel Any valid String
+     * @return An instance of Column. It may be the same reference.
+     */
+    Column renameAs(@NonNull String newLabel);
 
     <T, R> Column transform(@NonNull Function<T, R> function);
 

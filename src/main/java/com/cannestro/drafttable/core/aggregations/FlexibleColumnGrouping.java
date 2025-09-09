@@ -37,7 +37,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
                 col -> column().hasNulls(),
                 col -> col.append(nullCountByClassifier),
                 UnaryOperator.identity()
-        ).rename(COUNT);
+        ).renameAs(COUNT);
         return FlexibleDraftTable.fromColumns(List.of(valueColumn, aggregationColumn));
     }
 
@@ -62,7 +62,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
         List<B> nonNullValues = column()
                 .where(notNullValue())
                 .where((Function<? super B, R>) mapping, (Matcher<R>) notNullValue())
-                .getValues();
+                .values();
         Map<R, D> valueAggregationMap = nonNullValues.stream().collect(Collectors.groupingBy(mapping, aggregation));
         List<R> values = valueAggregationMap.keySet().stream().toList();
         return FlexibleDraftTable.fromColumns(List.of(

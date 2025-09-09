@@ -119,7 +119,7 @@ public class FlexibleDraftTableTest {
         Column contractTypes = exampleDraftTableFromColumns().select("contractType");
 
         Assert.assertEquals(contractTypes.size(), exampleDraftTableFromColumns().rowCount());
-        Assert.assertEquals(contractTypes.getLabel(), "contractType");
+        Assert.assertEquals(contractTypes.label(), "contractType");
     }
 
     @Test
@@ -412,7 +412,7 @@ public class FlexibleDraftTableTest {
         Assert.assertEquals(df.rowCount(), 3);
         Assert.assertTrue(df.hasColumn("loginName"));
         Assert.assertEquals(
-                df.select("loginName").getValues(),
+                df.select("loginName").values(),
                 asList("US112233", "CA112244", "")
         );
     }
@@ -558,10 +558,10 @@ public class FlexibleDraftTableTest {
     @Test
     public void canDeriveNewColumnOfDifferentTypeFromSingleInputColumnType() {
         DraftTable df = exampleDraftTableFromColumnValues()
-                .deriveNewColumn("dates", as("modifiedDates"), (LocalDate date) -> date.getDayOfWeek());
+                .deriveNewColumnFrom("dates", as("modifiedDates"), (LocalDate date) -> date.getDayOfWeek());
 
         Assert.assertEquals(
-                df.select("modifiedDates").getValues(),
+                df.select("modifiedDates").values(),
                 List.of(DayOfWeek.MONDAY, DayOfWeek.MONDAY, DayOfWeek.MONDAY)
         );
     }
@@ -569,11 +569,11 @@ public class FlexibleDraftTableTest {
     @Test
     public void canDeriveNewColumnOfDifferentTypeFromMultipleInputColumnTypes() {
         DraftTable df = exampleDraftTableFromColumnValues()
-                .deriveNewColumn("days", "dates", as("modifiedDates"),
+                .deriveNewColumnFrom("days", "dates", as("modifiedDates"),
                         (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd).getDayOfWeek());
 
         Assert.assertEquals(
-                df.select("modifiedDates").getValues(),
+                df.select("modifiedDates").values(),
                 List.of(DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY)
         );
     }
@@ -632,7 +632,7 @@ public class FlexibleDraftTableTest {
                 .select("job names");
 
        Assert.assertEquals(
-               col.getValues(),
+               col.values(),
                List.of(asList("RMT", "SSV"), asList("RMT", "SM"))
        );
     }
@@ -682,11 +682,11 @@ public class FlexibleDraftTableTest {
         );
 
         Assert.assertEquals(
-                sortedFrame.top(2).select("contractType").getValues().get(1),
+                sortedFrame.top(2).select("contractType").values().get(1),
                 "full-time"
         );
         Assert.assertEquals(
-                sortedFrame.top(2).select("exempt").getValues().get(1),
+                sortedFrame.top(2).select("exempt").values().get(1),
                 true
         );
 
@@ -703,7 +703,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void canSortByRowComparator() {
         DraftTable sortedFrame = exampleDraftTableFromColumnValues()
-                .deriveNewColumn("days", "dates",
+                .deriveNewColumnFrom("days", "dates",
                         as("modifiedDates"),
                         (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd))
                 .orderBy(Comparator.comparing((Row row) -> row.valueOf("modifiedDates")));
@@ -822,11 +822,11 @@ public class FlexibleDraftTableTest {
         df.select("job names").apply((List<String> list) -> list.removeIf(name -> name.contains("A")));
 
         Assert.assertEquals(
-                df.select("job names").getValues(),
+                df.select("job names").values(),
                 asList(new ArrayList<>(List.of("SSV")), new ArrayList<>(List.of("SM")))
         );
         Assert.assertEquals(
-                copy.select("job names").getValues(),
+                copy.select("job names").values(),
                 asList(new ArrayList<>(asList("BAR", "SSV")), new ArrayList<>(asList("ASM", "SM")))
         );
     }
