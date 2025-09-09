@@ -24,7 +24,7 @@ import static org.hamcrest.Matchers.*;
 public class TornadoExample {
 
     public static void main(String[] args) {
-        DraftTable tornadoes = FlexibleDraftTable.fromCSV("csv/tornadoes_1950-2014.csv")
+        DraftTable tornadoes = FlexibleDraftTable.create().fromCSV("csv/tornadoes_1950-2014.csv")
                 .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                 .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
                 .transform("Start Lat", (String lat) -> Double.parseDouble(lat))
@@ -180,7 +180,7 @@ public class TornadoExample {
                  .prettyPrint();
         System.out.println();
 
-        tornadoes.introspect(df -> FlexibleDraftTable.emptyDraftTable()
+        tornadoes.introspect(df -> FlexibleDraftTable.create().emptyDraftTable()
                         .append(df.where("DateTime", LocalDateTime::getMonth, is(JUNE))
                                  .where("DateTime", LocalDateTime::getDayOfMonth, greaterThanOrEqualTo(21)))
                         .append(df.where("DateTime", LocalDateTime::getMonth, in(List.of(JULY, AUGUST))))

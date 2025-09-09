@@ -15,7 +15,7 @@ import java.util.function.Function;
 public class FlexibleColumnSplitter implements ColumnSplitter {
 
     private final Column column;
-    private DraftTable outputTable = FlexibleDraftTable.emptyDraftTable();
+    private DraftTable outputTable = FlexibleDraftTable.create().emptyDraftTable();
 
 
     public FlexibleColumnSplitter(@NonNull Column column) {

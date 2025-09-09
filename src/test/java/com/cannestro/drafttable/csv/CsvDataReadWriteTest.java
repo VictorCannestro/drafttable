@@ -68,15 +68,16 @@ public class CsvDataReadWriteTest {
                 List.of("Hourly", "18.50", "", "80"),
                 List.of("Salary", "50000.00", "Bi-Weekly", "80")
         );
-        FlexibleDraftTable.from2DCollectionOfRowValues(headers, lines)
-                         .write()
-                         .toCSV(TEST_CSV_DIRECTORY.concat("temp_3.csv"), "NULL");
+        FlexibleDraftTable.create()
+                .fromRowValues(headers, lines)
+                .write()
+                .toCSV(TEST_CSV_DIRECTORY.concat("temp_3.csv"), "NULL");
         Assert.assertEquals(
                 CsvDataParser.mapCsvToJsonStrings("csv/temp_3.csv", Pay.class).size(),
                 3
         );
 
-        DraftTable df = FlexibleDraftTable.fromCSV("csv/temp_3.csv", Pay.class)
+        DraftTable df = FlexibleDraftTable.create().fromCSV("csv/temp_3.csv", Pay.class)
                                         .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);
 
@@ -93,9 +94,9 @@ public class CsvDataReadWriteTest {
         );
         CsvDataWriter.exportBeansToCsv(
                 TEST_CSV_DIRECTORY.concat("temp_4.csv"),
-                FlexibleDraftTable.from2DCollectionOfRowValues(headers, lines).gatherInto(Pay.class, as("pay")).values()
+                FlexibleDraftTable.create().fromRowValues(headers, lines).gatherInto(Pay.class, as("pay")).values()
         );
-        DraftTable df = FlexibleDraftTable.fromCSV("csv/temp_4.csv");
+        DraftTable df = FlexibleDraftTable.create().fromCSV("csv/temp_4.csv");
         Assert.assertEqualsNoOrder(
                 df.columnNames(),
                 List.of("type", "rate", "period", "workHours")

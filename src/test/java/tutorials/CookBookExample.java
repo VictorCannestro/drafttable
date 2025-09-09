@@ -24,7 +24,7 @@ public class CookBookExample {
             cookBook = DEFAULT_GSON.fromJson(reader, CookBook.class);
         } catch (Exception ignored) {}
 
-        DraftTable kitchenTable = FlexibleDraftTable.fromObjects(cookBook.recipes());
+        DraftTable kitchenTable = FlexibleDraftTable.create().fromObjects(cookBook.recipes());
         kitchenTable.write().structure();
 
         kitchenTable.where("cookTimeMinutes", is(lessThan(15.0)))

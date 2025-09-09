@@ -38,7 +38,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
                 col -> col.append(nullCountByClassifier),
                 UnaryOperator.identity()
         ).renameAs(COUNT);
-        return FlexibleDraftTable.fromColumns(List.of(valueColumn, aggregationColumn));
+        return FlexibleDraftTable.create().fromColumns(List.of(valueColumn, aggregationColumn));
     }
 
     @Override
@@ -54,7 +54,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
                 col -> col.append((Object) null),
                 UnaryOperator.identity()
         );
-        return FlexibleDraftTable.fromColumns(List.of(valueColumn, aggregationColumn));
+        return FlexibleDraftTable.create().fromColumns(List.of(valueColumn, aggregationColumn));
     }
 
     @Override
@@ -65,7 +65,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
                 .values();
         Map<R, D> valueAggregationMap = nonNullValues.stream().collect(Collectors.groupingBy(mapping, aggregation));
         List<R> values = valueAggregationMap.keySet().stream().toList();
-        return FlexibleDraftTable.fromColumns(List.of(
+        return FlexibleDraftTable.create().fromColumns(List.of(
                 FlexibleColumn.from(VALUE, values),
                 FlexibleColumn.from(VALUE_AGGREGATION, values.stream().map(valueAggregationMap::get).toList())
         ));

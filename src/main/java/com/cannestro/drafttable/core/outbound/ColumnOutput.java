@@ -48,7 +48,7 @@ public record ColumnOutput(Column column) {
      * {@code toString()} output. </p>
      */
     public void prettyPrint() {
-        FlexibleDraftTable.fromColumns(List.of(column()))
+        FlexibleDraftTable.create().fromColumns(List.of(column()))
                          .introspect(df -> df.addColumn("index", IntStream.range(0, df.rowCount()).boxed().toList(), null))
                          .write()
                          .prettyPrint();
@@ -75,7 +75,7 @@ public record ColumnOutput(Column column) {
                     .toList();
 
             record StatisticalDescription(String METRIC, Double VALUE) {}
-            FlexibleDraftTable.fromRows(entries.stream()
+            FlexibleDraftTable.create().fromRows(entries.stream()
                             .map(entry -> HashMapRow.from(new StatisticalDescription(entry.getKey().shortHand, entry.getValue().doubleValue())))
                             .map(Row.class::cast)
                             .toList())

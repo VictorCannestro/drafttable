@@ -42,7 +42,7 @@ public record DraftTableOutput(DraftTable draftTable) {
     }
 
     /**
-     * Exports the data frame to a destination filepath using comma delimiters and String values. Will create a new
+     * Exports the table to a destination filepath using comma delimiters and String values. Will create a new
      * file, if necessary, otherwise the existing file will be updated.
      *
      * @param filePath The destination filepath
@@ -91,7 +91,7 @@ public record DraftTableOutput(DraftTable draftTable) {
      */
     public void structure() {
         record Structure(String ColumnName, String Type, double NullCount) {}
-        FlexibleDraftTable.fromRows(draftTable().columns().stream()
+        FlexibleDraftTable.create().fromRows(draftTable().columns().stream()
                         .map(column -> new Structure(column.label(),
                                                      column.dataType().getTypeName(),
                                                      column.where(nullValue()).size()))

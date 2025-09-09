@@ -31,7 +31,7 @@ public class FlexibleDraftTablePerformanceTest {
                     )
             );
         }
-        FlexibleDraftTable.fromColumns(cols).where("0", is(greaterThan(0.50)));
+        FlexibleDraftTable.create().fromColumns(cols).where("0", is(greaterThan(0.50)));
     }
 
 }

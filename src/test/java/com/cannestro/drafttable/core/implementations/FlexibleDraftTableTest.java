@@ -57,7 +57,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void emptyDraftTablesHaveEmptyColumnNames() {
         Assert.assertEquals(
-                FlexibleDraftTable.emptyDraftTable().columnNames(),
+                FlexibleDraftTable.create().emptyDraftTable().columnNames(),
                 Collections.emptyList()
         );
     }
@@ -74,41 +74,41 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void renamingEmptyDraftTableDoesNotProduceChanges() {
-        DraftTable df = FlexibleDraftTable.emptyDraftTable().rename(from("nonExisting"), to("newName"));
+        DraftTable df = FlexibleDraftTable.create().emptyDraftTable().rename(from("nonExisting"), to("newName"));
 
         Assert.assertEquals(df.columnNames(), Collections.emptyList());
     }
 
     @Test
     public void emptyDraftTablesHaveEmptyColumns() {
-        Assert.assertEquals(FlexibleDraftTable.emptyDraftTable().columns(), Collections.emptyList());
+        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().columns(), Collections.emptyList());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotMakeDraftTableFromJagged2DListOfColumnData() {
         List<String> names = List.of("one", "two");
         List<List<?>> values = List.of(List.of("one", "two"), List.of());
-        FlexibleDraftTable.from2DCollectionOfColumnValues(names, values);
+        FlexibleDraftTable.create().fromColumnValues(names, values);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotMakeDraftTableFromJagged2DListOfRowData() {
         List<String> names = List.of("one", "two");
         List<List<?>> values = List.of(List.of("one", "two"), List.of());
-        FlexibleDraftTable.from2DCollectionOfRowValues(names, values);
+        FlexibleDraftTable.create().fromRowValues(names, values);
     }
 
     @Test
     public void fromEmptyRowsReturnsEmptyDraftTable() {
         Assert.assertEquals(
-                FlexibleDraftTable.fromRows(Collections.emptyList()),
-                FlexibleDraftTable.emptyDraftTable()
+                FlexibleDraftTable.create().fromRows(Collections.emptyList()),
+                FlexibleDraftTable.create().emptyDraftTable()
         );
     }
 
     @Test
     public void canMakeEmptyDraftTableFromEmptyColumnWithLabel() {
-        DraftTable df = FlexibleDraftTable.fromColumns(List.of(FlexibleColumn.from("", Collections.emptyList())));
+        DraftTable df = FlexibleDraftTable.create().fromColumns(List.of(FlexibleColumn.from("", Collections.emptyList())));
 
         Assert.assertTrue(df.isEmpty());
         Assert.assertFalse(df.isCompletelyEmpty());
@@ -167,15 +167,15 @@ public class FlexibleDraftTableTest {
                         .whereColumnType(is(Double.class))
                         .whereColumnType(is(Boolean.class))
                         .columnNames(),
-                FlexibleDraftTable.emptyDraftTable().columnNames()
+                FlexibleDraftTable.create().emptyDraftTable().columnNames()
         );
     }
 
     @Test
     public void whereColumnTypeReturnsSameEmptyFrameWhenGivenEmptyFrame() {
         Assert.assertEquals(
-                FlexibleDraftTable.emptyDraftTable().whereColumnType(is(not(Double.class))),
-                FlexibleDraftTable.emptyDraftTable()
+                FlexibleDraftTable.create().emptyDraftTable().whereColumnType(is(not(Double.class))),
+                FlexibleDraftTable.create().emptyDraftTable()
         );
     }
 
@@ -238,7 +238,7 @@ public class FlexibleDraftTableTest {
     public void whereByColumnSubFieldOnNullDataShouldThrowError() {
         Column c = FlexibleColumn.from("data", Collections.nCopies(3, null))
                                  .append("NON_NULL");
-        FlexibleDraftTable.fromColumns(List.of(c))
+        FlexibleDraftTable.create().fromColumns(List.of(c))
                          .where("data", String::length, not(nullValue()));
     }
 
@@ -246,27 +246,27 @@ public class FlexibleDraftTableTest {
     public void whereWithDefaultByColumnSubFieldOnNullDataShouldThrowError() {
         Column c = FlexibleColumn.from("data", Collections.nCopies(3, null))
                 .append("NON_NULL");
-        FlexibleDraftTable.fromColumns(List.of(c))
+        FlexibleDraftTable.create().fromColumns(List.of(c))
                 .whereWithDefault("data", String::length, not(nullValue()), nullValue());
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotAppendMisMatchingColumns() {
-        DraftTable draftTable = FlexibleDraftTable.fromColumns(List.of(FlexibleColumn.from("rate", List.of("12.33", "23.77"))));
-        DraftTable draftTable2 = FlexibleDraftTable.fromColumns(List.of(FlexibleColumn.from("date", List.of(LocalDate.now(), LocalDate.now()))));
+        DraftTable draftTable = FlexibleDraftTable.create().fromColumns(List.of(FlexibleColumn.from("rate", List.of("12.33", "23.77"))));
+        DraftTable draftTable2 = FlexibleDraftTable.create().fromColumns(List.of(FlexibleColumn.from("date", List.of(LocalDate.now(), LocalDate.now()))));
         draftTable.append(draftTable2);
     }
 
     @Test
     public void whenAppendingEmptyDraftTableThenExistingDraftTableIsReturned() {
         DraftTable df = exampleDraftTableFromColumns();
-        Assert.assertEquals(df.append(FlexibleDraftTable.emptyDraftTable()), df);
+        Assert.assertEquals(df.append(FlexibleDraftTable.create().emptyDraftTable()), df);
     }
 
     @Test
     public void whenAppendingNonEmptyDraftTableToAnEmptyDraftTableThenNonEmptyDraftTableIsReturned() {
         DraftTable df = exampleDraftTableFromColumns();
-        Assert.assertEquals(FlexibleDraftTable.emptyDraftTable().append(df), df);
+        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().append(df), df);
     }
 
     @Test
@@ -385,8 +385,8 @@ public class FlexibleDraftTableTest {
     @Test
     public void whenAddingNonEmptyColumnToEmptyDraftTableANonEmptyDraftTableIsProduced() {
         Assert.assertEquals(
-                FlexibleDraftTable.emptyDraftTable().addColumn("contractType", asList("", "", ""), ""),
-                FlexibleDraftTable.fromColumns(List.of(FlexibleColumn.from("contractType", asList("", "", ""))))
+                FlexibleDraftTable.create().emptyDraftTable().addColumn("contractType", asList("", "", ""), ""),
+                FlexibleDraftTable.create().fromColumns(List.of(FlexibleColumn.from("contractType", asList("", "", ""))))
         );
     }
 
@@ -447,14 +447,14 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenCallingTopOfEmptyDraftTableReturnsEmptyDraftTable() {
-        Assert.assertEquals(FlexibleDraftTable.emptyDraftTable().top(10).rowCount(), 0);
-        Assert.assertEquals(FlexibleDraftTable.emptyDraftTable().top(10).columnCount(), 0);
+        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().top(10).rowCount(), 0);
+        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().top(10).columnCount(), 0);
     }
 
     @Test
     public void whenCallingBottomOfEmptyDraftTableReturnsEmptyDraftTable() {
-        Assert.assertEquals(FlexibleDraftTable.emptyDraftTable().bottom(10).rowCount(), 0);
-        Assert.assertEquals(FlexibleDraftTable.emptyDraftTable().bottom(10).columnCount(), 0);
+        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().bottom(10).rowCount(), 0);
+        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().bottom(10).columnCount(), 0);
     }
 
     @Test
@@ -519,15 +519,15 @@ public class FlexibleDraftTableTest {
         DraftTable df = exampleDraftTableFromColumnValues().dropAllExcept(these());
 
         Assert.assertEquals(df.columnCount(), 0);
-        Assert.assertEquals(df, FlexibleDraftTable.emptyDraftTable());
+        Assert.assertEquals(df, FlexibleDraftTable.create().emptyDraftTable());
     }
 
     @Test
     public void whenDropAllExceptOfEmptyFrameIsProvidedEmptyListThenEmptyFrameIsReturned() {
-        DraftTable df = FlexibleDraftTable.emptyDraftTable().dropAllExcept(these());
+        DraftTable df = FlexibleDraftTable.create().emptyDraftTable().dropAllExcept(these());
 
         Assert.assertEquals(df.columnCount(), 0);
-        Assert.assertEquals(df, FlexibleDraftTable.emptyDraftTable());
+        Assert.assertEquals(df, FlexibleDraftTable.create().emptyDraftTable());
     }
 
     @Test
@@ -592,7 +592,7 @@ public class FlexibleDraftTableTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void fromRowsMustHaveEquivalentKeySemantics() {
-        FlexibleDraftTable.fromRows(
+        FlexibleDraftTable.create().fromRows(
                 List.of(
                         HashMapRow.from(List.of("days", "dates", "names"), List.of(1, LocalDate.of(2024, 1, 1), "Alice")),
                         HashMapRow.from(List.of("days", "dates", "NAMES"), List.of(2, LocalDate.of(2024, 1, 1), "Bob"))
@@ -602,7 +602,7 @@ public class FlexibleDraftTableTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void fromRowsMustHaveEquivalentKeySizes() {
-        FlexibleDraftTable.fromRows(
+        FlexibleDraftTable.create().fromRows(
                 List.of(
                         HashMapRow.from(List.of("days", "dates", "names"), List.of(1, LocalDate.of(2024, 1, 1), "Alice")),
                         HashMapRow.from(List.of("days", "dates"), List.of(3, LocalDate.of(2024, 1, 1)))
@@ -625,7 +625,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void applyCanMutateUnderlyingColumnStateForMutableValues() {
-        Column col = FlexibleDraftTable.fromColumns(List.of(new FlexibleColumn(
+        Column col = FlexibleDraftTable.create().fromColumns(List.of(new FlexibleColumn(
                         "job names",
                         asList(new ArrayList<>(asList("BAR", "SSV")), new ArrayList<>(asList("ASM", "SM")))
                 ))).apply("job names", (List<String> list) -> list.set(0, "RMT"))
@@ -744,7 +744,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canMapDraftTableIntoSingleColumnOfOriginatingType(){
-        Column c = FlexibleDraftTable.fromRows(List.of(
+        Column c = FlexibleDraftTable.create().fromRows(List.of(
                 HashMapRow.from(new WorkContract("part-time", "N", new Pay ("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now())),
                 HashMapRow.from(new WorkContract("part-time", "N", new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now())),
                 HashMapRow.from(new WorkContract("full-time", "Y", new Pay ("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1)))
@@ -755,7 +755,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canGatherSelectionIntoReducedDraftTable() {
-        DraftTable df = FlexibleDraftTable.fromRows(List.of(
+        DraftTable df = FlexibleDraftTable.create().fromRows(List.of(
                         HashMapRow.from(new Pay ("Hourly", "18.50", "Bi-Weekly", "80")),
                         HashMapRow.from(new Pay ("Salary", "50000.00", "Bi-Weekly", "80"))))
                 .addColumn(FlexibleColumn.from("country", List.of("US", "CA")))
@@ -764,7 +764,7 @@ public class FlexibleDraftTableTest {
         Assert.assertEquals(df.columnNames(), List.of("country", "pay"));
         Assert.assertEquals(
                 df,
-                FlexibleDraftTable.fromColumns(List.of(
+                FlexibleDraftTable.create().fromColumns(List.of(
                         FlexibleColumn.from("country", List.of("US", "CA")),
                         FlexibleColumn.from("pay", List.of(new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), new Pay ("Salary", "50000.00", "Bi-Weekly", "80")))
                 ))
@@ -787,7 +787,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void replacingAllOnlyReplacesMatchingValues(){
-        DraftTable draftTable = FlexibleDraftTable.fromColumns(List.of(
+        DraftTable draftTable = FlexibleDraftTable.create().fromColumns(List.of(
                 FlexibleColumn.from("country", Arrays.asList("US", "CA", "NULL")),
                 FlexibleColumn.from("state", List.of("NY", "PA", "NULL")),
                 FlexibleColumn.from("hasNewProduct", List.of(true, false, false))
@@ -800,7 +800,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenReplacingAllHasNoMatchesAnIdenticalDraftTableIsReturned() {
-        DraftTable draftTable = FlexibleDraftTable.fromColumns(List.of(
+        DraftTable draftTable = FlexibleDraftTable.create().fromColumns(List.of(
                 FlexibleColumn.from("country", Arrays.asList("US", "CA", "NULL")),
                 FlexibleColumn.from("state", List.of("NY", "PA", "NULL")),
                 FlexibleColumn.from("hasNewProduct", List.of(true, false, false))
@@ -816,7 +816,7 @@ public class FlexibleDraftTableTest {
                 "job names",
                 asList(new ArrayList<>(asList("BAR", "SSV")), new ArrayList<>(asList("ASM", "SM")))
         );
-        DraftTable df = FlexibleDraftTable.fromColumns(List.of(c));
+        DraftTable df = FlexibleDraftTable.create().fromColumns(List.of(c));
         DraftTable copy = df.copy();
 
         df.select("job names").apply((List<String> list) -> list.removeIf(name -> name.contains("A")));
@@ -834,7 +834,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void introspectAllowSelfReferencesInPipeline() {
         DraftTable draftTable = workContractDraftTable()
-                .introspect(df -> FlexibleDraftTable.emptyDraftTable()
+                .introspect(df -> FlexibleDraftTable.create().emptyDraftTable()
                         .append(these(df.rows().stream()
                                 .map(row -> row.valueOf("workContracts"))
                                 .map(HashMapRow::from)
@@ -846,7 +846,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canMakeDraftTableFromListOfObjects() {
-        DraftTable df = FlexibleDraftTable.fromObjects(List.of(
+        DraftTable df = FlexibleDraftTable.create().fromObjects(List.of(
                 new WorkContract("part-time", "N", new Pay ("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
                 new WorkContract("part-time", "N", new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
                 new WorkContract("full-time", "Y", new Pay ("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
@@ -855,7 +855,7 @@ public class FlexibleDraftTableTest {
         Assert.assertEquals(df.columnNames(), List.of("type", "exemptInd", "pay", "effectiveDate"));
         Assert.assertEquals(df.rowCount(), 3);
         Assert.assertEquals(
-                FlexibleDraftTable.fromColumns(List.of(df.select("pay"))).gatherInto(Pay.class, as("")).dataType(),
+                FlexibleDraftTable.create().fromColumns(List.of(df.select("pay"))).gatherInto(Pay.class, as("")).dataType(),
                 Pay.class
         );
     }
@@ -863,8 +863,8 @@ public class FlexibleDraftTableTest {
     @Test
     public void toStringIsAJsonString() {
         Assert.assertEquals(
-                FlexibleDraftTable.emptyDraftTable().toString(),
-                GsonSupplier.DEFAULT_GSON.toJson(FlexibleDraftTable.emptyDraftTable())
+                FlexibleDraftTable.create().emptyDraftTable().toString(),
+                GsonSupplier.DEFAULT_GSON.toJson(FlexibleDraftTable.create().emptyDraftTable())
         );
     }
 
@@ -874,7 +874,7 @@ public class FlexibleDraftTableTest {
     /* ----------------------------------------------------------------------------- */
 
     DraftTable workContractDraftTable() {
-        return FlexibleDraftTable.fromColumns(List.of(
+        return FlexibleDraftTable.create().fromColumns(List.of(
                 new FlexibleColumn("workContracts", List.of(
                         new WorkContract("part-time", "N", new Pay ("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
                         new WorkContract("part-time", "N", new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
@@ -885,7 +885,7 @@ public class FlexibleDraftTableTest {
     }
 
     DraftTable exampleDraftTableFromColumns() {
-        return FlexibleDraftTable.fromColumns(
+        return FlexibleDraftTable.create().fromColumns(
                 List.of(
                         FlexibleColumn.from("contractType", List.of("full-time", "full-time", "part-time")),
                         FlexibleColumn.from("payType", List.of("salary", "salary", "hourly")),
@@ -896,7 +896,7 @@ public class FlexibleDraftTableTest {
     }
 
     DraftTable exampleDraftTableFromColumnValues() {
-        return FlexibleDraftTable.from2DCollectionOfColumnValues(
+        return FlexibleDraftTable.create().fromColumnValues(
                 List.of("days", "dates", "names"),
                 List.of(
                         List.of(1, 2, 3),
@@ -907,7 +907,7 @@ public class FlexibleDraftTableTest {
     }
 
     DraftTable exampleDraftTableFromRowValues() {
-        return FlexibleDraftTable.from2DCollectionOfRowValues(
+        return FlexibleDraftTable.create().fromRowValues(
                 List.of("days", "dates", "names"),
                 List.of(
                         List.of(1, LocalDate.of(2024, 1, 1), "Alice"),
