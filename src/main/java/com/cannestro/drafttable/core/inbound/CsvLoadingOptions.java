@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.core.inbound;
 
-import com.cannestro.drafttable.csv.beans.CsvBean;
+import com.cannestro.drafttable.supporting.csv.CsvBean;
 
 
 public interface CsvLoadingOptions {

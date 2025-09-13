@@ -1,13 +1,13 @@
 package com.cannestro.drafttable.core.implementations;
 
-import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
-import com.cannestro.drafttable.core.implementations.rows.HashMapRow;
-import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
-import com.cannestro.drafttable.utils.mappers.GsonSupplier;
+import com.cannestro.drafttable.core.columns.FlexibleColumn;
+import com.cannestro.drafttable.core.rows.HashMapRow;
+import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.supporting.utils.mappers.GsonSupplier;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.cannestro.drafttable.core.Column;
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.Row;
+import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.rows.Row;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

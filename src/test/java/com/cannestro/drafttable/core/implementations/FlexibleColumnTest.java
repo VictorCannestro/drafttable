@@ -1,9 +1,9 @@
 package com.cannestro.drafttable.core.implementations;
 
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.options.SortingOrderType;
-import com.cannestro.drafttable.core.Column;
+import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.utils.helper.Library;
 import org.hamcrest.MatcherAssert;
 import org.testng.Assert;

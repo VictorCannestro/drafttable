@@ -1,19 +1,19 @@
 package com.cannestro.drafttable.core.inbound;
 
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.Row;
-import com.cannestro.drafttable.core.implementations.rows.HashMapRow;
-import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
-import com.cannestro.drafttable.csv.beans.CsvBean;
-import com.cannestro.drafttable.utils.MapUtils;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.rows.Row;
+import com.cannestro.drafttable.core.rows.HashMapRow;
+import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.supporting.csv.CsvBean;
+import com.cannestro.drafttable.supporting.utils.MapUtils;
 import lombok.NonNull;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.cannestro.drafttable.csv.CsvDataParser.csvBeanBuilder;
-import static com.cannestro.drafttable.csv.CsvDataParser.readAllLines;
-import static com.cannestro.drafttable.utils.ListUtils.firstElementOf;
+import static com.cannestro.drafttable.supporting.csv.CsvDataParser.csvBeanBuilder;
+import static com.cannestro.drafttable.supporting.csv.CsvDataParser.readAllLines;
+import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
 
 
 public class DefaultCsvLoader implements CsvLoader {
@@ -33,13 +33,8 @@ public class DefaultCsvLoader implements CsvLoader {
     }
 
     @Override
-    public DraftTable at(@NonNull String filePath, CsvLoadingOptions loadingOptions) {
+    public DraftTable at(@NonNull String filePath, @NonNull CsvLoadingOptions loadingOptions) {
         return FlexibleDraftTable.create().fromObjects(csvBeanBuilder(filePath,loadingOptions));
-    }
-
-    @Override
-    public <T extends CsvLoader> T using(Class<T> loader) {
-        return (T) this;
     }
 
     public DraftTable load(@NonNull String filePath, @NonNull Class<? extends CsvBean> csvSchema) {

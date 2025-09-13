@@ -1,13 +1,13 @@
 package com.cannestro.drafttable.core.outbound;
 
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.Row;
-import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
-import com.cannestro.drafttable.core.implementations.rows.HashMapRow;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.rows.Row;
+import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.cannestro.drafttable.csv.CsvDataWriter;
-import com.cannestro.drafttable.utils.mappers.GsonSupplier;
+import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
+import com.cannestro.drafttable.supporting.utils.mappers.GsonSupplier;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 

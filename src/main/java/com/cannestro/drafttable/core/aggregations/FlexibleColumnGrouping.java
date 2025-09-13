@@ -1,10 +1,9 @@
 package com.cannestro.drafttable.core.aggregations;
 
-import com.cannestro.drafttable.core.Column;
-import com.cannestro.drafttable.core.ColumnGrouping;
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
-import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.columns.FlexibleColumn;
+import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import org.hamcrest.Matcher;
 
 import java.util.List;

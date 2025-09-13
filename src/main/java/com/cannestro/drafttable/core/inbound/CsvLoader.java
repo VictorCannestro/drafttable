@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.core.inbound;
 
-import com.cannestro.drafttable.core.DraftTable;
+import com.cannestro.drafttable.core.tables.DraftTable;
 import lombok.NonNull;
 
 
@@ -17,8 +17,6 @@ public interface CsvLoader {
      */
     DraftTable at(@NonNull String filePath);
 
-    DraftTable at(@NonNull String filePath, CsvLoadingOptions loadingOptions);
-
-    <T extends CsvLoader> T using(Class<T> loader);
+    DraftTable at(@NonNull String filePath, @NonNull CsvLoadingOptions loadingOptions);
 
 }

@@ -1,8 +1,8 @@
 package com.cannestro.drafttable.core.assumptions;
 
-import com.cannestro.drafttable.core.Column;
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.Row;
+import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.rows.Row;
 import lombok.NonNull;
 
 import java.lang.reflect.Type;

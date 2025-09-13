@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.core.aggregations;
 
-import com.cannestro.drafttable.core.DraftTable;
+import com.cannestro.drafttable.core.tables.DraftTable;
 import com.google.common.annotations.Beta;
 
 import static java.util.Objects.isNull;

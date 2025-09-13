@@ -2,7 +2,7 @@ package com.cannestro.drafttable.utils.helper;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.opencsv.bean.CsvBindByName;
-import com.cannestro.drafttable.csv.beans.CsvBean;
+import com.cannestro.drafttable.supporting.csv.CsvBean;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

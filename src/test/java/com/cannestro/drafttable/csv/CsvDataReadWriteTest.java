@@ -1,9 +1,11 @@
 package com.cannestro.drafttable.csv;
 
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.inbound.DefaultCsvLoader;
-import com.cannestro.drafttable.utils.FileUtils;
+import com.cannestro.drafttable.supporting.csv.CsvDataParser;
+import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
+import com.cannestro.drafttable.supporting.utils.FileUtils;
 import com.cannestro.drafttable.utils.helper.Pay;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -11,8 +13,8 @@ import org.testng.annotations.Test;
 import java.util.List;
 
 import static com.cannestro.drafttable.core.options.Item.as;
-import static com.cannestro.drafttable.utils.Constants.TEST_CSV_DIRECTORY;
-import static com.cannestro.drafttable.utils.ListUtils.*;
+import static com.cannestro.drafttable.supporting.utils.Constants.TEST_CSV_DIRECTORY;
+import static com.cannestro.drafttable.supporting.utils.ListUtils.*;
 import static org.hamcrest.Matchers.*;
 
 
@@ -79,7 +81,7 @@ public class CsvDataReadWriteTest {
         );
 
         DraftTable df = FlexibleDraftTable.create()
-                .fromCSV().using(DefaultCsvLoader.class)
+                .fromCSV(DefaultCsvLoader.class)
                 .load("csv/temp_3.csv", Pay.class)
                 .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);

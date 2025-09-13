@@ -1,8 +1,8 @@
 package tutorials;
 
-import com.cannestro.drafttable.core.DraftTable;
-import com.cannestro.drafttable.core.Row;
-import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.core.rows.Row;
+import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
