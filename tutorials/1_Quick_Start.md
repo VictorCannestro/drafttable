@@ -23,12 +23,13 @@ The data used in this tutorial can be found in the `test/csv` folder.
 ## Reading a CSV file
 
 Here we read in a CSV file of tornado data directly and specify mapping rules for several columns. By default, CSV data
-is read in as a `String`. To set up our dataset to perform numerical operations, we'll need to parse any columns we're
+is read in as a `String`. To prepare our dataset to perform numerical operations, we'll need to parse any columns we're
 interested in operating on to a more fitting data type.
 
 ```java
 String filePath = "csv/tornadoes_1950-2014.csv";
-DraftTable tornadoes = FlexibleDraftTable.fromCSV(filePath)
+DraftTable tornadoes = FlexibleDraftTable.create()
+        .fromCSV().at(filePath)
         .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
         .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
         .transform("Start Lat", (String lat) -> Double.parseDouble(lat))
@@ -38,11 +39,15 @@ DraftTable tornadoes = FlexibleDraftTable.fromCSV(filePath)
         .transform("Width", (String width) -> Double.parseDouble(width));
 ```
 
-**Note:** Alternatively, we could pass in a user defined [Data](https://projectlombok.org/features/Data) class of type
-`CsvBean` that would bind column names to fields in the mapping class. The method call would change to something like
-the following:
+### Bean-Based Reading
+Alternatively, we could pass in a user defined Java `record` (or [Data](https://projectlombok.org/features/Data) class)
+that `implements CsvBean` to bind CSV column names to corresponding fields in the mapping class. DraftTable uses OpenCSV
+for these underlying processing operations. See [OpenCSV's documentation](https://opencsv.sourceforge.net/#reading_into_beans) 
+for more. Using this bean-based reading approach, the pipeline would change to something like the following:
 ```java
-FlexibleDraftTable.fromCSV(filePath, TornadoDataBean.class)
+DraftTable tornadoes = FlexibleDraftTable.create()
+        .fromCSV(DefaultCsvLoader.class)
+        .load(filePath, TornadoDataBean.class);
 ```
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
 columns vs optional columns, etc. When using this approach, *the field names will become the column names* of the
@@ -379,45 +384,6 @@ tornadoes.orderBy(Comparator.comparing((Row row) -> ((LocalDateTime) row.valueOf
 `((LocalDateTime) row.valueOf("DateTime"))`. This casting is *required* to be able to access the native methods of a 
 particular `Row` value. It is the price we pay paid to enable further customization.
 
-## Saving your data
-### To CSV
-We can write our data to a CSV file using:
-```java
-tornadoes.write().toCSV("./src/test/resources/csv/temp.csv", "NULL")
-```
-where `NULL` is the specified fill value for missing entries.
-
-**Note:** that this is a terminal operation (of return type `void`) and will end the data processing pipeline.
-
-### To JSON
-Exporting the data to a JSON string is also supported:
-```java
-System.out.println("To JSON output: " +
-    tornadoes.top(1).write().toJson()
-);
-```
-```
-To JSON output: {"data":["{\"Start Lon\":-94.1689,\"Length\":15.56,\"State\":\"TX\",\"Fatalities\":0,\"Region\":\"West South Central\",\"Scale\":3.0,\"State No\":\"2.0\",\"Width\":1087.0,\"Injuries\":0,\"Start Lat\":32.4869,\"DateTime\":\"2010-01-20T17:18:00\"}"]}
-```
-
-### Into a user-defined object
-Alternatively, we can gather the entire `DraftTable` or a defined subset of columns into a collection of user defined
-objects. For instance:
-
-```java
-// Note that the field names match the column names!
-record PhysicalMeasurements(double Scale, double Length, double Width) {}
-    
-List<PhysicalMeasurements> measurements = tornadoes
-        .gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
-        .select("Measurements")
-        .getValues();
-```
-**Note:** The field names of your target class **must exactly match** the column names used in the gathering!
-
-So remember to follow Java conventions and best practices by using camelCase column names and field names. (The irony of
-this statement is not lost on the author given the column names used in this tutorial.)
-
 
 ## Grouping your data
 To produce an aggregate grouping of a selected column, we can invoke the `group()` method to open up grouping
@@ -495,6 +461,45 @@ tornadoes.where("DateTime", LocalDateTime::getYear, allOf(greaterThan(1999), les
 |  2008 |   {Middle Atlantic=8, West North Central=555, East South Central=286, Mountain=77, West South Central=365, Pacific=10, New England=7, South Atlantic=283, East North Central=146} |
 |  2009 |  {Middle Atlantic=19, West North Central=299, East South Central=205, Mountain=74, West South Central=294, Pacific=12, New England=12, East North Central=96, South Atlantic=170} |
 ```
+
+## Saving your data
+### To CSV
+We can write our data to a CSV file using:
+```java
+tornadoes.write().toCSV("./src/test/resources/csv/temp.csv", "NULL")
+```
+where `NULL` is the specified fill value for missing entries.
+
+**Note:** that this is a terminal operation (of return type `void`) and will end the data processing pipeline.
+
+### To JSON
+Exporting the data to a JSON string is also supported:
+```java
+System.out.println("To JSON output: " +
+    tornadoes.top(1).write().toJson()
+);
+```
+```
+To JSON output: {"data":["{\"Start Lon\":-94.1689,\"Length\":15.56,\"State\":\"TX\",\"Fatalities\":0,\"Region\":\"West South Central\",\"Scale\":3.0,\"State No\":\"2.0\",\"Width\":1087.0,\"Injuries\":0,\"Start Lat\":32.4869,\"DateTime\":\"2010-01-20T17:18:00\"}"]}
+```
+
+### Into a user-defined object
+Alternatively, we can gather the entire `DraftTable` or a defined subset of columns into a collection of user defined
+objects. For instance:
+
+```java
+// Note that the field names match the column names!
+record PhysicalMeasurements(double Scale, double Length, double Width) {}
+    
+List<PhysicalMeasurements> measurements = tornadoes
+        .gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
+        .select("Measurements")
+        .getValues();
+```
+**Note:** The field names of your target class **must exactly match** the column names used in the gathering!
+
+So remember to follow Java conventions and best practices by using camelCase column names and field names. (The irony of
+this statement is not lost on the author given the column names used in this tutorial.)
 
 
 ## Putting it all together
