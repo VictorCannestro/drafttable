@@ -35,8 +35,7 @@ directory, in general, for access to the latest tutorials.
 ## Examples
 ### Example 1: Reading in a CSV, processing it, then exporting the results to another CSV
 ```java
-FlexibleDraftTable.create()
-                 .fromCSV().at("./src/main/resources/csv/employee_data.csv")
+FlexibleDraftTable.create().fromCSV().at("./src/main/resources/csv/employee_data.csv")
                  .where("state", is(not("CA")))
                  .where("jobName", endsWith("manager"))
                  .transform("nonExempt", (String exemptValue) -> exemptValue.equals("1"))
