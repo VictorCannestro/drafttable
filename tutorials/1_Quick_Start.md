@@ -4,7 +4,6 @@ showcase the DraftTable library and provide a basis of comparison for users inte
 capabilities.*
 
 ## Introduction
-
 Here we'll explore the [tornado dataset](https://www.ncei.noaa.gov/access/monitoring/tornadoes/) maintained by
 the NOAA. These tornado statistics are limited to the contiguous U.S. and are provided by the Storm Prediction
 Center (SPC). In doing so we’ll cover a variety of functionality provided by this library, including:
@@ -18,10 +17,9 @@ Center (SPC). In doing so we’ll cover a variety of functionality provided by t
 - Sorting
 - Grouping operations
 
-The data used in this tutorial can be found in the `test/csv` folder.
+The data used in this tutorial can be found in the `test/resources/csv` folder.
 
 ## Reading a CSV file
-
 Here we read in a CSV file of tornado data directly and specify mapping rules for several columns. By default, CSV data
 is read in as a `String`. To prepare our dataset to perform numerical operations, we'll need to parse any columns we're
 interested in operating on to a more fitting data type.
@@ -39,26 +37,38 @@ DraftTable tornadoes = FlexibleDraftTable.create()
         .transform("Width", (String width) -> Double.parseDouble(width));
 ```
 
+Column names in this `DraftTable` will appear exactly as they do in the CSV.
+
 ### Bean-Based Reading
 Alternatively, we could pass in a user defined Java `record` (or [Data](https://projectlombok.org/features/Data) class)
 that `implements CsvBean` to bind CSV column names to corresponding fields in the mapping class. DraftTable uses OpenCSV
 for these underlying processing operations. See [OpenCSV's documentation](https://opencsv.sourceforge.net/#reading_into_beans) 
-for more. Using this bean-based reading approach, the pipeline would change to something like the following:
+for more. Using this bean-based reading approach, the pipeline we defined earlier would change to something like the 
+following:
 ```java
 DraftTable tornadoes = FlexibleDraftTable.create()
         .fromCSV(DefaultCsvLoader.class)
         .load(filePath, TornadoDataBean.class);
 ```
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
-columns vs optional columns, etc. When using this approach, *the field names will become the column names* of the
-`DraftTable` (i.e., camelCase, following best practices and Java conventions).
+columns vs optional columns, etc. When using this approach, *the field names of the class will become the column names*
+of the `DraftTable`, *not the CSV column names*. So we'd expect our `DraftTable` to have columns with camelCase names,
+following best practices and Java conventions.
 
 This is the recommended approach for datasets with many columns and a variety of data types since it scales.
+
+### Advanced Reading
+Outside these built-in capabilities, users may also integrate their own CSV parsers with the `DraftTable` library. All
+that's required is to define a class that `implements CsvLoader`. Suppose we defined 
+`public class MyCustomCsvLoader implements CsvLoader`. To access the methods of this custom loader in the pipeline we
+just need to write:
+```java
+FlexibleDraftTable.create().fromCSV(MyCustomCsvLoader.class)
+```
 
 
 ## Viewing table data
 ### Viewing the metadata
-
 Let's start exploring the dataset by displaying the column names for reference:
 ```java
 System.out.println(tornadoes.columnNames())
@@ -382,7 +392,7 @@ tornadoes.orderBy(Comparator.comparing((Row row) -> ((LocalDateTime) row.valueOf
 - Sorting without using a user-defined rule will be performed in "natural" order.
 - Notice the casting performed in the `Comparator<Row>` example highlighted in this snippet: 
 `((LocalDateTime) row.valueOf("DateTime"))`. This casting is *required* to be able to access the native methods of a 
-particular `Row` value. It is the price we pay paid to enable further customization.
+particular `Row` value. It is the price we pay for dabbling deeply in wildcards.
 
 
 ## Grouping your data
@@ -535,7 +545,6 @@ Note that this only works here because the filter conditions are *mutually exclu
 
 
 #### The complete pipeline
-##### TODO: finish the example
 ```java
 FlexibleDraftTable.fromCSV("csv/tornadoes_1950-2014.csv")
                  .dropAllExcept(these("Date", "Time", "State", "Injuries", "Fatalities"))
