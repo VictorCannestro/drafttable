@@ -55,6 +55,25 @@ columns vs optional columns, etc. When using this approach, *the field names of 
 of the `DraftTable`, *not the CSV column names*. So we'd expect our `DraftTable` to have columns with camelCase names,
 following best practices and Java conventions.
 
+```java
+@Data
+public class TornadoDataBean implements CsvBean {
+
+    @CsvBindByName(column = "Date") String date;
+    @CsvBindByName(column = "Time") String time;
+    @CsvBindByName(column = "State") String state;
+    @CsvBindByName(column = "State No") double stateNumber;
+    @CsvBindByName(column = "Scale") double scale;
+    @CsvBindByName(column = "Injuries") double injuries;
+    @CsvBindByName(column = "Fatalities") double fatalities;
+    @CsvBindByName(column = "Start Lat") double startLat;
+    @CsvBindByName(column = "Start Lon") double startLon;
+    @CsvBindByName(column = "Length") double length;
+    @CsvBindByName(column = "Width") double width;
+
+}
+```
+
 This is the recommended approach for datasets with many columns and a variety of data types since it scales.
 
 ### Advanced Reading
