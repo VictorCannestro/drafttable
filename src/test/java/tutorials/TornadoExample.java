@@ -40,6 +40,7 @@ public class TornadoExample {
         System.out.println("Not of type Double: " +
                 tornadoes.whereColumnType(is(not(Double.class))).columnNames()
         );
+        tornadoes.write().structure();
         System.out.println();
 
         // Viewing data examples

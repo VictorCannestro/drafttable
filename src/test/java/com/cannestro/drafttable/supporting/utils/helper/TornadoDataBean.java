@@ -8,16 +8,16 @@ import lombok.Data;
 @Data
 public class TornadoDataBean implements CsvBean {
 
-    @CsvBindByName(column = "Date") String date;
-    @CsvBindByName(column = "Time") String time;
-    @CsvBindByName(column = "State") String state;
-    @CsvBindByName(column = "State No") double stateNumber;
-    @CsvBindByName(column = "Scale") double scale;
-    @CsvBindByName(column = "Injuries") double injuries;
-    @CsvBindByName(column = "Fatalities") double fatalities;
-    @CsvBindByName(column = "Start Lat") double startLat;
-    @CsvBindByName(column = "Start Lon") double startLon;
-    @CsvBindByName(column = "Length") double length;
-    @CsvBindByName(column = "Width") double width;
+    @CsvBindByName(column = "Date")       private String date;
+    @CsvBindByName(column = "Time")       private String time;
+    @CsvBindByName(column = "State")      private String state;
+    @CsvBindByName(column = "State No")   private String stateNumber;
+    @CsvBindByName(column = "Scale")      private double scale;
+    @CsvBindByName(column = "Injuries")   private double injuries;
+    @CsvBindByName(column = "Fatalities") private double fatalities;
+    @CsvBindByName(column = "Start Lat")  private double startLat;
+    @CsvBindByName(column = "Start Lon")  private double startLon;
+    @CsvBindByName(column = "Length")     private double length;
+    @CsvBindByName(column = "Width")      private double width;
 
 }
