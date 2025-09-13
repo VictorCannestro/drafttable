@@ -1,10 +1,8 @@
-package com.cannestro.drafttable.core.implementations;
+package com.cannestro.drafttable.core.columns;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
-import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.options.SortingOrderType;
-import com.cannestro.drafttable.core.columns.Column;
-import com.cannestro.drafttable.utils.helper.Library;
+import com.cannestro.drafttable.supporting.utils.helper.Library;
 import org.hamcrest.MatcherAssert;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;

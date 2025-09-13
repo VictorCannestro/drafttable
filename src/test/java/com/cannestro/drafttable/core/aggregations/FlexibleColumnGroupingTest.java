@@ -3,8 +3,8 @@ package com.cannestro.drafttable.core.aggregations;
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
-import com.cannestro.drafttable.utils.helper.BareBonesPojo;
-import com.cannestro.drafttable.utils.helper.Pay;
+import com.cannestro.drafttable.supporting.utils.helper.BareBonesPojo;
+import com.cannestro.drafttable.supporting.utils.helper.Pay;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

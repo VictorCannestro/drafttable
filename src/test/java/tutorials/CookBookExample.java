@@ -2,7 +2,7 @@ package tutorials;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
-import com.cannestro.drafttable.utils.helper.CookBook;
+import com.cannestro.drafttable.supporting.utils.helper.CookBook;
 
 import java.io.FileReader;
 import java.io.Reader;

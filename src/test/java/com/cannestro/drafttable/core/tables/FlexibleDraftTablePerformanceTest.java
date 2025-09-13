@@ -1,8 +1,7 @@
-package com.cannestro.drafttable.core.implementations;
+package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
-import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;

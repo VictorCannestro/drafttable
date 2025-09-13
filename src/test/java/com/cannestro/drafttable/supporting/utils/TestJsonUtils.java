@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.utils;
+package com.cannestro.drafttable.supporting.utils;
 
 import com.cannestro.drafttable.supporting.utils.JsonUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;

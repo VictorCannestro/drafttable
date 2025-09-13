@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.utils.helper;
+package com.cannestro.drafttable.supporting.utils.helper;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.opencsv.bean.CsvBindByName;

@@ -1,7 +1,5 @@
-package com.cannestro.drafttable.core.implementations;
+package com.cannestro.drafttable.core.rows;
 
-import com.cannestro.drafttable.core.rows.Row;
-import com.cannestro.drafttable.core.rows.HashMapRow;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

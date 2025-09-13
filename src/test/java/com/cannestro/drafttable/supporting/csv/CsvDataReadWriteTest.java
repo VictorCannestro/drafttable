@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.csv;
+package com.cannestro.drafttable.supporting.csv;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
@@ -6,7 +6,7 @@ import com.cannestro.drafttable.core.inbound.DefaultCsvLoader;
 import com.cannestro.drafttable.supporting.csv.CsvDataParser;
 import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
-import com.cannestro.drafttable.utils.helper.Pay;
+import com.cannestro.drafttable.supporting.utils.helper.Pay;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

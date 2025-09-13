@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.utils.helper;
+package com.cannestro.drafttable.supporting.utils.helper;
 
 import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.builder.ToStringBuilder;
