@@ -24,7 +24,8 @@ import static org.hamcrest.Matchers.*;
 public class TornadoExample {
 
     public static void main(String[] args) {
-        DraftTable tornadoes = FlexibleDraftTable.create().fromCSV("csv/tornadoes_1950-2014.csv")
+        DraftTable tornadoes = FlexibleDraftTable.create()
+                .fromCSV().at("csv/tornadoes_1950-2014.csv")
                 .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                 .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
                 .transform("Start Lat", (String lat) -> Double.parseDouble(lat))

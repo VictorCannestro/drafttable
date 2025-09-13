@@ -2,6 +2,7 @@ package com.cannestro.drafttable.csv;
 
 import com.cannestro.drafttable.core.DraftTable;
 import com.cannestro.drafttable.core.implementations.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.core.inbound.DefaultCsvLoader;
 import com.cannestro.drafttable.utils.FileUtils;
 import com.cannestro.drafttable.utils.helper.Pay;
 import org.testng.Assert;
@@ -77,8 +78,10 @@ public class CsvDataReadWriteTest {
                 3
         );
 
-        DraftTable df = FlexibleDraftTable.create().fromCSV("csv/temp_3.csv", Pay.class)
-                                        .where("type", is("Salary"));
+        DraftTable df = FlexibleDraftTable.create()
+                .fromCSV().using(DefaultCsvLoader.class)
+                .load("csv/temp_3.csv", Pay.class)
+                .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);
 
         FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_3.csv"));
@@ -96,7 +99,7 @@ public class CsvDataReadWriteTest {
                 TEST_CSV_DIRECTORY.concat("temp_4.csv"),
                 FlexibleDraftTable.create().fromRowValues(headers, lines).gatherInto(Pay.class, as("pay")).values()
         );
-        DraftTable df = FlexibleDraftTable.create().fromCSV("csv/temp_4.csv");
+        DraftTable df = FlexibleDraftTable.create().fromCSV().at("csv/temp_4.csv");
         Assert.assertEqualsNoOrder(
                 df.columnNames(),
                 List.of("type", "rate", "period", "workHours")

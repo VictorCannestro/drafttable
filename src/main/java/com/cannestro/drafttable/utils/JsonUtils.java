@@ -53,7 +53,6 @@ public class JsonUtils {
             return false;
         }
         try {
-            // TODO: This usage of try/catch is a technical debt that should be refactored into a proper conditional
             parseString(String.valueOf(firstElementOf(collection))).getAsJsonObject();
         } catch (IllegalStateException | JsonParseException | NullPointerException e) {
             return false;

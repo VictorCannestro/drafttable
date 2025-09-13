@@ -6,20 +6,18 @@ import com.cannestro.drafttable.core.Row;
 import com.cannestro.drafttable.core.TableCreator;
 import com.cannestro.drafttable.core.implementations.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.implementations.rows.HashMapRow;
-import com.cannestro.drafttable.csv.beans.CsvBean;
+import com.cannestro.drafttable.core.inbound.CsvLoader;
+import com.cannestro.drafttable.core.inbound.DefaultCsvLoader;
 import com.cannestro.drafttable.utils.MapUtils;
 import lombok.NonNull;
 import org.paumard.streams.StreamsUtils;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeColumnsHaveUniformSize;
-import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeRowsHaveEquivalentKeySet;
+import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeRowsHaveEquivalentKeySets;
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniformityOf;
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUnique;
-import static com.cannestro.drafttable.csv.CsvDataParser.csvBeanBuilder;
-import static com.cannestro.drafttable.csv.CsvDataParser.readAllLines;
 import static com.cannestro.drafttable.utils.ListUtils.firstElementOf;
 import static java.util.Collections.emptyList;
 
@@ -56,7 +54,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
         if(listOfRows.isEmpty()) {
             return emptyDraftTable();
         }
-        assumeRowsHaveEquivalentKeySet(listOfRows);
+        assumeRowsHaveEquivalentKeySets(listOfRows);
         return new FlexibleDraftTable(
                 firstElementOf(listOfRows)
                         .keys().stream()
@@ -93,22 +91,8 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public DraftTable fromCSV(@NonNull String filePath, @NonNull Class<? extends CsvBean> csvSchema) {
-        return fromObjects(csvBeanBuilder(filePath, csvSchema));
-    }
-
-    @Override
-    public DraftTable fromCSV(@NonNull String filePath) {
-        List<List<String>> fullTable = readAllLines(filePath);
-        List<String> headers = firstElementOf(fullTable);
-        List<List<String>> tableData = fullTable.subList(1, fullTable.size());
-        return fromRows(
-                IntStream.range(1, tableData.size())
-                        .mapToObj(rowIndex -> MapUtils.zip(headers, tableData.get(rowIndex)))
-                        .map(HashMapRow::new)
-                        .map(Row.class::cast)
-                        .toList()
-        );
+    public CsvLoader fromCSV() {
+        return new DefaultCsvLoader();
     }
 
 }
