@@ -97,7 +97,6 @@ public record DraftTableOutput(DraftTable draftTable) {
                                                      column.where(nullValue()).size()))
                         .sorted(Comparator.comparing(Structure::ColumnName))
                         .map(HashMapRow::from)
-                        .map(Row.class::cast)
                         .toList())
                 .write()
                 .prettyPrint();

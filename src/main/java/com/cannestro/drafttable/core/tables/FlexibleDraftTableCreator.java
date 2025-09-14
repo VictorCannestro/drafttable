@@ -29,12 +29,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
 
     @Override
     public <T> DraftTable fromObjects(@NonNull List<T> objects) {
-        return fromRows(
-                objects.stream()
-                        .map(HashMapRow::from)
-                        .map(Row.class::cast)
-                        .toList()
-        );
+        return fromRows(objects.stream().map(HashMapRow::from).toList());
     }
 
     @Override
@@ -48,7 +43,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public DraftTable fromRows(@NonNull List<Row> listOfRows) {
+    public <T extends Row> DraftTable fromRows(@NonNull List<T> listOfRows) {
         if(listOfRows.isEmpty()) {
             return emptyDraftTable();
         }
@@ -83,7 +78,6 @@ public class FlexibleDraftTableCreator implements TableCreator {
                 table.stream()
                         .map(rowValues -> MapUtils.zip(columnNames, rowValues))
                         .map(HashMapRow::new)
-                        .map(Row.class::cast)
                         .toList()
         );
     }

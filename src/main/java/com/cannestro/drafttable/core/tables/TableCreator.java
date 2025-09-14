@@ -32,7 +32,7 @@ public interface TableCreator {
      * @param listOfRows Any list of {@code Row} objects
      * @return A new {@code DraftTable}
      */
-    DraftTable fromRows(@NonNull List<Row> listOfRows);
+    <T extends Row> DraftTable fromRows(@NonNull List<T> listOfRows);
 
     /**
      * Splits a homogenous list of objects into a new {@code DraftTable} in which each field in a given object is mapped

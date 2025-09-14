@@ -10,13 +10,13 @@ import static java.util.Objects.isNull;
 
 
 @Setter
-public class CsvToListTransferrer {
+public class CsvToListTransferrer<T extends CsvBean> {
 
     private List<String[]> csvStringList;
-    private List<CsvBean> csvList;
+    private List<T> csvList;
 
 
-    public List<CsvBean> getCsvList() {
+    public List<T> getCsvList() {
         if (!isNull(csvList)) {
             return csvList;
         }

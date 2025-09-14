@@ -28,13 +28,13 @@ public class CsvDataParser {
 
 
     public static List<String> mapCsvToJsonStrings(@NonNull String resourceFilePath, @NonNull Class<? extends CsvBean> csvBeanClass) {
-        return JsonUtils.jsonStringListFrom(csvBeanBuilder(resourceFilePath, csvBeanClass));
+        return JsonUtils.jsonStringListFrom(buildBeansFrom(resourceFilePath, csvBeanClass));
     }
 
-    public static List<CsvBean> csvBeanBuilder(@NonNull String resourceFilePath, @NonNull CsvLoadingOptions loadingOptions) {
-        CsvToListTransferrer csvToListTransferrer = new CsvToListTransferrer();
+    public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull CsvLoadingOptions loadingOptions) {
+        CsvToListTransferrer<T> csvToListTransferrer = new CsvToListTransferrer<>();
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
-            CsvToBean<CsvBean> csvBean = new CsvToBeanBuilder<CsvBean>(reader)
+            CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
                     .withEscapeChar(loadingOptions.escapeCharacter())
                     .withQuoteChar(loadingOptions.quoteCharacter())
                     .withIgnoreEmptyLine(loadingOptions.ignoreEmptyLines())
@@ -49,6 +49,7 @@ public class CsvDataParser {
         return csvToListTransferrer.getCsvList();
     }
 
+
     /**
      * Maps the contents of the CSV located at resourceFilePath to its corresponding CSV representation.
      *
@@ -56,10 +57,10 @@ public class CsvDataParser {
      * @param csvBeanClass The {@code CsvBean} type representation of the CSV file located at resourceFilePath
      * @return A List of extracted {@code CsvBean} types where each bean maps to a row in the CSV
      */
-    public static List<CsvBean> csvBeanBuilder(@NonNull String resourceFilePath, @NonNull Class<? extends CsvBean> csvBeanClass) {
-        CsvToListTransferrer csvToListTransferrer = new CsvToListTransferrer();
+    public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull Class<T> csvBeanClass) {
+        CsvToListTransferrer<T> csvToListTransferrer = new CsvToListTransferrer<>();
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
-            CsvToBean<CsvBean> csvBean = new CsvToBeanBuilder<CsvBean>(reader)
+            CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
                     .withType(csvBeanClass)
                     .build();
             csvToListTransferrer.setCsvList(csvBean.parse());

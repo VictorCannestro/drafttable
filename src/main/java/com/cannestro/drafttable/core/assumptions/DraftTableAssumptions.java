@@ -47,7 +47,7 @@ public class DraftTableAssumptions {
         }
     }
 
-    public static void assumeRowsHaveEquivalentKeySets(@NonNull List<Row> listOfRows) {
+    public static <T extends Row> void assumeRowsHaveEquivalentKeySets(@NonNull List<T> listOfRows) {
         long distinctKeyLists =  listOfRows.stream().map(Row::keys).distinct().count();
         if (1 != distinctKeyLists) {
             throw new IllegalArgumentException(

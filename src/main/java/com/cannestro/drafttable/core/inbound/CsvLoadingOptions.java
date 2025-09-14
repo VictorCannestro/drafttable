@@ -19,6 +19,6 @@ public interface CsvLoadingOptions {
 
     Boolean ignoreEmptyLines();
 
-    Class<? extends CsvBean> type();
+    <T extends CsvBean> Class<T> type();
 
 }

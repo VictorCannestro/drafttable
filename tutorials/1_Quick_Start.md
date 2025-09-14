@@ -59,8 +59,8 @@ following best practices and Java conventions.
 @Data
 public class TornadoDataBean implements CsvBean {
 
-    @CsvBindByName(column = "Date") private String date;
-    @CsvBindByName(column = "Time") private String time;
+    @CsvBindByName(column = "Date") @CsvDate("yyyy-MM-dd") private LocalDate date;
+    @CsvBindByName(column = "Time") @CsvDate("HH:mm:ss") private LocalTime time;
     @CsvBindByName(column = "State") private String state;
     @CsvBindByName(column = "State No") private String stateNumber;
     @CsvBindByName(column = "Scale") private double scale;
