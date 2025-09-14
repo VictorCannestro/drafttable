@@ -40,8 +40,8 @@ DraftTable tornadoes = FlexibleDraftTable.create()
 Column names in this `DraftTable` will appear exactly as they do in the CSV.
 
 ### Bean-Based Reading
-Alternatively, we could pass in a user defined Java `record` (or [Data](https://projectlombok.org/features/Data) class)
-that `implements CsvBean` to bind CSV column names to corresponding fields in the mapping class. DraftTable uses OpenCSV
+Alternatively, we could pass in a user defined [Data](https://projectlombok.org/features/Data) class that 
+`implements CsvBean` to bind CSV column names to corresponding fields in the mapping class. DraftTable uses OpenCSV
 for these underlying processing operations. See [OpenCSV's documentation](https://opencsv.sourceforge.net/#reading_into_beans) 
 for more. Using this bean-based reading approach, the pipeline we defined earlier would change to something like the 
 following:
