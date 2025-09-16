@@ -17,6 +17,6 @@ public interface CsvLoader {
      */
     DraftTable at(@NonNull String filePath);
 
-    DraftTable at(@NonNull String filePath, @NonNull CsvLoadingOptions loadingOptions);
+    DraftTable at(@NonNull String filePath, @NonNull CsvOptions loadingOptions);
 
 }

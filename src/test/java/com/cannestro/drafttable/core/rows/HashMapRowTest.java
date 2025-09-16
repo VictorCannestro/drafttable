@@ -58,11 +58,19 @@ public class HashMapRowTest {
     }
 
     @Test
-    public void underlyingMapMatchesInputData() {
+    public void underlyingMapMatchesInputDataAsStrings() {
         LocalDate date = LocalDate.of(2023, 1, 1);
         Row row = HashMapRow.from(new DailyHireCount(100, date));
 
         Assert.assertEquals(row.valueMap().get("timeStamp"), date.toString());
+    }
+
+    @Test(description = "The true test of whether rows preserve type")
+    public void mappedDataTypeMatchesInputDataType() {
+        LocalDate date = LocalDate.of(2023, 1, 1);
+        Row row = HashMapRow.from(new DailyHireCount(100, date));
+
+        Assert.assertEquals(row.valueMap().get("timeStamp").getClass(), LocalDate.class);
     }
 
     @Test

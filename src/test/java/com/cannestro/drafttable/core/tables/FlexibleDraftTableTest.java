@@ -2,8 +2,9 @@ package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.rows.HashMapRow;
+import com.cannestro.drafttable.supporting.utils.helper.EmploymentContract;
+import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import com.cannestro.drafttable.supporting.utils.mappers.GsonSupplier;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.rows.Row;
 import org.testng.Assert;
@@ -28,14 +29,7 @@ import static org.hamcrest.Matchers.*;
  */
 @Test(groups = {"component"})
 public class FlexibleDraftTableTest {
-
-    @JsonPropertyOrder({"type", "exemptInd", "pay", "effectiveDate"})
-    record WorkContract (String type, String exemptInd, Pay pay, LocalDate effectiveDate) {}
-
-    @JsonPropertyOrder({"type", "rate", "period", "workHours"})
-    record Pay (String type, String rate, String period, String workHours) {}
-
-
+    
     @Test
     public void columnNamesMatchUnderLyingObjectsFields() {
         assertThat(
@@ -548,9 +542,9 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canTransformInplaceWhenDraftTableHasSingleColumn(){
-        DraftTable df = workContractDraftTable().transform("workContracts", (WorkContract wc) -> wc.type().equals("full-time"));
+        DraftTable df = EmploymentContractDraftTable().transform("EmploymentContracts", (EmploymentContract ec) -> ec.getType().equals("full-time"));
 
-        Assert.assertEquals(df.select("workContracts").dataType(), Boolean.class);
+        Assert.assertEquals(df.select("EmploymentContracts").dataType(), Boolean.class);
     }
 
     @Test
@@ -718,53 +712,55 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canFilterByAnAspectOfAColumnOfComplexObjects() {
-        DraftTable df = workContractDraftTable()
-                .where("workContracts", WorkContract::type, is("full-time"));
+        DraftTable df = EmploymentContractDraftTable()
+                .where("EmploymentContracts", EmploymentContract::getType, is("full-time"));
 
         Assert.assertEquals(df.rowCount(), 1);
         Assert.assertEquals(
-                df.select("workContracts").firstValue().get(),
-                new WorkContract("full-time", "Y", new Pay ("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
+                df.select("EmploymentContracts").firstValue().get(),
+                new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
     }
 
     @Test
     public void canFilterByARow() {
-        DraftTable df = workContractDraftTable()
-                .where((Row row) -> ((WorkContract) row.valueOf("workContracts")).type(), is("full-time"));
+        DraftTable df = EmploymentContractDraftTable()
+                .where((Row row) -> ((EmploymentContract) row.valueOf("EmploymentContracts")).getType(), is("full-time"));
 
         Assert.assertEquals(df.rowCount(), 1);
         Assert.assertEquals(
-                df.select("workContracts").firstValue().get(),
-                new WorkContract("full-time", "Y", new Pay ("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
+                df.select("EmploymentContracts").firstValue().get(),
+                new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
     }
 
     @Test
     public void canMapDraftTableIntoSingleColumnOfOriginatingType(){
-        Column c = FlexibleDraftTable.create().fromRows(List.of(
-                HashMapRow.from(new WorkContract("part-time", "N", new Pay ("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now())),
-                HashMapRow.from(new WorkContract("part-time", "N", new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now())),
-                HashMapRow.from(new WorkContract("full-time", "Y", new Pay ("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1)))
-        )).gatherInto(WorkContract.class, as("workContracts"));
+        DraftTable df = FlexibleDraftTable.create().fromRows(List.of(
+                HashMapRow.from(new EmploymentContract("part-time", "N", new PayDetails("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now())),
+                HashMapRow.from(new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now())),
+                HashMapRow.from(new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1)))
+        ));
+        df.write().structure();
+        Column c = df.gatherInto(EmploymentContract.class, as("EmploymentContracts"));
 
-        Assert.assertEquals(c, workContractDraftTable().select("workContracts"));
+        Assert.assertEquals(c, EmploymentContractDraftTable().select("EmploymentContracts"));
     }
 
     @Test
     public void canGatherSelectionIntoReducedDraftTable() {
         DraftTable df = FlexibleDraftTable.create().fromRows(List.of(
-                        HashMapRow.from(new Pay ("Hourly", "18.50", "Bi-Weekly", "80")),
-                        HashMapRow.from(new Pay ("Salary", "50000.00", "Bi-Weekly", "80"))))
+                        HashMapRow.from(new PayDetails("Hourly", "18.50", "Bi-Weekly", "80")),
+                        HashMapRow.from(new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"))))
                 .addColumn(FlexibleColumn.from("country", List.of("US", "CA")))
-                .gatherInto(Pay.class, as("pay"), using("type", "rate", "period", "workHours"));
+                .gatherInto(PayDetails.class, as("pay"), using("type", "rate", "period", "workHours"));
 
         Assert.assertEquals(df.columnNames(), List.of("country", "pay"));
         Assert.assertEquals(
                 df,
                 FlexibleDraftTable.create().fromColumns(List.of(
                         FlexibleColumn.from("country", List.of("US", "CA")),
-                        FlexibleColumn.from("pay", List.of(new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), new Pay ("Salary", "50000.00", "Bi-Weekly", "80")))
+                        FlexibleColumn.from("pay", List.of(new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), new PayDetails("Salary", "50000.00", "Bi-Weekly", "80")))
                 ))
         );
     }
@@ -772,14 +768,14 @@ public class FlexibleDraftTableTest {
     @Test
     public void canGatherIntoIfOneOrMoreElementsNull() {
         Row row = HashMapRow.from(
-                Collections.singletonList("workContracts"),
-                List.of(new WorkContract(null, null, null, null))
+                Collections.singletonList("EmploymentContracts"),
+                List.of(new EmploymentContract(null, null, null, null))
         );
-        Column c = workContractDraftTable().append(row).gatherInto(WorkContract.class, as(""));
+        Column c = EmploymentContractDraftTable().append(row).gatherInto(EmploymentContract.class, as(""));
 
         Assert.assertEquals(
                 c.bottom(1).firstValue().get(),
-                new WorkContract(null, null, null, null)
+                new EmploymentContract(null, null, null, null)
         );
     }
 
@@ -831,30 +827,30 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void introspectAllowSelfReferencesInPipeline() {
-        DraftTable draftTable = workContractDraftTable()
+        DraftTable draftTable = EmploymentContractDraftTable()
                 .introspect(df -> FlexibleDraftTable.create().emptyDraftTable()
                         .append(these(df.rows().stream()
-                                .map(row -> row.valueOf("workContracts"))
+                                .map(row -> row.valueOf("EmploymentContracts"))
                                 .map(HashMapRow::from)
                                 .map(hmr -> (Row) hmr)
                                 .toList())));
 
-        assertThat(draftTable.columnNames(), containsInAnyOrder("type", "exemptInd", "pay", "effectiveDate"));
+        assertThat(draftTable.columnNames(), containsInAnyOrder("type", "exemptInd", "payDetails", "effectiveDate"));
     }
 
     @Test
     public void canMakeDraftTableFromListOfObjects() {
         DraftTable df = FlexibleDraftTable.create().fromObjects(List.of(
-                new WorkContract("part-time", "N", new Pay ("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
-                new WorkContract("part-time", "N", new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
-                new WorkContract("full-time", "Y", new Pay ("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
+                new EmploymentContract("part-time", "N", new PayDetails("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
+                new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
+                new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         ));
 
-        Assert.assertEquals(df.columnNames(), List.of("type", "exemptInd", "pay", "effectiveDate"));
+        Assert.assertEquals(df.columnNames(), List.of("type", "exemptInd", "payDetails", "effectiveDate"));
         Assert.assertEquals(df.rowCount(), 3);
         Assert.assertEquals(
-                FlexibleDraftTable.create().fromColumns(List.of(df.select("pay"))).gatherInto(Pay.class, as("")).dataType(),
-                Pay.class
+                FlexibleDraftTable.create().fromColumns(List.of(df.select("payDetails"))).gatherInto(PayDetails.class, as("")).dataType(),
+                PayDetails.class
         );
     }
 
@@ -871,12 +867,12 @@ public class FlexibleDraftTableTest {
     /* --------------------------Test Data and DataProviders------------------------ */
     /* ----------------------------------------------------------------------------- */
 
-    DraftTable workContractDraftTable() {
+    DraftTable EmploymentContractDraftTable() {
         return FlexibleDraftTable.create().fromColumns(List.of(
-                new FlexibleColumn("workContracts", List.of(
-                        new WorkContract("part-time", "N", new Pay ("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
-                        new WorkContract("part-time", "N", new Pay ("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
-                        new WorkContract("full-time", "Y", new Pay ("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
+                new FlexibleColumn("EmploymentContracts", List.of(
+                        new EmploymentContract("part-time", "N", new PayDetails("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
+                        new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
+                        new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
                     )
                 )
         ));

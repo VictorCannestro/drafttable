@@ -5,7 +5,7 @@ import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvDataParser;
 import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
-import com.cannestro.drafttable.supporting.utils.helper.Pay;
+import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -32,13 +32,13 @@ public class DraftTableFromCsvTest {
                 .write()
                 .toCSV(TEST_CSV_DIRECTORY.concat("temp_3.csv"), "NULL");
         Assert.assertEquals(
-                CsvDataParser.mapCsvToJsonStrings("csv/temp_3.csv", Pay.class).size(),
+                CsvDataParser.mapCsvToJsonStrings("csv/temp_3.csv", PayDetails.class).size(),
                 3
         );
 
         DraftTable df = FlexibleDraftTable.create()
                 .fromCSV(DefaultCsvLoader.class)
-                .load("csv/temp_3.csv", Pay.class)
+                .load("csv/temp_3.csv", PayDetails.class)
                 .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);
 
@@ -55,7 +55,7 @@ public class DraftTableFromCsvTest {
         );
         CsvDataWriter.exportBeansToCsv(
                 TEST_CSV_DIRECTORY.concat("temp_4.csv"),
-                FlexibleDraftTable.create().fromRowValues(headers, lines).gatherInto(Pay.class, as("pay")).values()
+                FlexibleDraftTable.create().fromRowValues(headers, lines).gatherInto(PayDetails.class, as("pay")).values()
         );
         DraftTable df = FlexibleDraftTable.create().fromCSV().at("csv/temp_4.csv");
         Assert.assertEqualsNoOrder(

@@ -1,25 +1,27 @@
 package com.cannestro.drafttable.supporting.utils.helper;
 
+import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.opencsv.bean.CsvBindByName;
-import com.cannestro.drafttable.supporting.csv.CsvBean;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.time.LocalDate;
 
-@Data
+
+@Getter
+@Setter
+@EqualsAndHashCode
 @AllArgsConstructor
 @RequiredArgsConstructor
-@JsonPropertyOrder({"type", "rate", "period", "workHours"})
-public class Pay implements CsvBean {
+@JsonPropertyOrder({"type", "exemptInd", "payDetails", "effectiveDate"})
+public class EmploymentContract implements CsvBean {
 
     @CsvBindByName(column = "type") String type;
-    @CsvBindByName(column = "rate") String rate;
-    @CsvBindByName(column = "period") String period;
-    @CsvBindByName(column = "workHours") String workHours;
+    @CsvBindByName(column = "exempt") String exemptInd;
+    @CsvBindByName(column = "pay_details") PayDetails payDetails;
+    @CsvBindByName(column = "effective_date") LocalDate effectiveDate;
 
 
     @Override

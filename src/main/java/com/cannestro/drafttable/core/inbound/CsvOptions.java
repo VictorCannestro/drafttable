@@ -3,7 +3,7 @@ package com.cannestro.drafttable.core.inbound;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 
 
-public interface CsvLoadingOptions {
+public interface CsvOptions {
 
     Character delimiter();
 

@@ -1,11 +1,9 @@
 package com.cannestro.drafttable.core.inbound;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
-import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
-import com.cannestro.drafttable.supporting.csv.CsvDataParser;
 import com.cannestro.drafttable.supporting.utils.MapUtils;
 import lombok.NonNull;
 
@@ -28,18 +26,17 @@ public class DefaultCsvLoader implements CsvLoader {
                 IntStream.range(1, tableData.size())
                         .mapToObj(rowIndex -> MapUtils.zip(headers, tableData.get(rowIndex)))
                         .map(HashMapRow::new)
-                        .map(Row.class::cast)
                         .toList()
         );
     }
 
     @Override
-    public DraftTable at(@NonNull String filePath, @NonNull CsvLoadingOptions loadingOptions) {
+    public DraftTable at(@NonNull String filePath, @NonNull CsvOptions loadingOptions) {
         return FlexibleDraftTable.create().fromObjects(buildBeansFrom(filePath, loadingOptions));
     }
 
     public <T extends CsvBean> DraftTable load(@NonNull String filePath, @NonNull Class<T> csvSchema) {
-        return FlexibleDraftTable.create().fromObjects(CsvDataParser.buildBeansFrom(filePath, csvSchema));
+        return FlexibleDraftTable.create().fromObjects(buildBeansFrom(filePath, csvSchema));
     }
 
 }

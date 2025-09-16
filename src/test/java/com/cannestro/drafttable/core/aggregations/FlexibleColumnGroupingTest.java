@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.supporting.utils.helper.BareBonesPojo;
-import com.cannestro.drafttable.supporting.utils.helper.Pay;
+import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,14 +36,14 @@ public class FlexibleColumnGroupingTest {
     @Test(description = "Value count of mutable Data class counts by value as desired instead of by object reference")
     public void mutableValueCountTest() {
         Column column = FlexibleColumn.from("pay", List.of(
-                new Pay("Hourly", "20.11", "Bi-Weekly", "80"),
-                new Pay(null, null, null, null),
-                new Pay(null, null, null, null),
-                new Pay(null, null, null, null)
-        )).append((Pay) null);
+                new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"),
+                new PayDetails(null, null, null, null),
+                new PayDetails(null, null, null, null),
+                new PayDetails(null, null, null, null)
+        )).append((PayDetails) null);
 
         Assert.assertEquals(
-                column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new Pay("Hourly", "20.11", "Bi-Weekly", "80")))
+                column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80")))
                         .select(ColumnGrouping.COUNT)
                         .firstValue()
                         .get(),
@@ -57,7 +57,7 @@ public class FlexibleColumnGroupingTest {
                 1L
         );
         Assert.assertEquals(
-                column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new Pay(null, null, null, null)))
+                column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new PayDetails(null, null, null, null)))
                         .select(ColumnGrouping.COUNT)
                         .firstValue()
                         .get(),
@@ -132,11 +132,11 @@ public class FlexibleColumnGroupingTest {
 
     @Test
     public void aggregationToListGroupsLikeValuesIntoSameListPerValue() {
-        List<Pay> values = new ArrayList<>(List.of(
-                new Pay("Hourly", "20.11", "Bi-Weekly", "80"),
-                new Pay(null, null, null, null),
-                new Pay(null, null, null, null),
-                new Pay(null, null, null, null)
+        List<PayDetails> values = new ArrayList<>(List.of(
+                new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"),
+                new PayDetails(null, null, null, null),
+                new PayDetails(null, null, null, null),
+                new PayDetails(null, null, null, null)
         ));
         values.add(null);
         Column column = FlexibleColumn.from("pay", values);
@@ -144,18 +144,18 @@ public class FlexibleColumnGroupingTest {
         DraftTable grouping = column.group().byValuesUsing(Collectors.toList());
 
         Assert.assertEquals(
-                grouping.where(ColumnGrouping.VALUE, is(new Pay(null, null, null, null)))
+                grouping.where(ColumnGrouping.VALUE, is(new PayDetails(null, null, null, null)))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
                         .firstValue()
                         .get(),
-                Collections.nCopies(3, new Pay(null, null, null, null))
+                Collections.nCopies(3, new PayDetails(null, null, null, null))
         );
         Assert.assertEquals(
-                grouping.where(ColumnGrouping.VALUE, is(new Pay("Hourly", "20.11", "Bi-Weekly", "80")))
+                grouping.where(ColumnGrouping.VALUE, is(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80")))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
                         .firstValue()
                         .get(),
-                List.of(new Pay("Hourly", "20.11", "Bi-Weekly", "80"))
+                List.of(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"))
         );
     }
 
@@ -174,14 +174,14 @@ public class FlexibleColumnGroupingTest {
     @Test
     public void byCountsOfUserDefinedFunctionReturnsExpectedFieldCounts() {
         Column column = FlexibleColumn.from("pay", List.of(
-                new Pay("Hourly", "20.11", "Bi-Weekly", "80"),
-                new Pay("Hourly", null, null, null),
-                new Pay("Hourly", null, null, null),
-                new Pay(null, null, null, null),
-                new Pay("Salary", null, null, null)
-        )).append((Pay) null);
+                new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"),
+                new PayDetails("Hourly", null, null, null),
+                new PayDetails("Hourly", null, null, null),
+                new PayDetails(null, null, null, null),
+                new PayDetails("Salary", null, null, null)
+        )).append((PayDetails) null);
 
-        DraftTable grouping = column.group().byCountsOf(Pay::getType);
+        DraftTable grouping = column.group().byCountsOf(PayDetails::getType);
 
         Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("Hourly")).select(ColumnGrouping.COUNT).firstValue().get(), 3L);
         Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("Salary")).select(ColumnGrouping.COUNT).firstValue().get(), 1L);
@@ -191,14 +191,14 @@ public class FlexibleColumnGroupingTest {
     @Test
     public void byUserDefinedFunctionAndAggregateTruncatesNulls() {
         Column column = FlexibleColumn.from("pay", List.of(
-                new Pay("Hourly", "20.11", "Bi-Weekly", "80"),
-                new Pay("Hourly", null, null, null),
-                new Pay("Hourly", null, null, null),
-                new Pay(null, null, null, null),
-                new Pay("Salary", null, null, null)
-        )).append((Pay) null);
+                new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"),
+                new PayDetails("Hourly", null, null, null),
+                new PayDetails("Hourly", null, null, null),
+                new PayDetails(null, null, null, null),
+                new PayDetails("Salary", null, null, null)
+        )).append((PayDetails) null);
 
-        DraftTable grouping = column.group().by(Pay::getType, Collectors.toList());
+        DraftTable grouping = column.group().by(PayDetails::getType, Collectors.toList());
 
         Assert.assertEqualsNoOrder(grouping.select(ColumnGrouping.VALUE).values(), List.of("Hourly", "Salary"));
         Assert.assertEquals(
@@ -206,16 +206,16 @@ public class FlexibleColumnGroupingTest {
                         .select(ColumnGrouping.VALUE_AGGREGATION)
                         .firstValue()
                         .get(),
-                List.of(new Pay("Salary", null, null, null))
+                List.of(new PayDetails("Salary", null, null, null))
         );
         Assert.assertEquals(
                 grouping.where(ColumnGrouping.VALUE, is("Hourly"))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
                         .firstValue()
                         .get(),
-                List.of(new Pay("Hourly", "20.11", "Bi-Weekly", "80"),
-                        new Pay("Hourly", null, null, null),
-                        new Pay("Hourly", null, null, null)
+                List.of(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"),
+                        new PayDetails("Hourly", null, null, null),
+                        new PayDetails("Hourly", null, null, null)
                 )
         );
     }

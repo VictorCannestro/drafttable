@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.supporting.csv;
 
-import com.cannestro.drafttable.core.inbound.CsvLoadingOptions;
+import com.cannestro.drafttable.core.inbound.CsvOptions;
 import com.opencsv.CSVReader;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
@@ -31,7 +31,7 @@ public class CsvDataParser {
         return JsonUtils.jsonStringListFrom(buildBeansFrom(resourceFilePath, csvBeanClass));
     }
 
-    public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull CsvLoadingOptions loadingOptions) {
+    public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull CsvOptions loadingOptions) {
         CsvToListTransferrer<T> csvToListTransferrer = new CsvToListTransferrer<>();
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
             CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)

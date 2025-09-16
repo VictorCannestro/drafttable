@@ -1,7 +1,7 @@
 package com.cannestro.drafttable.supporting.csv;
 
 import com.cannestro.drafttable.supporting.utils.FileUtils;
-import com.cannestro.drafttable.supporting.utils.helper.Pay;
+import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -26,7 +26,7 @@ public class CsvDataReadWriteTest {
 
         Assert.assertEquals(lines.size(), 3);
         Assert.assertEquals(
-                CsvDataParser.mapCsvToJsonStrings("csv/temp_1.csv", Pay.class).size(),
+                CsvDataParser.mapCsvToJsonStrings("csv/temp_1.csv", PayDetails.class).size(),
                 3
         );
 
