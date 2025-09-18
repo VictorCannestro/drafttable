@@ -38,10 +38,12 @@ import static org.hamcrest.Matchers.*;
 @EqualsAndHashCode
 public class FlexibleDraftTable implements DraftTable {
 
-    @Getter(AccessLevel.PRIVATE) List<Column> listOfColumns;
+    @Getter(AccessLevel.PRIVATE) private final List<Column> listOfColumns;
+    private String tableName;
 
 
-    FlexibleDraftTable(List<Column> listOfColumns) {
+    FlexibleDraftTable(String tableName, List<Column> listOfColumns) {
+        this.tableName = tableName;
         this.listOfColumns = listOfColumns;
     }
 
@@ -65,6 +67,17 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public int columnCount() {
         return getListOfColumns().size();
+    }
+
+    @Override
+    public String tableName() {
+        return tableName;
+    }
+
+    @Override
+    public DraftTable nameTable(@NonNull String newTableName) {
+        this.tableName = newTableName;
+        return this;
     }
 
     @Override
@@ -127,6 +140,7 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable selectMultiple(@NonNull Items<String> columnNames) {
         columnNames.params().forEach(columnName -> assumeColumnExists(columnName, this));
         return new FlexibleDraftTable(
+                tableName(),
                 getListOfColumns().stream()
                         .filter(column -> in(columnNames.params()).matches(column.label()))
                         .toList()
@@ -227,6 +241,7 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public DraftTable top(int nRows) {
         return new FlexibleDraftTable(
+                tableName(),
                 getListOfColumns().stream()
                         .map(column -> column.top(nRows))
                         .toList()
@@ -236,6 +251,7 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public DraftTable bottom(int nRows) {
         return new FlexibleDraftTable(
+                tableName(),
                 getListOfColumns().stream()
                         .map(column -> column.bottom(nRows))
                         .toList()
@@ -296,6 +312,7 @@ public class FlexibleDraftTable implements DraftTable {
         assumeColumnNamesAreExactMatchesOf(otherDraftTable.columnNames(), this);
         List<Column> copyOfCurrentState = getListOfColumns();
         return new FlexibleDraftTable(
+                tableName(),
                 copyOfCurrentState.stream()
                         .map(column -> column.append(otherDraftTable.select(column.label())))
                         .toList()
@@ -343,7 +360,7 @@ public class FlexibleDraftTable implements DraftTable {
                 newColumnName,
                 ListUtils.fillToTargetLength(newColumnValues, rowCount(), fillValue)
         ));
-        return new FlexibleDraftTable(updatedListOfColumns);
+        return new FlexibleDraftTable(tableName(), updatedListOfColumns);
     }
 
     @Override
@@ -362,6 +379,7 @@ public class FlexibleDraftTable implements DraftTable {
             return create().emptyDraftTable();
         }
         return new FlexibleDraftTable(
+                tableName(),
                 getListOfColumns().stream()
                         .filter(column -> !column.label().equals(columnToDrop))
                         .toList()
@@ -375,6 +393,7 @@ public class FlexibleDraftTable implements DraftTable {
             return create().emptyDraftTable();
         }
         return new FlexibleDraftTable(
+                tableName(),
                 getListOfColumns().stream()
                         .filter(column -> not(in(columnsToDrop.params())).matches(column.label()))
                         .toList()
@@ -435,7 +454,8 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public <T> DraftTable gatherInto(Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
-        return addColumn(selectMultiple(selectColumnNames).gatherInto(aggregate, aggregateColumnName), null)
+        return addColumn(selectMultiple(selectColumnNames)
+                .gatherInto(aggregate, aggregateColumnName), null)
                 .dropColumns(selectColumnNames);
     }
 

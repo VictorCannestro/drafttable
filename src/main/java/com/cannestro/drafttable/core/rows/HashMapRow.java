@@ -1,18 +1,16 @@
 package com.cannestro.drafttable.core.rows;
 
+import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.annotations.Beta;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
-import com.cannestro.drafttable.supporting.utils.MapUtils;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.*;
 
-import static com.cannestro.drafttable.supporting.utils.mappers.GsonSupplier.DEFAULT_GSON;
+import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 import static java.util.Objects.isNull;
 
 
@@ -23,35 +21,18 @@ import static java.util.Objects.isNull;
 @Slf4j
 public record HashMapRow(Map<String, ?> map) implements Row {
 
-    private static volatile Gson defaultGson = DEFAULT_GSON;
-
-
     public HashMapRow {
         if (isNull(map)) {
             throw new IllegalArgumentException("Cannot create a null row");
         }
     }
 
-    public static synchronized void setDefaultGson(@NonNull Gson gson) {
-         defaultGson = gson;
-    }
-
     public static HashMapRow from(List<String> keys, List<?> values) {
-        return new HashMapRow(MapUtils.zip(keys, values));
+        return new HashMapRow(zip(keys, values));
     }
 
-    public static <T> HashMapRow from(T object) {
-        try {
-            return new HashMapRow(
-                    defaultGson.fromJson(
-                            defaultGson.toJson(object),
-                            new TypeToken<Map<String, ?>>() {}.getType()
-                    )
-            );
-        } catch (JsonSyntaxException e) {
-            log.debug("Cannot convert {} to a row", object.getClass());
-            throw new IllegalArgumentException(String.format("Cannot convert %s to a row%nCause: %s", object.getClass(), e));
-        }
+    public static HashMapRow from(Mappable object) {
+        return new HashMapRow(object.asMap());
     }
 
     @Override
@@ -89,14 +70,26 @@ public record HashMapRow(Map<String, ?> map) implements Row {
 
     @Override
     public Row deepCopy() {
-        return from(map());
+        try {
+            return new HashMapRow(
+                    ObjectMapperManager.getInstance().defaultMapper().readValue(
+                            ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(map()),
+                            new TypeReference<>() {}
+                    )
+            );
+        } catch (JsonProcessingException | UnsupportedOperationException e) {
+            throw new IllegalArgumentException(String.format("Cannot create a copy the row%nCause: %s", e));
+        }
     }
 
     @Override
     public <T> T as(Class<T> target) {
         try {
-            return defaultGson.fromJson(defaultGson.toJson(map()), target);
-        } catch (JsonSyntaxException | UnsupportedOperationException e) {
+            return ObjectMapperManager.getInstance().defaultMapper().readValue(
+                    ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(map()),
+                    target
+            );
+        } catch (JsonProcessingException | UnsupportedOperationException e) {
             log.debug("Cannot convert the row to a {}", target);
             throw new IllegalArgumentException(String.format("Cannot convert the row to a%s%nCause: %s", target, e));
         }

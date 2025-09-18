@@ -1,16 +1,18 @@
 package com.cannestro.drafttable.core.outbound;
 
+import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
-import com.cannestro.drafttable.supporting.utils.mappers.GsonSupplier;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -27,7 +29,6 @@ import static org.hamcrest.Matchers.nullValue;
  */
 public record DraftTableOutput(DraftTable draftTable) {
 
-    public static final String JSON_ROOT_KEY = "data";
     public static final String DIVIDER = "=";
     public static final String EMPTY_DELIMITER = "";
     public static final String PRETTY_DELIMITER = " | ";
@@ -66,23 +67,67 @@ public record DraftTableOutput(DraftTable draftTable) {
      * a nested JSON String. If the {@code DraftTable} is empty, then an empty JSON array will be returned under the root
      * element. Non-empty example: <pre>{@code
      * {
-     *   "data": [
-     *     "{\"Measurements\":{\"Scale\":3.0,\"Length\":6.2,\"Width\":150.0},\"DateTime\":\"1950-01-03T11:00:00\"}"
-     *   ]
+     *     "label": "tornadoes",
+     *     "values": [
+     *         {
+     *             "Start Lon": "-101.8",
+     *             "Length": "7.0",
+     *             "State": "KS",
+     *             "Fatalities": "0.0",
+     *             "Time": "19:32:00",
+     *             "Scale": "2.0",
+     *             "State No": "12.0",
+     *             "Width": "800.0",
+     *             "Date": "1994-06-07",
+     *             "Injuries": "0.0",
+     *             "Start Lat": "39.68"
+     *         },
+     *         {
+     *             "Start Lon": "-82.48",
+     *             "Length": "0.2",
+     *             "State": "MI",
+     *             "Fatalities": "0.0",
+     *             "Time": "19:20:00",
+     *             "Scale": "1.0",
+     *             "State No": "5.0",
+     *             "Width": "20.0",
+     *             "Date": "1984-05-22",
+     *             "Injuries": "1.0",
+     *             "Start Lat": "43.08"
+     *         }
+     *     ]
      * }
      * }</pre>
      * </p>
      *
      * @return A valid JSON string
      */
-    public String toJson() {
-        JsonObject jsonObject = new JsonObject();
-        JsonArray jsonArray = new JsonArray();
-        draftTable().rows().stream()
-                   .map(Row::valueMap)
-                   .forEach(map -> jsonArray.add(GsonSupplier.DEFAULT_GSON.toJson(map)));
-        jsonObject.add(JSON_ROOT_KEY, jsonArray);
-        return jsonObject.toString();
+    public String toJsonString() {
+        try {
+            return ObjectMapperManager.getInstance()
+                    .defaultMapper()
+                    .writeValueAsString(new JsonOutputFormat(
+                            draftTable().tableName(),
+                            draftTable().rows().stream().map(Row::valueMap).toList()
+                    ));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public void toJson(@NonNull File outputFile) {
+        try {
+            ObjectMapperManager.getInstance()
+                    .defaultMapper()
+                    .writeValue(
+                            outputFile,
+                            new JsonOutputFormat(draftTable().tableName(), draftTable().rows().stream().map(Row::valueMap).toList())
+                    );
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -90,12 +135,12 @@ public record DraftTableOutput(DraftTable draftTable) {
      * ordered alphabetically and a count of null values is also provided on a per-column basis. </p>
      */
     public void structure() {
-        record Structure(String ColumnName, String Type, double NullCount) {}
         FlexibleDraftTable.create().fromRows(draftTable().columns().stream()
                         .map(column -> new Structure(column.label(),
                                                      column.dataType().getTypeName(),
                                                      column.where(nullValue()).size()))
-                        .sorted(Comparator.comparing(Structure::ColumnName))
+                        .sorted(Comparator.comparing(Structure::columnName))
+                        .map(Mappable.class::cast)
                         .map(HashMapRow::from)
                         .toList())
                 .write()

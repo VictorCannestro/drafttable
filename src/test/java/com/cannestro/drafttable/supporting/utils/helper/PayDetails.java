@@ -12,7 +12,6 @@ import java.util.Map;
 
 
 @Getter
-@Setter
 @EqualsAndHashCode
 @AllArgsConstructor
 @RequiredArgsConstructor

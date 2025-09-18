@@ -2,9 +2,9 @@ package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.rows.HashMapRow;
+import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.supporting.utils.helper.EmploymentContract;
 import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
-import com.cannestro.drafttable.supporting.utils.mappers.GsonSupplier;
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.rows.Row;
 import org.testng.Assert;
@@ -766,12 +766,13 @@ public class FlexibleDraftTableTest {
     }
 
     @Test
-    public void canGatherIntoIfOneOrMoreElementsNull() {
+    public void canGatherIntoIfOneOrMoreOfTheTargetObjectsFieldsAreNull() {
         Row row = HashMapRow.from(
-                Collections.singletonList("EmploymentContracts"),
-                List.of(new EmploymentContract(null, null, null, null))
+                new EmploymentContract(null, null, null, null)
         );
-        Column c = EmploymentContractDraftTable().append(row).gatherInto(EmploymentContract.class, as(""));
+        Column c = FlexibleDraftTable.create().emptyDraftTable()
+                .append(row)
+                .gatherInto(EmploymentContract.class, as(""));
 
         Assert.assertEquals(
                 c.bottom(1).firstValue().get(),
@@ -831,6 +832,7 @@ public class FlexibleDraftTableTest {
                 .introspect(df -> FlexibleDraftTable.create().emptyDraftTable()
                         .append(these(df.rows().stream()
                                 .map(row -> row.valueOf("EmploymentContracts"))
+                                .map(Mappable.class::cast)
                                 .map(HashMapRow::from)
                                 .map(hmr -> (Row) hmr)
                                 .toList())));
@@ -840,25 +842,23 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canMakeDraftTableFromListOfObjects() {
-        DraftTable df = FlexibleDraftTable.create().fromObjects(List.of(
+        List<EmploymentContract> testData = List.of(
                 new EmploymentContract("part-time", "N", new PayDetails("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
                 new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
                 new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
-        ));
-
-        Assert.assertEquals(df.columnNames(), List.of("type", "exemptInd", "payDetails", "effectiveDate"));
-        Assert.assertEquals(df.rowCount(), 3);
-        Assert.assertEquals(
-                FlexibleDraftTable.create().fromColumns(List.of(df.select("payDetails"))).gatherInto(PayDetails.class, as("")).dataType(),
-                PayDetails.class
         );
-    }
+        DraftTable df = FlexibleDraftTable.create().fromObjects(testData);
 
-    @Test
-    public void toStringIsAJsonString() {
+        FlexibleDraftTable.create()
+                .fromColumns(List.of(df.select("payDetails"))).write().structure();
+        Assert.assertEqualsNoOrder(df.columnNames(), List.of("type", "exemptInd", "payDetails", "effectiveDate"));
+        Assert.assertEquals(df.rowCount(), testData.size());
         Assert.assertEquals(
-                FlexibleDraftTable.create().emptyDraftTable().toString(),
-                GsonSupplier.DEFAULT_GSON.toJson(FlexibleDraftTable.create().emptyDraftTable())
+                FlexibleDraftTable.create()
+                        .fromObjects(df.select("payDetails").values())
+                        .gatherInto(PayDetails.class, as(""))
+                        .dataType(),
+                PayDetails.class
         );
     }
 

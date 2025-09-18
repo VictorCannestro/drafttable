@@ -22,6 +22,8 @@ import static com.cannestro.drafttable.core.options.Items.these;
 @Beta
 public interface DraftTable {
 
+    String DEFAULT_TABLE_NAME = "data";
+
     /**
      * Fetches the current number of rows or records present in the {@code DraftTable}.
      *
@@ -35,6 +37,10 @@ public interface DraftTable {
      * @return An integer within [0,n]
      */
     int columnCount();
+
+    String tableName();
+
+    DraftTable nameTable(@NonNull String newTableName);
 
     /**
      * Fetches the labels of every column present in the {@code DraftTable}.
@@ -464,6 +470,7 @@ public interface DraftTable {
      * @return A {@code DraftTableOutput}
      */
     DraftTableOutput write();
+
 
     /**
      * Produces a count of rows and columns. For example: "10000 rows X 10 columns".

@@ -2,6 +2,7 @@ package com.cannestro.drafttable.supporting.utils.helper;
 
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
+import com.cannestro.drafttable.supporting.utils.MapBuilder;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.opencsv.bean.CsvBindByName;
 import lombok.*;
@@ -33,11 +34,11 @@ public class EmploymentContract implements CsvBean, Mappable {
 
     @Override
     public Map<String, ?> asMap() {
-        return Map.of(
-                "type", type,
-                "exempt", exemptInd,
-                "payDetails", payDetails,
-                "effectiveDate", effectiveDate
-        );
+        return MapBuilder.with()
+                .entry("type", type)
+                .entry("exemptInd", exemptInd)
+                .entry("payDetails", payDetails)
+                .entry("effectiveDate", effectiveDate)
+                .asMap();
     }
 }

@@ -4,10 +4,12 @@ import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.options.StatisticName;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.cannestro.drafttable.supporting.utils.mappers.GsonSupplier;
+import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.NonNull;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -27,18 +29,46 @@ public record ColumnOutput(Column column) {
     }
 
     /**
-     * <p> Produces a JSON String representation of the {@code Column} using the column label as the root element.
+     * <p> Produces a JSON String representation of the {@code Column} using the column tableName and "values" as root elements.
      * Non-primitive objects will be represented by a nested JSON String. If the {@code Column} is empty, then an empty
-     * JSON array will be returned under the root element. </p>
+     * JSON array will be returned under the root element. For example: <pre>{@code
+     * {
+     *     "label": "Date",
+     *     "values": [
+     *         "2005-03-21",
+     *         "1976-06-28",
+     *         "1964-05-10",
+     *         "1984-06-17",
+     *         "2007-03-01",
+     *         "1973-06-26",
+     *         "1998-11-10"
+     *     ]
+     * }
+     * }</pre>
+     * </p>
      *
      * @return A valid JSON string
      */
-    public String toJson() {
-        JsonObject jsonObject = new JsonObject();
-        JsonArray jsonArray = new JsonArray();
-        column().values().forEach(value -> jsonArray.add(GsonSupplier.DEFAULT_GSON.toJson(value)));
-        jsonObject.add(column().label(), jsonArray);
-        return jsonObject.toString();
+    public String toJsonString() {
+        try {
+            return ObjectMapperManager.getInstance()
+                    .defaultMapper()
+                    .writeValueAsString(new JsonOutputFormat(column().label(), column().values()));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public void toJson(@NonNull File outputFile) {
+        try {
+            ObjectMapperManager.getInstance()
+                    .defaultMapper()
+                    .writeValue(outputFile, new JsonOutputFormat(column().label(), column().values()));
+        } catch (JsonProcessingException e) {
+            throw new IllegalStateException(e);
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -73,7 +103,6 @@ public record ColumnOutput(Column column) {
                     .sorted(Map.Entry.comparingByKey())
                     .toList();
 
-            record StatisticalDescription(String METRIC, Double VALUE) {}
             FlexibleDraftTable.create().fromRows(entries.stream()
                             .map(entry -> HashMapRow.from(new StatisticalDescription(entry.getKey().shortHand, entry.getValue().doubleValue())))
                             .toList())

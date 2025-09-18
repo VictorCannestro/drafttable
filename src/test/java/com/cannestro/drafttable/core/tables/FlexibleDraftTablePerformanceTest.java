@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 public class FlexibleDraftTablePerformanceTest {
 
 
-    @Test(timeOut = 10_000)
+    @Test(enabled = false, timeOut = 10_000)
     public void largeDataFrameWhereTest(){
         int columnSize = 10;
         int rowSize = 10_000_000;

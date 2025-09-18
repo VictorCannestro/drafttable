@@ -14,13 +14,13 @@ public class HashMapRowTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotMakeRowFromNull() {
-        HashMapRow.from(null);
+        new HashMapRow(null);
     }
 
     @Test
     public void isEmptyTrueWhenEmpty() {
         Assert.assertTrue(
-                HashMapRow.from(emptyMap()).isEmpty()
+                new HashMapRow(emptyMap()).isEmpty()
         );
     }
 
@@ -32,11 +32,6 @@ public class HashMapRowTest {
 
         Assert.assertTrue(row.hasKey("n"));
         Assert.assertTrue(row.hasKey("timeStamp"));
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenCreatingRowFromIncompatibleType() {
-        HashMapRow.from(LocalDate.of(2023, 1, 1));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -60,7 +55,7 @@ public class HashMapRowTest {
         LocalDate date = LocalDate.of(2023, 1, 1);
         Row row = HashMapRow.from(new DailyHireCount(100, date));
 
-        Assert.assertEquals(row.valueMap().get("timeStamp"), date.toString());
+        Assert.assertEquals(row.valueMap().get("timeStamp").toString(), date.toString());
     }
 
     @Test(description = "The true test of whether rows preserve type")

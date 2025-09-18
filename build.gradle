@@ -60,6 +60,10 @@ test {
     }
 }
 
+tasks.withType(JavaExec).configureEach {
+    jvmArgs += '--add-opens=java.base/java.time=ALL-UNNAMED'
+}
+
 def generatedSrcRoot = "$buildRoot/generated_sources"
 
 sourceSets {

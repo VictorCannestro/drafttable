@@ -93,7 +93,7 @@ public class TornadoExample {
         tornadoes.gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
                  .top(2)
                  .write()
-                 .toJson();
+                 .toJsonString();
 
         tornadoes.gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
                  .select("Measurements")
@@ -108,7 +108,7 @@ public class TornadoExample {
                         .where("Fatalities", is(-1))
                         .selectMultiple(these("DateTime", "Measurements"))
                         .write()
-                        .toJson()
+                        .toJsonString()
         );
 
         List<PhysicalMeasurements> physicalMeasurements = tornadoes.gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
@@ -166,7 +166,7 @@ public class TornadoExample {
                          .where("Scale", greaterThanOrEqualTo(3.0))
                          .top(1)
                          .write()
-                         .toJson()
+                         .toJsonString()
         );
         System.out.println();
 

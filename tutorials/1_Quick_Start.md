@@ -502,14 +502,19 @@ where `NULL` is the specified fill value for missing entries.
 **Note:** that this is a terminal operation (of return type `void`) and will end the data processing pipeline.
 
 ### To JSON
-Exporting the data to a JSON string is also supported:
+Exporting `DraftTable` or `Column` data to a JSON or JSON string is also supported:
 ```java
-System.out.println("To JSON output: " +
-    tornadoes.top(1).write().toJson()
+System.out.println(
+    tornadoes.top(1).write().toJsonString()
 );
 ```
 ```
-To JSON output: {"data":["{\"Start Lon\":-94.1689,\"Length\":15.56,\"State\":\"TX\",\"Fatalities\":0,\"Region\":\"West South Central\",\"Scale\":3.0,\"State No\":\"2.0\",\"Width\":1087.0,\"Injuries\":0,\"Start Lat\":32.4869,\"DateTime\":\"2010-01-20T17:18:00\"}"]}
+{"label":"data","values":[{"Start Lon":-94.1689,"Length":15.56,"State":"TX","Fatalities":0,"Region":"West South Central","Scale":3.0,"State No":"2.0","Width":1087.0,"Injuries":0,"Start Lat":32.4869,"DateTime":"2010-01-20T17:18:00"}]}
+```
+
+Similarly, to produce a JSON output file we could write something like:
+```java
+tornadoes.write().toJson(new File(outputFilePath));
 ```
 
 ### Into a user-defined object
