@@ -39,7 +39,6 @@ dependencies {
     implementation("org.apache.commons:commons-math3:$apacheCommonsMath")
     implementation("org.paumard:streams-utils:$streamsUtilsVersion")
     implementation("com.opencsv:opencsv:$opencsvVersion")
-    implementation("com.google.code.gson:gson:$gsonVersion")
     implementation("com.google.guava:guava:$guavaVersion")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonDataformatXmlVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonDatatypeVersion")

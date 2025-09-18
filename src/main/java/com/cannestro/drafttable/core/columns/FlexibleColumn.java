@@ -1,8 +1,8 @@
 package com.cannestro.drafttable.core.columns;
 
 import com.cannestro.drafttable.core.options.SortingOrderType;
+import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.google.common.annotations.Beta;
-import com.google.gson.reflect.TypeToken;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
 import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
@@ -22,7 +22,6 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeDataTypesMatch;
 import static com.cannestro.drafttable.core.options.StatisticName.*;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
 import static com.cannestro.drafttable.supporting.utils.NullDetector.hasNullIn;
 import static java.util.Objects.isNull;
 
@@ -37,7 +36,7 @@ public class FlexibleColumn implements Column {
 
     @Getter private String label;
     @Getter private final List<?> values;
-    @Getter(AccessLevel.PRIVATE) private final TypeToken<?> typeToken;
+    @Getter(AccessLevel.PRIVATE) private final Class<?> type;
 
     private static final String EXCEPTION_FORMAT_STRING = "Input type of the provided expression must match the Column data type: %s";
 
@@ -49,9 +48,14 @@ public class FlexibleColumn implements Column {
         }
         this.label = label;
         this.values = values;
-        this.typeToken = (this.values.isEmpty() || nonNullValues.isEmpty())
-                ? TypeToken.get(Object.class)
-                : TypeToken.get(firstElementOf(nonNullValues).getClass());
+        if (this.values.isEmpty() || nonNullValues.isEmpty()) {
+            this.type = Object.class;
+        } else {
+            this.type = ObjectMapperManager.getInstance().defaultMapper()
+                    .getTypeFactory()
+                    .constructType(nonNullValues.get(0).getClass())
+                    .getRawClass();
+        }
     }
 
     /**
@@ -69,7 +73,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Type dataType() {
-        return typeToken().getType();
+        return type();
     }
 
     @Override
@@ -324,7 +328,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Map<StatisticName, Number> descriptiveStats() {
-        if (!typeToken().getRawType().getSuperclass().equals(Number.class)) {
+        if (!type().getClass().getSuperclass().equals(Number.class)) {
             return Collections.emptyMap();
         }
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
