@@ -36,12 +36,12 @@ public interface TableCreator {
     <T extends Row> DraftTable fromRows(@NonNull List<T> listOfRows);
 
     /**
-     * Splits a homogenous list of objects into a new {@code DraftTable} in which each field in a given object is mapped
-     * to a corresponding column. Items in the list will be converted into rows in a 1-1 mapping.
+     * Splits a homogenous list of mappable objects into a new {@code DraftTable} in which each field in a given object
+     * is mapped to a corresponding column. Items in the list will be converted into rows in a 1-1 mapping.
      *
      * @param objects A homogeneous list of objects
      * @return A new {@code DraftTable}
-     * @param <T> Any arbitrary, non-primitive object that is mappable
+     * @param <T> Any arbitrary, non-primitive object that is {@code Mappable}
      */
     <T extends Mappable> DraftTable fromObjects(@NonNull List<T> objects);
 

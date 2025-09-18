@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 import static java.util.Objects.isNull;
 
 
@@ -40,7 +41,7 @@ public record ExperimentalRow(Map<String, ?> map) implements Row {
     }
 
     public static ExperimentalRow from(List<String> keys, List<?> values) {
-        return new ExperimentalRow(MapUtils.zip(keys, values));
+        return new ExperimentalRow(zip(keys, values));
     }
 
     public static ExperimentalRow from(Mappable object) {
