@@ -1,7 +1,6 @@
 package com.cannestro.drafttable.core.outbound;
 
 import com.cannestro.drafttable.core.columns.Column;
-import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.options.StatisticName;
@@ -77,7 +76,6 @@ public record ColumnOutput(Column column) {
             record StatisticalDescription(String METRIC, Double VALUE) {}
             FlexibleDraftTable.create().fromRows(entries.stream()
                             .map(entry -> HashMapRow.from(new StatisticalDescription(entry.getKey().shortHand, entry.getValue().doubleValue())))
-                            .map(Row.class::cast)
                             .toList())
                     .write()
                     .prettyPrint();

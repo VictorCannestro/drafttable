@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.supporting.utils.helper;
 
+import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.opencsv.bean.CsvBindByName;
@@ -8,6 +9,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 
 @Getter
@@ -16,7 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @JsonPropertyOrder({"type", "exemptInd", "payDetails", "effectiveDate"})
-public class EmploymentContract implements CsvBean {
+public class EmploymentContract implements CsvBean, Mappable {
 
     @CsvBindByName(column = "type") String type;
     @CsvBindByName(column = "exempt") String exemptInd;
@@ -29,4 +31,13 @@ public class EmploymentContract implements CsvBean {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 
+    @Override
+    public Map<String, ?> asMap() {
+        return Map.of(
+                "type", type,
+                "exempt", exemptInd,
+                "payDetails", payDetails,
+                "effectiveDate", effectiveDate
+        );
+    }
 }

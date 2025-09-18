@@ -565,7 +565,7 @@ Note that this only works here because the filter conditions are *mutually exclu
 
 #### The complete pipeline
 ```java
-FlexibleDraftTable.fromCSV("csv/tornadoes_1950-2014.csv")
+FlexibleDraftTable.create().fromCSV().at("csv/tornadoes_1950-2014.csv")
                  .dropAllExcept(these("Date", "Time", "State", "Injuries", "Fatalities"))
                  .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                  .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))

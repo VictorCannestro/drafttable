@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.core.inbound;
 
+import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
@@ -35,7 +36,7 @@ public class DefaultCsvLoader implements CsvLoader {
         return FlexibleDraftTable.create().fromObjects(buildBeansFrom(filePath, loadingOptions));
     }
 
-    public <T extends CsvBean> DraftTable load(@NonNull String filePath, @NonNull Class<T> csvSchema) {
+    public <T extends CsvBean & Mappable> DraftTable load(@NonNull String filePath, @NonNull Class<T> csvSchema) {
         return FlexibleDraftTable.create().fromObjects(buildBeansFrom(filePath, csvSchema));
     }
 

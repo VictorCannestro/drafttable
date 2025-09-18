@@ -2,6 +2,8 @@ package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
+import com.cannestro.drafttable.core.rows.ExperimentalRow;
+import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.inbound.CsvLoader;
@@ -28,8 +30,8 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public <T> DraftTable fromObjects(@NonNull List<T> objects) {
-        return fromRows(objects.stream().map(HashMapRow::from).toList());
+    public <T extends Mappable> DraftTable fromObjects(@NonNull List<T> objects) {
+        return fromRows(objects.stream().map(ExperimentalRow::from).toList());
     }
 
     @Override

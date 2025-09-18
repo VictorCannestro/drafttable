@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.inbound.CsvLoader;
 import lombok.NonNull;
@@ -40,9 +41,9 @@ public interface TableCreator {
      *
      * @param objects A homogeneous list of objects
      * @return A new {@code DraftTable}
-     * @param <T> Any arbitrary, non-primitive object
+     * @param <T> Any arbitrary, non-primitive object that is mappable
      */
-    <T> DraftTable fromObjects(@NonNull List<T> objects);
+    <T extends Mappable> DraftTable fromObjects(@NonNull List<T> objects);
 
     /**
      * <p><b>Requires</b>: The inner collection represents a particular <u>row's</u> values. Value order, with respect to

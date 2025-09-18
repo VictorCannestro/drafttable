@@ -6,27 +6,13 @@ import org.testng.annotations.Test;
 
 import java.time.LocalDate;
 
-import static java.util.Collections.emptyMap;
-
 
 @Test(groups = {"component"})
-public class HashMapRowTest {
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void cannotMakeRowFromNull() {
-        HashMapRow.from(null);
-    }
-
-    @Test
-    public void isEmptyTrueWhenEmpty() {
-        Assert.assertTrue(
-                HashMapRow.from(emptyMap()).isEmpty()
-        );
-    }
+public class ExperimentalRowTest {
 
     @Test
     public void canCreateRowFromRecordContainingJavaTimeLocalDates() {
-        Row row = HashMapRow.from(
+        Row row = ExperimentalRow.from(
                 new DailyHireCount(100, LocalDate.of(2023, 1, 1))
         );
 
@@ -35,14 +21,8 @@ public class HashMapRowTest {
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenCreatingRowFromIncompatibleType() {
-        HashMapRow.from(LocalDate.of(2023, 1, 1));
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotMapBackIntoIncompatibleType() {
-        HashMapRow.from(new DailyHireCount(100, LocalDate.of(2023, 1, 1)))
-                  .as(LocalDate.class);
+        ExperimentalRow.from(new DailyHireCount(100, LocalDate.of(2023, 1, 1))).as(LocalDate.class);
     }
 
     @Test
@@ -50,7 +30,7 @@ public class HashMapRowTest {
         DailyHireCount hireCount = new DailyHireCount(100, LocalDate.of(2023, 1, 1));
 
         Assert.assertEquals(
-                HashMapRow.from(hireCount).as(DailyHireCount.class),
+                ExperimentalRow.from(hireCount).as(DailyHireCount.class),
                 hireCount
         );
     }
@@ -58,23 +38,24 @@ public class HashMapRowTest {
     @Test
     public void underlyingMapMatchesInputDataAsStrings() {
         LocalDate date = LocalDate.of(2023, 1, 1);
-        Row row = HashMapRow.from(new DailyHireCount(100, date));
+        Row row = ExperimentalRow.from(new DailyHireCount(100, date));
 
-        Assert.assertEquals(row.valueMap().get("timeStamp"), date.toString());
+        Assert.assertEquals(row.valueMap().get("timeStamp").toString(), date.toString());
     }
 
     @Test(description = "The true test of whether rows preserve type")
     public void mappedDataTypeMatchesInputDataType() {
         LocalDate date = LocalDate.of(2023, 1, 1);
-        Row row = HashMapRow.from(new DailyHireCount(100, date));
+        Row row = ExperimentalRow.from(new DailyHireCount(100, date));
 
+        
         Assert.assertEquals(row.valueMap().get("timeStamp").getClass(), LocalDate.class);
     }
 
     @Test
     public void valueOfUnrecognizedColumnNameIsNull() {
         LocalDate date = LocalDate.of(2023, 1, 1);
-        Row row = HashMapRow.from(new DailyHireCount(100, date));
+        Row row = ExperimentalRow.from(new DailyHireCount(100, date));
 
         Assert.assertNull(row.valueOf("INVALID"));
     }
