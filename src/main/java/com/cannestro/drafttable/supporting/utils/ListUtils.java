@@ -92,7 +92,6 @@ public class ListUtils {
     }
 
     /**
-     * <p>Returns the first element of the input list.</p>
      * <p><b>Requires</b>: Both the list and the element are not null</p>
      * <p><b>Guarantees</b>: The first element of the list is returned regardless of parameter type</p>
      *
@@ -109,7 +108,7 @@ public class ListUtils {
     }
 
     /**
-     * <p>Returns the first element of the input array.</p>
+     * <p><b>Requires</b>: Both the array and the element are not null</p>
      * <p><b>Guarantees</b>: The first element of the array is returned regardless of parameter type</p>
      *
      * @param array An array containing objects of type T
@@ -125,7 +124,9 @@ public class ListUtils {
     }
 
     /**
-     * Returns the last element of the input list with the requirement that both the list and the element are not null.
+     * <p><b>Requires</b>: Both the list and the element are not null</p>
+     * <p><b>Guarantees</b>: Returns the last element of the input list with the requirement that both the list and the
+     *                       element are not null.</p>
      *
      * @param list A list containing objects of type T
      * @return The last element of the list, or a thrown exception if the value is null
@@ -140,7 +141,9 @@ public class ListUtils {
     }
 
     /**
-     * Returns the last element of the input array with the requirement that the array is not empty.
+     * <p><b>Requires</b>: Both the list and the element are not null</p>
+     * <p><b>Guarantees</b>: Returns the last element of the input array with the requirement that the array is not
+     *                       empty. </p>
      *
      * @param array An array containing objects of type T
      * @return The last element of the array

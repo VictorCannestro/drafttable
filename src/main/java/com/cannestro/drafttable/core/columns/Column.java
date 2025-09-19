@@ -23,23 +23,23 @@ import java.util.function.*;
 public interface Column {
 
     /**
-     * <p><b>Guarantees</b>: Queries the current state of the column to determine the type of its values. </p>
+     * <p><b>Guarantees</b>: The {@code Type} information of the underlying column data. </p>
      *
-     * @return The {@code Type} of the underlying column data
+     * @return A {@code Type}
      */
     Type dataType();
 
     /**
-     * <p><b>Guarantees</b>: Queries the current state of the column to determine the column label. </p>
+     * <p><b>Guarantees</b>: A copy of the column's current label. </p>
      *
-     * @return The column label or name
+     * @return A String
      */
     String label();
 
     /**
      * <p> <b>Guarantees</b>: The list of underlying values within the column. </p>
      *
-     * @return The values of the underlying column data
+     * @return The underlying column data
      * @param <T> The homogenous type of the value list
      */
     <T> List<T> values();

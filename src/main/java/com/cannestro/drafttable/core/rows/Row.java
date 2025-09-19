@@ -13,7 +13,7 @@ import java.util.Map;
 public interface Row {
 
     /**
-     * <p> <b>Guarantees</b>: Calculates the number of keys within the {@code Row} </p>
+     * <p> <b>Guarantees</b>: The number of keys within the {@code Row} </p>
      *
      * @return A non-negative integer
      */

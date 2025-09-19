@@ -63,8 +63,8 @@ public record DraftTableOutput(DraftTable draftTable) {
     }
 
     /**
-     * <p> Produces a JSON String representation of the {@code DraftTable}. Non-primitive objects will be represented by
-     * a nested JSON String. If the {@code DraftTable} is empty, then an empty JSON array will be returned under the root
+     * <p> Produces a JSON String representation of the {@code DraftTable} using the table "label" and "values" as root
+     * elements. If the {@code DraftTable} is empty, then an empty JSON array will be returned under the "values"
      * element. Non-empty example: <pre>{@code
      * {
      *     "label": "tornadoes",

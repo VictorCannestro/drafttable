@@ -539,13 +539,13 @@ public interface DraftTable {
      * @param newColumnName A string label
      * @param operationToApply The function to apply to each pair of values in the columns
      * @return A new {@code DraftTable}
-     * @param <X> A type compatible with the first column
-     * @param <Y> A type compatible with the second column
+     * @param <T> A type compatible with the first column
+     * @param <R> A type compatible with the second column
      */
-    default <X, Y> DraftTable melt(@NonNull String firstColumnName,
+    default <T, R> DraftTable melt(@NonNull String firstColumnName,
                                    @NonNull String secondColumnName,
                                    @NonNull Item<String> newColumnName,
-                                   @NonNull BiFunction<X, Y, ?> operationToApply)  {
+                                   @NonNull BiFunction<T, R, ?> operationToApply)  {
         return deriveNewColumnFrom(
                 firstColumnName, secondColumnName, newColumnName, operationToApply
         ).dropColumns(these(firstColumnName, secondColumnName));

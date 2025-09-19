@@ -29,9 +29,9 @@ public record ColumnOutput(Column column) {
     }
 
     /**
-     * <p> Produces a JSON String representation of the {@code Column} using the column tableName and "values" as root elements.
-     * Non-primitive objects will be represented by a nested JSON String. If the {@code Column} is empty, then an empty
-     * JSON array will be returned under the root element. For example: <pre>{@code
+     * <p> Produces a JSON String representation of the {@code Column} using the column "label" and "values" as root
+     * elements. If the {@code Column} is empty, then an empty JSON array will be returned under the "values" element.
+     * For example: <pre>{@code
      * {
      *     "label": "Date",
      *     "values": [

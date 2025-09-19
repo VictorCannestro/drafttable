@@ -423,13 +423,13 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public <X, Y> DraftTable deriveNewColumnFrom(@NonNull String firstColumnName,
+    public <T, R> DraftTable deriveNewColumnFrom(@NonNull String firstColumnName,
                                                  @NonNull String secondColumnName,
                                                  @NonNull Item<String> newColumnName,
-                                                 @NonNull BiFunction<X, Y, ?> operationToApply) {
+                                                 @NonNull BiFunction<T, R, ?> operationToApply) {
         List<?> combinedColumnValues = StreamsUtils.zip(
-                ((List<X>) select(firstColumnName).values()).stream(),
-                ((List<Y>) select(secondColumnName).values()).stream(),
+                ((List<T>) select(firstColumnName).values()).stream(),
+                ((List<R>) select(secondColumnName).values()).stream(),
                 operationToApply
         ).toList();
         return addColumn(newColumnName.value(), combinedColumnValues, null);
