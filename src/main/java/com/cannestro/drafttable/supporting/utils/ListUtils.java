@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 
+import static java.util.Objects.isNull;
+
 
 /**
  * @author Victor Cannestro
@@ -81,6 +83,14 @@ public class ListUtils {
         return paddedList;
     }
 
+    public static <T> boolean containsMultipleTypes(@NonNull List<T> list) {
+        return 1L != list.stream().map(Object::getClass).distinct().count();
+    }
+
+    public static <T> List<T> copyWithoutNulls(@NonNull List<T> list) {
+        return list.stream().filter(value -> !isNull(value)).toList();
+    }
+
     /**
      * <p>Returns the first element of the input list.</p>
      * <p><b>Requires</b>: Both the list and the element are not null</p>
@@ -95,7 +105,7 @@ public class ListUtils {
         if (list.isEmpty()) {
             throw new IllegalArgumentException("Input list cannot be empty");
         }
-        return List.copyOf(list).get(0);
+        return list.get(0);
     }
 
     /**
@@ -126,7 +136,7 @@ public class ListUtils {
         if (list.isEmpty()) {
             throw new IllegalArgumentException("Input list cannot be empty");
         }
-        return List.copyOf(list).get(list.size() - 1);
+        return list.get(list.size() - 1);
     }
 
     /**

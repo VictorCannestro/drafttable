@@ -30,28 +30,23 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public <T extends Mappable> DraftTable fromObjects(@NonNull List<T> objects) {
-        return fromRows(objects.stream().map(HashMapRow::from).toList());
-    }
-
-    @Override
-    public DraftTable fromColumns(@NonNull List<Column> columns) {
+    public DraftTable fromColumns(@NonNull String tableName, @NonNull List<Column> columns) {
         if(columns.isEmpty()) {
             return emptyDraftTable();
         }
         assumeUnique(columns.stream().map(Column::label).toList());
         assumeColumnsHaveUniformSize(columns);
-        return new FlexibleDraftTable(DEFAULT_TABLE_NAME, columns);
+        return new FlexibleDraftTable(tableName, columns);
     }
 
     @Override
-    public <T extends Row> DraftTable fromRows(@NonNull List<T> listOfRows) {
+    public <T extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<T> listOfRows) {
         if(listOfRows.isEmpty()) {
             return emptyDraftTable();
         }
         assumeRowsHaveEquivalentKeySets(listOfRows);
         return new FlexibleDraftTable(
-                DEFAULT_TABLE_NAME,
+                tableName,
                 firstElementOf(listOfRows)
                         .keys().stream()
                         .map(name -> new FlexibleColumn(
@@ -60,6 +55,11 @@ public class FlexibleDraftTableCreator implements TableCreator {
                         )).map(Column.class::cast)
                         .toList()
         );
+    }
+
+    @Override
+    public <T extends Mappable> DraftTable fromObjects(@NonNull String tableName, @NonNull List<T> objects) {
+        return fromRows(tableName, objects.stream().map(HashMapRow::from).toList());
     }
 
     @Override
@@ -79,6 +79,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
         assumeUnique(columnNames);
         assumeUniformityOf(table);
         return fromRows(
+                DEFAULT_TABLE_NAME,
                 table.stream()
                         .map(rowValues -> MapUtils.zip(columnNames, rowValues))
                         .map(HashMapRow::new)

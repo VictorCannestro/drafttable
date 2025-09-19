@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.supporting.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.NonNull;
 
 import java.util.List;
 
@@ -11,13 +12,13 @@ public class JsonUtils {
 
     private JsonUtils() {}
 
-    public static String prettyJsonString(String unformattedJsonString) {
+    public static String prettyJsonString(@NonNull String uglyJsonString) {
         try {
             return ObjectMapperManager.getInstance().defaultMapper()
                     .writerWithDefaultPrettyPrinter()
-                    .writeValueAsString(unformattedJsonString);
+                    .writeValueAsString(ObjectMapperManager.getInstance().defaultMapper().readTree(uglyJsonString));
         } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(String.format("Could not parse input: %s", uglyJsonString), e);
         }
     }
 

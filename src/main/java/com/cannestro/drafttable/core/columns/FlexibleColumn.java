@@ -22,6 +22,8 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeDataTypesMatch;
 import static com.cannestro.drafttable.core.options.StatisticName.*;
+import static com.cannestro.drafttable.supporting.utils.ListUtils.containsMultipleTypes;
+import static com.cannestro.drafttable.supporting.utils.ListUtils.copyWithoutNulls;
 import static com.cannestro.drafttable.supporting.utils.NullDetector.hasNullIn;
 import static java.util.Objects.isNull;
 
@@ -30,28 +32,29 @@ import static java.util.Objects.isNull;
  * @author Victor Cannestro
  */
 @Beta
+@Getter
 @Accessors(fluent = true)
 @EqualsAndHashCode
 public class FlexibleColumn implements Column {
 
-    @Getter private String label;
-    @Getter private final List<?> values;
-    @Getter(AccessLevel.PRIVATE) private final Class<?> type;
+    private String label;
+    private final List<?> values;
+    private final Type dataType;
 
     private static final String EXCEPTION_FORMAT_STRING = "Input type of the provided expression must match the Column data type: %s";
 
 
     public FlexibleColumn(@NonNull String label, @NonNull List<?> values) {
-        List<?> nonNullValues = values.stream().filter(value -> !isNull(value)).toList();
-        if (!nonNullValues.isEmpty() && 1 != nonNullValues.stream().map(value -> value.getClass().getTypeName()).distinct().count()) {
+        List<?> nonNullValues = copyWithoutNulls(values);
+        if (!nonNullValues.isEmpty() && containsMultipleTypes(nonNullValues)) {
             throw new IllegalArgumentException("Values cannot be of mixed type");
         }
         this.label = label;
         this.values = values;
         if (this.values.isEmpty() || nonNullValues.isEmpty()) {
-            this.type = Object.class;
+            this.dataType = Object.class;
         } else {
-            this.type = ObjectMapperManager.getInstance().defaultMapper()
+            this.dataType = ObjectMapperManager.getInstance().defaultMapper()
                     .getTypeFactory()
                     .constructType(nonNullValues.get(0).getClass())
                     .getRawClass();
@@ -69,11 +72,6 @@ public class FlexibleColumn implements Column {
      */
     public static Column from(String label, List<?> values) {
         return new FlexibleColumn(label, values);
-    }
-
-    @Override
-    public Type dataType() {
-        return type();
     }
 
     @Override
@@ -328,7 +326,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Map<StatisticName, Number> descriptiveStats() {
-        if (!type().getClass().getSuperclass().equals(Number.class)) {
+        if (!dataType().getClass().getSuperclass().equals(Number.class)) {
             return Collections.emptyMap();
         }
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
