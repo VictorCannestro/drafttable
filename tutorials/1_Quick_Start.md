@@ -41,9 +41,10 @@ Column names in this `DraftTable` will appear exactly as they do in the CSV.
 
 ### Bean-Based Reading
 Alternatively, we could pass in a user defined [Data](https://projectlombok.org/features/Data) class that 
-`implements CsvBean` to bind CSV column names to corresponding fields in the mapping class. DraftTable uses OpenCSV
-for these underlying processing operations. See [OpenCSV's documentation](https://opencsv.sourceforge.net/#reading_into_beans) 
-for more. Using this bean-based reading approach, the pipeline we defined earlier would change to something like the 
+`implements CsvBean` to bind CSV column names to corresponding fields in the mapping class, and, also, 
+`implements Mappable` to be eligible to be converted into a `DraftTable`. The DraftTable library uses OpenCSV for these
+underlying processing operations. See [OpenCSV's documentation](https://opencsv.sourceforge.net/#reading_into_beans) for
+more. Using this bean-based reading approach, the pipeline we defined earlier would change to something like the 
 following:
 ```java
 DraftTable tornadoes = FlexibleDraftTable.create()
@@ -51,28 +52,48 @@ DraftTable tornadoes = FlexibleDraftTable.create()
         .load(filePath, TornadoDataBean.class);
 ```
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
-columns vs optional columns, etc. When using this approach, *the field names of the class will become the column names*
-of the `DraftTable`, *not the CSV column names*. So we'd expect our `DraftTable` to have columns with camelCase names,
-following best practices and Java conventions.
+columns vs optional columns, etc. When using this approach, *the key names specified in `asMap()` will become the column
+names* of the `DraftTable`, *not the CSV column names*. 
 
+<details>
+    <summary> Expand to see <b>TornadoDataBean.class</b> </summary>
+  
 ```java
-@Data
-public class TornadoDataBean implements CsvBean {
-
-    @CsvBindByName(column = "Date") @CsvDate("yyyy-MM-dd") private LocalDate date;
-    @CsvBindByName(column = "Time") @CsvDate("HH:mm:ss") private LocalTime time;
-    @CsvBindByName(column = "State") private String state;
-    @CsvBindByName(column = "State No") private String stateNumber;
-    @CsvBindByName(column = "Scale") private double scale;
-    @CsvBindByName(column = "Injuries") private double injuries;
-    @CsvBindByName(column = "Fatalities") private double fatalities;
-    @CsvBindByName(column = "Start Lat") private double startLat;
-    @CsvBindByName(column = "Start Lon") private double startLon;
-    @CsvBindByName(column = "Length") private double length;
-    @CsvBindByName(column = "Width") private double width;
-
-}
+    @Data
+    public class TornadoDataBean implements CsvBean, Mappable {
+    
+        @CsvBindByName(column = "Date") @CsvDate("yyyy-MM-dd") private LocalDate date;
+        @CsvBindByName(column = "Time") @CsvDate("HH:mm:ss") private LocalTime time;
+        @CsvBindByName(column = "State") private String state;
+        @CsvBindByName(column = "State No") private String stateNumber;
+        @CsvBindByName(column = "Scale") private double scale;
+        @CsvBindByName(column = "Injuries") private double injuries;
+        @CsvBindByName(column = "Fatalities") private double fatalities;
+        @CsvBindByName(column = "Start Lat") private double startLat;
+        @CsvBindByName(column = "Start Lon") private double startLon;
+        @CsvBindByName(column = "Length") private double length;
+        @CsvBindByName(column = "Width") private double width;
+    
+        @Override
+        public Map<String, ?> asMap() {
+            return MapBuilder.with()
+                    .entry("date", date)
+                    .entry("time", time)
+                    .entry("state", state)
+                    .entry("stateNumber", stateNumber)
+                    .entry("scale", scale)
+                    .entry("injuries", injuries)
+                    .entry("fatalities", fatalities)
+                    .entry("startLat", startLat)
+                    .entry("startLon", startLon)
+                    .entry("length", length)
+                    .entry("width", width)
+                    .asMap();
+        }
+    }
 ```
+</details>
+
 
 This is the recommended approach for datasets with many columns and a variety of data types since it scales.
 

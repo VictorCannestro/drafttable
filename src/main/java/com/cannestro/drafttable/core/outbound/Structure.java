@@ -12,9 +12,9 @@ public record Structure(String columnName,
     @Override
     public Map<String, ?> asMap() {
         return Map.of(
-                "Column Name", columnName,
+                "ColumnName", columnName,
                 "Type", type,
-                "Null Count", nullCount
+                "NullCount", nullCount
         );
     }
 
