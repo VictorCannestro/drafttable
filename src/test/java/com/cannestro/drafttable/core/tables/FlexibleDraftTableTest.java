@@ -56,19 +56,19 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void renamedColumns() {
-        DraftTable df = exampleDraftTableFromColumns().rename(these("contractType", "pppayType"), using("CONTRACT_TYPE", "invalid"));
+        DraftTable dt = exampleDraftTableFromColumns().rename(these("contractType", "pppayType"), using("CONTRACT_TYPE", "invalid"));
 
-        assertThat(df.columnNames(), hasItem("CONTRACT_TYPE"));
-        assertThat(df.columnNames(), hasItem("payType"));
-        assertThat(df.columnNames(), not(hasItem("contractType")));
-        assertThat(df.columnNames(), not(hasItem("invalid")));
+        assertThat(dt.columnNames(), hasItem("CONTRACT_TYPE"));
+        assertThat(dt.columnNames(), hasItem("payType"));
+        assertThat(dt.columnNames(), not(hasItem("contractType")));
+        assertThat(dt.columnNames(), not(hasItem("invalid")));
     }
 
     @Test
     public void renamingEmptyDraftTableDoesNotProduceChanges() {
-        DraftTable df = FlexibleDraftTable.create().emptyDraftTable().rename(from("nonExisting"), to("newName"));
+        DraftTable dt = FlexibleDraftTable.create().emptyDraftTable().rename(from("nonExisting"), to("newName"));
 
-        Assert.assertEquals(df.columnNames(), Collections.emptyList());
+        Assert.assertEquals(dt.columnNames(), Collections.emptyList());
     }
 
     @Test
@@ -100,10 +100,10 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canMakeEmptyDraftTableFromEmptyColumnWithLabel() {
-        DraftTable df = FlexibleDraftTable.create().fromColumns(List.of(FlexibleColumn.from("", Collections.emptyList())));
+        DraftTable dt = FlexibleDraftTable.create().fromColumns(List.of(FlexibleColumn.from("", Collections.emptyList())));
 
-        Assert.assertTrue(df.isEmpty());
-        Assert.assertFalse(df.isCompletelyEmpty());
+        Assert.assertTrue(dt.isEmpty());
+        Assert.assertFalse(dt.isCompletelyEmpty());
     }
 
     @Test
@@ -178,50 +178,50 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void noMatchesWhereStillReturnsEmptyDraftTableNotACompletelyEmptyDraftTable() {
-        DraftTable df = exampleDraftTableFromColumns()
+        DraftTable dt = exampleDraftTableFromColumns()
                 .where("minor", is(true))
                 .where("exempt", is(true));
 
-        Assert.assertTrue(df.isEmpty());
-        Assert.assertFalse(df.isCompletelyEmpty());
+        Assert.assertTrue(dt.isEmpty());
+        Assert.assertFalse(dt.isCompletelyEmpty());
     }
 
     @Test
     public void whereWithDefaultReturnsDefaultMatcherWhenConditionNotMet() {
-        DraftTable df = exampleDraftTableFromColumns().whereWithDefault("contractType", is("INVALID"), is("full-time"));
+        DraftTable dt = exampleDraftTableFromColumns().whereWithDefault("contractType", is("INVALID"), is("full-time"));
 
-        Assert.assertFalse(df.isEmpty());
+        Assert.assertFalse(dt.isEmpty());
         Assert.assertFalse(exampleDraftTableFromColumns().select("contractType").has("INVALID"));
     }
 
     @Test
     public void whereWithDefaultReturnsFirstMatcherWhenConditionMet() {
-        DraftTable df = exampleDraftTableFromColumns().whereWithDefault("contractType", is("full-time"), is("INVALID"));
+        DraftTable dt = exampleDraftTableFromColumns().whereWithDefault("contractType", is("full-time"), is("INVALID"));
 
-        Assert.assertFalse(df.isEmpty());
+        Assert.assertFalse(dt.isEmpty());
         Assert.assertFalse(exampleDraftTableFromColumns().select("contractType").has("INVALID"));
     }
 
     @Test
     public void whereWithDefaultByColumnAspectReturnsFirstMatcherWhenConditionMet() {
-        DraftTable df = exampleDraftTableFromColumnValues()
+        DraftTable dt = exampleDraftTableFromColumnValues()
                 .melt("days", "dates", as("newDates"), (Integer days, LocalDate date) -> date.plusDays(days))
                 .whereWithDefault("newDates", LocalDate::getDayOfMonth, is(2), is(greaterThan(2)));
 
         Assert.assertEquals(
-                df.select("newDates").firstValue().get(),
+                dt.select("newDates").firstValue().get(),
                 LocalDate.of(2024, 1, 2)
         );
     }
 
     @Test
     public void whereWithDefaultByColumnAspectReturnsDefaultMatcherWhenConditionNotMet() {
-        DraftTable df = exampleDraftTableFromColumnValues()
+        DraftTable dt = exampleDraftTableFromColumnValues()
                 .melt("days", "dates", as("newDates"), (Integer days, LocalDate date) -> date.plusDays(days))
                 .whereWithDefault("newDates", LocalDate::getDayOfMonth, is(lessThan(0)), is(2));
 
         Assert.assertEquals(
-                df.select("newDates").firstValue().get(),
+                dt.select("newDates").firstValue().get(),
                 LocalDate.of(2024, 1, 2)
         );
     }
@@ -251,14 +251,14 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenAppendingEmptyDraftTableThenExistingDraftTableIsReturned() {
-        DraftTable df = exampleDraftTableFromColumns();
-        Assert.assertEquals(df.append(FlexibleDraftTable.create().emptyDraftTable()), df);
+        DraftTable dt = exampleDraftTableFromColumns();
+        Assert.assertEquals(dt.append(FlexibleDraftTable.create().emptyDraftTable()), dt);
     }
 
     @Test
     public void whenAppendingNonEmptyDraftTableToAnEmptyDraftTableThenNonEmptyDraftTableIsReturned() {
-        DraftTable df = exampleDraftTableFromColumns();
-        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().append(df), df);
+        DraftTable dt = exampleDraftTableFromColumns();
+        Assert.assertEquals(FlexibleDraftTable.create().emptyDraftTable().append(dt), dt);
     }
 
     @Test
@@ -398,13 +398,13 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canAddNewUniqueColumnAndFillMissingRowValue() {
-        DraftTable df = exampleDraftTableFromColumns().addColumn("loginName", asList("US112233", "CA112244"), "");
+        DraftTable dt = exampleDraftTableFromColumns().addColumn("loginName", asList("US112233", "CA112244"), "");
 
-        Assert.assertEquals(df.columnCount(), 5);
-        Assert.assertEquals(df.rowCount(), 3);
-        Assert.assertTrue(df.hasColumn("loginName"));
+        Assert.assertEquals(dt.columnCount(), 5);
+        Assert.assertEquals(dt.rowCount(), 3);
+        Assert.assertTrue(dt.hasColumn("loginName"));
         Assert.assertEquals(
-                df.select("loginName").values(),
+                dt.select("loginName").values(),
                 asList("US112233", "CA112244", "")
         );
     }
@@ -427,12 +427,12 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canAddMultipleColumnsOfSameLength() {
-        DraftTable df = exampleDraftTableFromColumns().addColumns(
+        DraftTable dt = exampleDraftTableFromColumns().addColumns(
                 these(exampleDraftTableFromColumnValues().columns())
         );
 
         Assert.assertEquals(
-                df.columnCount(),
+                dt.columnCount(),
                 exampleDraftTableFromColumns().columnCount() + exampleDraftTableFromColumnValues().columnCount()
         );
     }
@@ -469,57 +469,57 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canDropSingleColumn() {
-        DraftTable df = exampleDraftTableFromColumnValues().dropColumn("days");
+        DraftTable dt = exampleDraftTableFromColumnValues().dropColumn("days");
 
-        assertThat(df.columnNames(), not(contains("days")));
+        assertThat(dt.columnNames(), not(contains("days")));
     }
 
     @Test
     public void whenDroppingAllColumnsAnEmptyDraftTableIsReturned() {
-        DraftTable df = exampleDraftTableFromColumnValues();
-        df = df.dropColumns(these(df.columnNames()));
+        DraftTable dt = exampleDraftTableFromColumnValues();
+        dt = dt.dropColumns(these(dt.columnNames()));
 
-        Assert.assertTrue(df.isEmpty());
-        Assert.assertTrue(df.isCompletelyEmpty());
+        Assert.assertTrue(dt.isEmpty());
+        Assert.assertTrue(dt.isCompletelyEmpty());
     }
 
     @Test
     public void canDropMultipleColumns() {
-        DraftTable df = exampleDraftTableFromColumnValues().dropColumns(these("days", "dates"));
+        DraftTable dt = exampleDraftTableFromColumnValues().dropColumns(these("days", "dates"));
 
-        assertThat(df.columnNames(), not(contains("days", "dates")));
+        assertThat(dt.columnNames(), not(contains("days", "dates")));
     }
 
     @Test
     public void canDropAllExceptSpecifiedColumns() {
-        DraftTable df = exampleDraftTableFromColumnValues().dropAllExcept(these("days", "dates"));
+        DraftTable dt = exampleDraftTableFromColumnValues().dropAllExcept(these("days", "dates"));
 
-        Assert.assertEquals(df.columnCount(), 2);
-        assertThat(df.columnNames(), contains("days", "dates"));
+        Assert.assertEquals(dt.columnCount(), 2);
+        assertThat(dt.columnNames(), contains("days", "dates"));
     }
 
     @Test
     public void whenDropAllExceptIsProvidedAllColumnNamesThenNoColumnsDropped() {
-        DraftTable df = exampleDraftTableFromColumnValues().dropAllExcept(these(exampleDraftTableFromColumnValues().columnNames()));
+        DraftTable dt = exampleDraftTableFromColumnValues().dropAllExcept(these(exampleDraftTableFromColumnValues().columnNames()));
 
-        Assert.assertEquals(df.columnCount(), exampleDraftTableFromColumnValues().columnCount());
-        Assert.assertEquals(df, exampleDraftTableFromColumnValues());
+        Assert.assertEquals(dt.columnCount(), exampleDraftTableFromColumnValues().columnCount());
+        Assert.assertEquals(dt, exampleDraftTableFromColumnValues());
     }
 
     @Test
     public void whenDropAllExceptIsProvidedEmptyListThenAllColumnsDropped() {
-        DraftTable df = exampleDraftTableFromColumnValues().dropAllExcept(these());
+        DraftTable dt = exampleDraftTableFromColumnValues().dropAllExcept(these());
 
-        Assert.assertEquals(df.columnCount(), 0);
-        Assert.assertEquals(df, FlexibleDraftTable.create().emptyDraftTable());
+        Assert.assertEquals(dt.columnCount(), 0);
+        Assert.assertEquals(dt, FlexibleDraftTable.create().emptyDraftTable());
     }
 
     @Test
     public void whenDropAllExceptOfEmptyFrameIsProvidedEmptyListThenEmptyFrameIsReturned() {
-        DraftTable df = FlexibleDraftTable.create().emptyDraftTable().dropAllExcept(these());
+        DraftTable dt = FlexibleDraftTable.create().emptyDraftTable().dropAllExcept(these());
 
-        Assert.assertEquals(df.columnCount(), 0);
-        Assert.assertEquals(df, FlexibleDraftTable.create().emptyDraftTable());
+        Assert.assertEquals(dt.columnCount(), 0);
+        Assert.assertEquals(dt, FlexibleDraftTable.create().emptyDraftTable());
     }
 
     @Test
@@ -542,30 +542,30 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canTransformInplaceWhenDraftTableHasSingleColumn(){
-        DraftTable df = EmploymentContractDraftTable().transform("EmploymentContracts", (EmploymentContract ec) -> ec.getType().equals("full-time"));
+        DraftTable dt = EmploymentContractDraftTable().transform("EmploymentContracts", (EmploymentContract ec) -> ec.getType().equals("full-time"));
 
-        Assert.assertEquals(df.select("EmploymentContracts").dataType(), Boolean.class);
+        Assert.assertEquals(dt.select("EmploymentContracts").dataType(), Boolean.class);
     }
 
     @Test
     public void canDeriveNewColumnOfDifferentTypeFromSingleInputColumnType() {
-        DraftTable df = exampleDraftTableFromColumnValues()
+        DraftTable dt = exampleDraftTableFromColumnValues()
                 .deriveNewColumnFrom("dates", as("modifiedDates"), (LocalDate date) -> date.getDayOfWeek());
 
         Assert.assertEquals(
-                df.select("modifiedDates").values(),
+                dt.select("modifiedDates").values(),
                 List.of(DayOfWeek.MONDAY, DayOfWeek.MONDAY, DayOfWeek.MONDAY)
         );
     }
 
     @Test
     public void canDeriveNewColumnOfDifferentTypeFromMultipleInputColumnTypes() {
-        DraftTable df = exampleDraftTableFromColumnValues()
+        DraftTable dt = exampleDraftTableFromColumnValues()
                 .deriveNewColumnFrom("days", "dates", as("modifiedDates"),
                         (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd).getDayOfWeek());
 
         Assert.assertEquals(
-                df.select("modifiedDates").values(),
+                dt.select("modifiedDates").values(),
                 List.of(DayOfWeek.TUESDAY, DayOfWeek.WEDNESDAY, DayOfWeek.THURSDAY)
         );
     }
@@ -712,52 +712,52 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canFilterByAnAspectOfAColumnOfComplexObjects() {
-        DraftTable df = EmploymentContractDraftTable()
+        DraftTable dt = EmploymentContractDraftTable()
                 .where("EmploymentContracts", EmploymentContract::getType, is("full-time"));
 
-        Assert.assertEquals(df.rowCount(), 1);
+        Assert.assertEquals(dt.rowCount(), 1);
         Assert.assertEquals(
-                df.select("EmploymentContracts").firstValue().get(),
+                dt.select("EmploymentContracts").firstValue().get(),
                 new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
     }
 
     @Test
     public void canFilterByARow() {
-        DraftTable df = EmploymentContractDraftTable()
+        DraftTable dt = EmploymentContractDraftTable()
                 .where((Row row) -> ((EmploymentContract) row.valueOf("EmploymentContracts")).getType(), is("full-time"));
 
-        Assert.assertEquals(df.rowCount(), 1);
+        Assert.assertEquals(dt.rowCount(), 1);
         Assert.assertEquals(
-                df.select("EmploymentContracts").firstValue().get(),
+                dt.select("EmploymentContracts").firstValue().get(),
                 new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
     }
 
     @Test
     public void canMapDraftTableIntoSingleColumnOfOriginatingType(){
-        DraftTable df = FlexibleDraftTable.create().fromRows(List.of(
+        DraftTable dt = FlexibleDraftTable.create().fromRows(List.of(
                 HashMapRow.from(new EmploymentContract("part-time", "N", new PayDetails("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now())),
                 HashMapRow.from(new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now())),
                 HashMapRow.from(new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1)))
         ));
-        df.write().structure();
-        Column c = df.gatherInto(EmploymentContract.class, as("EmploymentContracts"));
+        dt.write().structure();
+        Column c = dt.gatherInto(EmploymentContract.class, as("EmploymentContracts"));
 
         Assert.assertEquals(c, EmploymentContractDraftTable().select("EmploymentContracts"));
     }
 
     @Test
     public void canGatherSelectionIntoReducedDraftTable() {
-        DraftTable df = FlexibleDraftTable.create().fromRows(List.of(
+        DraftTable dt = FlexibleDraftTable.create().fromRows(List.of(
                         HashMapRow.from(new PayDetails("Hourly", "18.50", "Bi-Weekly", "80")),
                         HashMapRow.from(new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"))))
                 .addColumn(FlexibleColumn.from("country", List.of("US", "CA")))
                 .gatherInto(PayDetails.class, as("pay"), using("type", "rate", "period", "workHours"));
 
-        Assert.assertEquals(df.columnNames(), List.of("country", "pay"));
+        Assert.assertEquals(dt.columnNames(), List.of("country", "pay"));
         Assert.assertEquals(
-                df,
+                dt,
                 FlexibleDraftTable.create().fromColumns(List.of(
                         FlexibleColumn.from("country", List.of("US", "CA")),
                         FlexibleColumn.from("pay", List.of(new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), new PayDetails("Salary", "50000.00", "Bi-Weekly", "80")))
@@ -787,10 +787,10 @@ public class FlexibleDraftTableTest {
                 FlexibleColumn.from("state", List.of("NY", "PA", "NULL")),
                 FlexibleColumn.from("hasNewProduct", List.of(true, false, false))
         ));
-        DraftTable df = draftTable.replaceAll("NULL", null);
+        DraftTable dt = draftTable.replaceAll("NULL", null);
 
-        Assert.assertTrue(df.select("country").hasNulls());
-        Assert.assertTrue(df.select("state").hasNulls());
+        Assert.assertTrue(dt.select("country").hasNulls());
+        Assert.assertTrue(dt.select("state").hasNulls());
     }
 
     @Test
@@ -800,9 +800,9 @@ public class FlexibleDraftTableTest {
                 FlexibleColumn.from("state", List.of("NY", "PA", "NULL")),
                 FlexibleColumn.from("hasNewProduct", List.of(true, false, false))
         ));
-        DraftTable df = draftTable.replaceAll(42, null);
+        DraftTable dt = draftTable.replaceAll(42, null);
 
-        Assert.assertEquals(draftTable, df);
+        Assert.assertEquals(draftTable, dt);
     }
 
     @Test
@@ -811,13 +811,13 @@ public class FlexibleDraftTableTest {
                 "job names",
                 asList(new ArrayList<>(asList("BAR", "SSV")), new ArrayList<>(asList("ASM", "SM")))
         );
-        DraftTable df = FlexibleDraftTable.create().fromColumns(List.of(c));
-        DraftTable copy = df.copy();
+        DraftTable dt = FlexibleDraftTable.create().fromColumns(List.of(c));
+        DraftTable copy = dt.copy();
 
-        df.select("job names").apply((List<String> list) -> list.removeIf(name -> name.contains("A")));
+        dt.select("job names").apply((List<String> list) -> list.removeIf(name -> name.contains("A")));
 
         Assert.assertEquals(
-                df.select("job names").values(),
+                dt.select("job names").values(),
                 asList(new ArrayList<>(List.of("SSV")), new ArrayList<>(List.of("SM")))
         );
         Assert.assertEquals(
@@ -829,8 +829,8 @@ public class FlexibleDraftTableTest {
     @Test
     public void introspectAllowSelfReferencesInPipeline() {
         DraftTable draftTable = EmploymentContractDraftTable()
-                .introspect(df -> FlexibleDraftTable.create().emptyDraftTable()
-                        .append(these(df.rows().stream()
+                .introspect(dt -> FlexibleDraftTable.create().emptyDraftTable()
+                        .append(these(dt.rows().stream()
                                 .map(row -> row.valueOf("EmploymentContracts"))
                                 .map(Mappable.class::cast)
                                 .map(HashMapRow::from)
@@ -847,19 +847,27 @@ public class FlexibleDraftTableTest {
                 new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
                 new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
-        DraftTable df = FlexibleDraftTable.create().fromObjects(testData);
+        DraftTable dt = FlexibleDraftTable.create().fromObjects(testData);
 
         FlexibleDraftTable.create()
-                .fromColumns(List.of(df.select("payDetails"))).write().structure();
-        Assert.assertEqualsNoOrder(df.columnNames(), List.of("type", "exemptInd", "payDetails", "effectiveDate"));
-        Assert.assertEquals(df.rowCount(), testData.size());
+                .fromColumns(List.of(dt.select("payDetails"))).write().structure();
+        Assert.assertEqualsNoOrder(dt.columnNames(), List.of("type", "exemptInd", "payDetails", "effectiveDate"));
+        Assert.assertEquals(dt.rowCount(), testData.size());
         Assert.assertEquals(
                 FlexibleDraftTable.create()
-                        .fromObjects(df.select("payDetails").values())
+                        .fromObjects(dt.select("payDetails").values())
                         .gatherInto(PayDetails.class, as(""))
                         .dataType(),
                 PayDetails.class
         );
+    }
+    
+    @Test
+    public void renamingTableAssignsUserDesignatedNameToTable() {
+        DraftTable dt = FlexibleDraftTable.create().emptyDraftTable();
+
+        Assert.assertEquals(dt.tableName(), DraftTable.DEFAULT_TABLE_NAME);
+        Assert.assertEquals(dt.nameTable("newName").tableName(), "newName");
     }
 
 
