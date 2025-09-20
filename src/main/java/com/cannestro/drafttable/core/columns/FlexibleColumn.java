@@ -2,6 +2,7 @@ package com.cannestro.drafttable.core.columns;
 
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.annotations.Beta;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
@@ -39,7 +40,7 @@ public class FlexibleColumn implements Column {
 
     private String label;
     private final List<?> values;
-    private final Type dataType;
+    @Getter(AccessLevel.PRIVATE) private final JavaType type;
 
     private static final String EXCEPTION_FORMAT_STRING = "Input type of the provided expression must match the Column data type: %s";
 
@@ -52,12 +53,13 @@ public class FlexibleColumn implements Column {
         this.label = label;
         this.values = values;
         if (this.values.isEmpty() || nonNullValues.isEmpty()) {
-            this.dataType = Object.class;
-        } else {
-            this.dataType = ObjectMapperManager.getInstance().defaultMapper()
+            this.type = ObjectMapperManager.getInstance().defaultMapper()
                     .getTypeFactory()
-                    .constructType(nonNullValues.get(0).getClass())
-                    .getRawClass();
+                    .constructType(Object.class);
+        } else {
+            this.type = ObjectMapperManager.getInstance().defaultMapper()
+                    .getTypeFactory()
+                    .constructType(nonNullValues.get(0).getClass());
         }
     }
 
@@ -72,6 +74,11 @@ public class FlexibleColumn implements Column {
      */
     public static Column from(String label, List<?> values) {
         return new FlexibleColumn(label, values);
+    }
+
+    @Override
+    public Type dataType() {
+        return type.getRawClass();
     }
 
     @Override
@@ -326,7 +333,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Map<StatisticName, Number> descriptiveStats() {
-        if (!dataType().getClass().getSuperclass().equals(Number.class)) {
+        if (!type().getRawClass().getGenericSuperclass().equals(Number.class)) {
             return Collections.emptyMap();
         }
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();

@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.core.columns;
 
+import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.supporting.utils.helper.Library;
@@ -14,6 +15,7 @@ import java.time.Month;
 import java.time.Period;
 import java.util.*;
 import java.util.function.BinaryOperator;
+import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -424,8 +426,11 @@ public class FlexibleColumnTest {
                 LocalDate.of(2023, 1, 1),
                 LocalDate.of(2012, 12, 14)
         );
-        Column c = new FlexibleColumn("hireDates", list)
-                .where(greaterThan(LocalDate.of(2013, 1, 1)))
+        Column c = new FlexibleColumn("hireDates", list);
+
+        assertEquals(c.dataType(), LocalDate.class);
+
+        c = c.where(greaterThan(LocalDate.of(2013, 1, 1)))
                 .transform("Length of Service", (LocalDate date) -> Period.between(date, LocalDate.of(2023, 1, 1)))
                 .transform("Years of Service", Period::getYears);
 
@@ -614,6 +619,23 @@ public class FlexibleColumnTest {
                 .split()
                 .intoColumn("day", LocalDate::getDayOfMonth)
                 .gatherIntoNewTable();
+    }
+
+    @Test
+    public void descriptiveStatsGeneratedForIntegerType() {
+        List<Integer> list = IntStream.range(0, 10).boxed().toList();
+        var stats = FlexibleColumn.from("num", list).descriptiveStats();
+
+        Assert.assertFalse(stats.isEmpty());
+        Assert.assertTrue(stats.containsKey(StatisticName.MAX));
+    }
+
+    @Test
+    public void emptyMapGeneratedForDescriptiveStatsOfNonNumericType() {
+        Assert.assertEquals(
+                FlexibleColumn.from("dates", dateCollectionHelper()).descriptiveStats(),
+                Collections.emptyMap()
+        );
     }
 
 
