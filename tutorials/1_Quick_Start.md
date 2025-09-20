@@ -47,9 +47,7 @@ underlying processing operations. See [OpenCSV's documentation](https://opencsv.
 more. Using this bean-based reading approach, the pipeline we defined earlier would change to something like the 
 following:
 ```java
-DraftTable tornadoes = FlexibleDraftTable.create()
-        .fromCSV(DefaultCsvLoader.class)
-        .load(filePath, TornadoDataBean.class);
+FlexibleDraftTable.create().fromCSV(DefaultCsvLoader.class).load(filePath, TornadoDataBean.class)
 ```
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
 columns vs optional columns, etc. When using this approach, *the key names specified in `asMap()` will become the column
