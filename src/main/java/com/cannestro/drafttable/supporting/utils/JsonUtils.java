@@ -12,7 +12,7 @@ public class JsonUtils {
 
     private JsonUtils() {}
 
-    public static String prettyJsonString(@NonNull String uglyJsonString) {
+    public static String makePretty(@NonNull String uglyJsonString) {
         try {
             return ObjectMapperManager.getInstance().defaultMapper()
                     .writerWithDefaultPrettyPrinter()
@@ -39,7 +39,7 @@ public class JsonUtils {
                         throw new IllegalArgumentException(e);
                     }
                 })
-                .map(JsonUtils::prettyJsonString)
+                .map(JsonUtils::makePretty)
                 .toList();
     }
 
