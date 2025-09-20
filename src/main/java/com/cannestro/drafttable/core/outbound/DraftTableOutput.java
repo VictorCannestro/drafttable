@@ -8,6 +8,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
+import com.google.common.base.Strings;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,6 +34,7 @@ public record DraftTableOutput(DraftTable draftTable) {
     public static final String EMPTY_DELIMITER = "";
     public static final String PRETTY_DELIMITER = " | ";
     public static final String PRETTY_FORMAT_STRING = "| %s |";
+    public static final String SEPARATE_BY_NEW_LINE_FORMAT_STRING = "%s%n%s";
     public static final String NULL_STRING = "null";
 
 
@@ -193,9 +195,11 @@ public record DraftTableOutput(DraftTable draftTable) {
     Iterator<String> oneDimensionalPrettyPrintOf(DraftTable draftTable) {
         String header = format(PRETTY_FORMAT_STRING, join(PRETTY_DELIMITER, draftTable.columnNames()));
         String divider = join(EMPTY_DELIMITER, nCopies(header.length(), DIVIDER));
+        String name = generateNameHeader(divider.length());
+        System.out.println(name);
         System.out.println(header);
         System.out.println(divider);
-        return List.of(header, divider).listIterator();
+        return List.of(name, header, divider).listIterator();
     }
 
     Iterator<String> fullDimensionalPrettyPrintOf(DraftTable draftTable, int characterLimitPerColumn) {
@@ -206,37 +210,11 @@ public record DraftTableOutput(DraftTable draftTable) {
                 .collect(Collectors.joining(PRETTY_DELIMITER));
         String header = format(PRETTY_FORMAT_STRING, joinedAndPaddedHeaders);
         String divider = join(EMPTY_DELIMITER, nCopies(header.length(), DIVIDER));
-        List<String> tableWithHeaders = new ArrayList<>(List.of(header, divider));
+        String name =  generateNameHeader(divider.length());
+        List<String> tableWithHeaders = new ArrayList<>(List.of(name, header, divider));
         tableWithHeaders.addAll(formattedRowContentAccordingTo(lengthLimitsPerColumn, draftTable));
         tableWithHeaders.forEach(System.out::println);
         return tableWithHeaders.listIterator();
-    }
-
-    List<String> formattedRowContentAccordingTo(Map<String, Integer> lengthLimitsPerColumn, DraftTable draftTable) {
-        return draftTable.rows().stream()
-                .map(Row::valueMap)
-                .map(valueMap -> valueMap.keySet().stream().toList().stream()
-                        .map(Object::toString)
-                        .map(columnName -> {
-                            int lengthLimit = lengthLimitsPerColumn.get(columnName);
-                            if (isNull(valueMap.get(columnName))) {
-                                return StringUtils.leftPad(NULL_STRING, lengthLimit);
-                            }
-                            return StringUtils.leftPad(
-                                    truncateIfNecessary(valueMap.get(columnName).toString(), lengthLimit),
-                                    lengthLimit
-                            );
-                        })
-                        .toList())
-                .map(valueList -> format(PRETTY_FORMAT_STRING, join(PRETTY_DELIMITER, valueList)))
-                .toList();
-    }
-
-    String truncateIfNecessary(String string, int lengthLimit){
-        if (string.length() == Math.min(string.length(), lengthLimit)) {
-            return string;
-        }
-        return string.substring(0, lengthLimit);
     }
 
     Map<String, Integer> calculateAppropriateWidthPerColumnGiven(int characterLimitPerColumn, DraftTable draftTable) {
@@ -270,6 +248,41 @@ public record DraftTableOutput(DraftTable draftTable) {
                         .orElseThrow())
         );
         return columnDataMaxLengths;
+    }
+
+    List<String> formattedRowContentAccordingTo(Map<String, Integer> lengthLimitsPerColumn, DraftTable draftTable) {
+        return draftTable.rows().stream()
+                .map(Row::valueMap)
+                .map(valueMap -> valueMap.keySet().stream().toList().stream()
+                        .map(Object::toString)
+                        .map(columnName -> {
+                            int lengthLimit = lengthLimitsPerColumn.get(columnName);
+                            if (isNull(valueMap.get(columnName))) {
+                                return StringUtils.leftPad(NULL_STRING, lengthLimit);
+                            }
+                            return StringUtils.leftPad(
+                                    truncateIfNecessary(valueMap.get(columnName).toString(), lengthLimit),
+                                    lengthLimit
+                            );
+                        })
+                        .toList())
+                .map(valueList -> format(PRETTY_FORMAT_STRING, join(PRETTY_DELIMITER, valueList)))
+                .toList();
+    }
+
+    String truncateIfNecessary(String string, int lengthLimit){
+        if (string.length() == Math.min(string.length(), lengthLimit)) {
+            return string;
+        }
+        return string.substring(0, lengthLimit);
+    }
+
+    String generateNameHeader(int length) {
+        return String.format(
+                SEPARATE_BY_NEW_LINE_FORMAT_STRING,
+                StringUtils.center(draftTable().tableName(), length),
+                Strings.repeat(DIVIDER, length)
+        );
     }
 
 }

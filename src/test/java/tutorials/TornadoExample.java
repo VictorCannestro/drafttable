@@ -53,6 +53,8 @@ public class TornadoExample {
         tornadoes.randomDraw(3).write().prettyPrint();
         System.out.println();
 
+        tornadoes.select("Injuries").write().describe();
+
         // Mapping example 1: melt columns
         tornadoes = tornadoes.melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)));
 
@@ -201,7 +203,7 @@ public class TornadoExample {
                 .group()
                 .by((PlaceInTime pit) -> pit.localDateTime().getYear(), Collectors.groupingBy(PlaceInTime::place, Collectors.counting()))
                 .write()
-                .prettyPrint(30);
+                .prettyPrint();
 
     }
 

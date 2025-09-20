@@ -140,6 +140,8 @@ per-column basis we can invoke:
 tornadoes.write().structure();
 ```
 ```
+             tornadoes_1950-2014              
+==============================================
 | ColumnName |       Type        | NullCount |
 ==============================================
 |       Date |  java.lang.String |       0.0 |
@@ -162,6 +164,8 @@ The `top(n)` method returns a new `DraftTable` containing the first `n` rows, up
 tornadoes.top(2).write().prettyPrint();
 ```
 ```
+                                                 tornadoes_1950-2014                                                 
+=====================================================================================================================
 | Start Lon | Length | State | Fatalities |   Time   | Scale | State No | Width |    Date    | Injuries | Start Lat |
 =====================================================================================================================
 |    -90.22 |    6.2 |    MO |          0 | 11:00:00 |   3.0 |      1.0 | 150.0 | 1950-01-03 |        3 |     38.77 |
@@ -173,6 +177,8 @@ Analogously, the `bottom(n)` method returns a new `DraftTable` containing the la
 tornadoes.bottom(2).write().prettyPrint();
 ```
 ```
+                                                 tornadoes_1950-2014                                                 
+=====================================================================================================================
 | Start Lon | Length | State | Fatalities |   Time   | Scale | State No | Width |    Date    | Injuries | Start Lat |
 =====================================================================================================================
 |   -93.979 |   1.98 |    TX |          0 | 14:35:00 |   1.0 |      0.0 | 150.0 | 2014-12-27 |        0 |    30.864 |
@@ -184,6 +190,8 @@ To get a random uniform sample up to size `n`, up to the total row count, from t
 tornadoes.randomDraw(3).write().prettyPrint();
 ```
 ```
+                                                 tornadoes_1950-2014                                                 
+=====================================================================================================================
 | Start Lon | Length | State | Fatalities |   Time   | Scale | State No | Width |    Date    | Injuries | Start Lat |
 =====================================================================================================================
 |    -86.78 |    0.1 |    IN |          0 | 19:12:00 |   0.0 |      8.0 |  10.0 | 1981-07-25 |        0 |      41.5 |
@@ -197,6 +205,7 @@ column we can write:
 tornadoes.select("Date").top(5).write().prettyPrint();
 ```
 ```
+======================
 | index |    Date    |
 ======================
 |     0 | 1950-01-03 |
@@ -221,6 +230,8 @@ value: `VARIANCE`, `MEAN`, `PERCENTILE_50`, etc.  To display a table of these st
 tornadoes.select("Injuries").write().describe();
 ```
 ```
+      Column: "Injuries"       
+===============================
 | METRIC |       VALUE        |
 ===============================
 |    25% |                0.0 |
@@ -403,6 +414,8 @@ We can also order by multiple columns, up to the total column count. For example
 tornadoes.orderByMultiple(using("Fatalities", "DateTime"), DESCENDING).top(4).write().prettyPrint();
 ```
 ```
+                                                         tornadoes_1950-2014                                                          
+=====================================================================================================================================
 | Start Lon | Length | State | Fatalities |       Region       | Scale | State No | Width  | Injuries | Start Lat |     DateTime     |
 ======================================================================================================================================
 |  -94.5932 |  21.62 |    MO |        158 | West North Central |   5.0 |     38.0 | 1600.0 |     1150 |   37.0524 | 2011-05-22T16:34 |
@@ -419,6 +432,8 @@ tornadoes.orderBy(Comparator.comparing((Row row) -> ((LocalDateTime) row.valueOf
          .prettyPrint();
 ```
 ```
+                                                         tornadoes_1950-2014                                                          
+=====================================================================================================================================
 | Start Lon | Length | State | Fatalities |       Region       | Scale | State No | Width | Injuries | Start Lat |     DateTime     |
 =====================================================================================================================================
 |    -88.85 |    0.1 |    MS |          0 | East South Central |   1.0 |      3.0 |  10.0 |        0 |      32.5 | 1950-03-01T02:30 |
@@ -440,6 +455,8 @@ operations. For example, to group `tornadoes` by `Region` according to descendin
 tornadoes.select("Region").group().byValueCounts(DESCENDING).write().prettyPrint();
 ```
 ```
+      Grouping: "Region"      
+==============================
 |       Value        | Count |
 ==============================
 | West North Central | 16190 |
@@ -469,6 +486,8 @@ tornadoes.gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scal
          .write().prettyPrint();
 ```
 ```
+                     Grouping: "Measurements"                      
+===================================================================
 |                          Value                          | Count |
 ===================================================================
 | PhysicalMeasurements[Scale=0.0, Length=0.1, Width=10.0] |  5691 |
@@ -496,6 +515,8 @@ tornadoes.where("DateTime", LocalDateTime::getYear, allOf(greaterThan(1999), les
          .prettyPrint();
 ```
 ```
+                                                                                   Grouping: "PlaceInTime"                                                                                   
+=============================================================================================================================================================================================
 | Value |                                                                                 ValueAggregation                                                                                  |
 =============================================================================================================================================================================================
 |  2000 |  {Middle Atlantic=10, West North Central=269, East South Central=121, Mountain=98, West South Central=272, Pacific=15, New England=5, South Atlantic=171, East North Central=116} |

@@ -21,6 +21,9 @@ import static org.hamcrest.Matchers.*;
  */
 public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
 
+    public static final String LABEL_FORMATTER = "Grouping: \"%s\"";
+
+
     @Override
     public <B, R> DraftTable byCountsOf(Function<? super B, ? extends R> mapping) {
         DraftTable grouping = by(mapping, Collectors.counting());
@@ -37,7 +40,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
                 col -> col.append(nullCountByClassifier),
                 UnaryOperator.identity()
         ).renameAs(COUNT);
-        return FlexibleDraftTable.create().fromColumns(List.of(valueColumn, aggregationColumn));
+        return FlexibleDraftTable.create().fromColumns(outputTableName(), List.of(valueColumn, aggregationColumn));
     }
 
     @Override
@@ -53,7 +56,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
                 col -> col.append((Object) null),
                 UnaryOperator.identity()
         );
-        return FlexibleDraftTable.create().fromColumns(List.of(valueColumn, aggregationColumn));
+        return FlexibleDraftTable.create().fromColumns(outputTableName(), List.of(valueColumn, aggregationColumn));
     }
 
     @Override
@@ -64,10 +67,17 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
                 .values();
         Map<R, D> valueAggregationMap = nonNullValues.stream().collect(Collectors.groupingBy(mapping, aggregation));
         List<R> values = valueAggregationMap.keySet().stream().toList();
-        return FlexibleDraftTable.create().fromColumns(List.of(
-                FlexibleColumn.from(VALUE, values),
-                FlexibleColumn.from(VALUE_AGGREGATION, values.stream().map(valueAggregationMap::get).toList())
-        ));
+        return FlexibleDraftTable.create().fromColumns(
+                outputTableName(),
+                List.of(
+                        FlexibleColumn.from(VALUE, values),
+                        FlexibleColumn.from(VALUE_AGGREGATION, values.stream().map(valueAggregationMap::get).toList())
+                )
+        );
+    }
+
+    String outputTableName() {
+        return String.format(LABEL_FORMATTER, column().label());
     }
 
 }

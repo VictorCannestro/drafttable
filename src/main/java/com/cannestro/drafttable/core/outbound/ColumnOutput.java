@@ -22,6 +22,11 @@ import static java.util.Objects.isNull;
  */
 public record ColumnOutput(Column column) {
 
+    public static final String EMPTY_LABEL = "";
+    public static final String INDEX_LABEL = "index";
+    public static final String DESCRIBE_LABEL_FORMATTER = "Column: \"%s\"";
+
+
     public ColumnOutput {
         if (isNull(column)) {
             throw new IllegalStateException("Cannot output a null object");
@@ -77,8 +82,8 @@ public record ColumnOutput(Column column) {
      * {@code toString()} output. </p>
      */
     public void prettyPrint() {
-        FlexibleDraftTable.create().fromColumns(column().label(), List.of(column()))
-                         .introspect(df -> df.addColumn("index", IntStream.range(0, df.rowCount()).boxed().toList(), null))
+        FlexibleDraftTable.create().fromColumns(EMPTY_LABEL, List.of(column()))
+                         .introspect(df -> df.addColumn(INDEX_LABEL, IntStream.range(0, df.rowCount()).boxed().toList(), null))
                          .write()
                          .prettyPrint();
     }
@@ -104,7 +109,7 @@ public record ColumnOutput(Column column) {
                     .toList();
 
             FlexibleDraftTable.create().fromRows(
-                    column().label(),
+                    String.format(DESCRIBE_LABEL_FORMATTER, column().label()),
                     entries.stream()
                             .map(entry -> HashMapRow.from(new StatisticalDescription(entry.getKey().shortHand, entry.getValue().doubleValue())))
                             .toList())
