@@ -135,14 +135,16 @@ public record DraftTableOutput(DraftTable draftTable) {
      * ordered alphabetically and a count of null values is also provided on a per-column basis. </p>
      */
     public void structure() {
-        FlexibleDraftTable.create().fromRows(draftTable().columns().stream()
-                        .map(column -> new Structure(column.label(),
-                                                     column.dataType().getTypeName(),
-                                                     column.where(nullValue()).size()))
-                        .sorted(Comparator.comparing(Structure::columnName))
-                        .map(Mappable.class::cast)
-                        .map(HashMapRow::from)
-                        .toList())
+        FlexibleDraftTable.create()
+                .fromRows(draftTable().tableName(),
+                          draftTable().columns().stream()
+                                  .map(column -> new Structure(column.label(),
+                                                               column.dataType().getTypeName(),
+                                                               column.where(nullValue()).size()))
+                                  .sorted(Comparator.comparing(Structure::columnName))
+                                  .map(Mappable.class::cast)
+                                  .map(HashMapRow::from)
+                                  .toList())
                 .write()
                 .prettyPrint();
     }
