@@ -1,14 +1,27 @@
 package com.cannestro.drafttable.supporting.utils;
 
 import com.google.common.io.Files;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
+
+import static java.nio.file.Files.createDirectories;
+import static org.apache.commons.io.FileUtils.copyURLToFile;
+import static org.apache.commons.io.FileUtils.getTempDirectory;
 
 
 /**
@@ -19,6 +32,44 @@ public class FileUtils {
 
     private FileUtils() {}
 
+
+    public static URL url(String fileUrl) {
+        try {
+            return new URI(fileUrl).toURL();
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Either no legal protocol could be found in a specification string or the string could not be parsed.", e);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("The String could not be parsed as a URI reference.", e);
+        }
+    }
+
+    public static File copyFromURL(URL fileUrl,
+                                   int connectionTimeoutInMillis,
+                                   int readTimeoutInMillis) {
+        try {
+            Path path = Paths.get(getTempDirectory().getAbsolutePath(), UUID.randomUUID().toString());
+            String tempDirectory = createDirectories(path).toFile().getPath();
+            String filePath = String.format(
+                    "%s%s%s",
+                    tempDirectory,
+                    File.separator,
+                    FilenameUtils.getName(fileUrl.getPath())
+            );
+            File temp = new File(filePath);
+            copyURLToFile(fileUrl, temp, connectionTimeoutInMillis, readTimeoutInMillis);
+            return temp;
+        } catch (IOException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public static File copyFromURL(URL fileUrl) {
+        return copyFromURL(
+                fileUrl,
+                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(10),
+                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(10)
+        );
+    }
 
     /**
      * Creates an empty file or updates the last updated timestamp on the same as in the UNIX command of the same name
@@ -31,7 +82,6 @@ public class FileUtils {
             Files.touch(new File(filePath));
         } catch (IOException e) {
             log.error("Could not create or modify the resource at {}", filePath);
-            throw new RuntimeException(e);
         }
         log.debug("Successfully created or modified the resource at {}", filePath);
     }
@@ -51,7 +101,6 @@ public class FileUtils {
             }
         } catch (IOException e) {
             log.error("Could not delete the resource at {}", filePath);
-            throw new RuntimeException(e);
         }
     }
 
@@ -74,14 +123,7 @@ public class FileUtils {
         } catch (URISyntaxException | NullPointerException e) {
             log.debug("An exception occurred loading {} from the ContextClassLoader and converting to a Path", resourceFilePath);
         }
-
-        try {
-            log.debug("Attempting to walk the ./src/main directory to find the file");
-            return walkFileTreeToFind("./src/main/resources/" + resourceFilePath);
-        } catch (IllegalArgumentException ex) {
-            log.debug("Attempting to walk the ./src/test directory to find the file");
-            return walkFileTreeToFind("./src/test/resources/" + resourceFilePath);
-        }
+        return walkFileTreeToFind(resourceFilePath);
     }
 
     public static Path walkFileTreeToFind(String filePath) {
@@ -93,15 +135,24 @@ public class FileUtils {
         }
     }
 
-    public static Reader createReaderFromResource(String resourceFilePath) throws IOException {
+    public static Reader createReaderFromResource(@NonNull String resourceFilePath) throws IOException {
         try {
-            return new BufferedReader(new InputStreamReader(Objects.requireNonNull(
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFilePath)
-            )));
-        } catch (NullPointerException e) {
-            log.debug("Could not load {}. Now attempting to search for the resource", resourceFilePath);
-            return java.nio.file.Files.newBufferedReader(searchForResource(resourceFilePath));
+            Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(resourceFilePath), StandardCharsets.UTF_8));
+            log.debug("Successfully loaded {} using the FileInputStream.", resourceFilePath);
+            return reader;
+        } catch (FileNotFoundException e) {
+            log.debug("Could not find {} through FileInputStream. Attempting to search for the resource.", resourceFilePath);
         }
+        try {
+            Reader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
+                Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFilePath)
+            )));
+            log.debug("Successfully loaded {} using the ContextClassLoader.", resourceFilePath);
+            return reader;
+        } catch (NullPointerException e) {
+            log.debug("Could not load {} using the ContextClassLoader. Attempting to search elsewhere.", resourceFilePath);
+        }
+        return java.nio.file.Files.newBufferedReader(searchForResource(resourceFilePath));
     }
 
 }

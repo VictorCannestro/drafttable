@@ -9,6 +9,7 @@ import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import static com.cannestro.drafttable.core.options.Item.as;
@@ -38,7 +39,7 @@ public class DraftTableFromCsvTest {
 
         DraftTable df = FlexibleDraftTable.create()
                 .fromCSV(DefaultCsvLoader.class)
-                .load("csv/temp_3.csv", PayDetails.class)
+                .load(Path.of("csv/temp_3.csv"), PayDetails.class)
                 .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);
 
@@ -57,7 +58,7 @@ public class DraftTableFromCsvTest {
                 TEST_CSV_DIRECTORY.concat("temp_4.csv"),
                 FlexibleDraftTable.create().fromRowValues(headers, lines).gatherInto(PayDetails.class, as("pay")).values()
         );
-        DraftTable df = FlexibleDraftTable.create().fromCSV().at("csv/temp_4.csv");
+        DraftTable df = FlexibleDraftTable.create().fromCSV().at(Path.of("csv/temp_4.csv"));
         Assert.assertEqualsNoOrder(
                 df.columnNames(),
                 List.of("type", "rate", "period", "workHours")

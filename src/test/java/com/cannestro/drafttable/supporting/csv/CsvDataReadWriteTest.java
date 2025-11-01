@@ -3,6 +3,7 @@ package com.cannestro.drafttable.supporting.csv;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
 import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -26,11 +27,9 @@ public class CsvDataReadWriteTest {
 
         Assert.assertEquals(lines.size(), 3);
         Assert.assertEquals(
-                CsvDataParser.mapCsvToJsonStrings("csv/temp_1.csv", PayDetails.class).size(),
+                CsvDataParser.mapCsvToJsonStrings(TEST_CSV_DIRECTORY.concat("temp_1.csv"), PayDetails.class).size(),
                 3
         );
-
-        FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_1.csv"));
     }
 
     @Test(description = "Can export and read CSV data when given an extra column header and the fill value matches what is expected")
@@ -42,7 +41,7 @@ public class CsvDataReadWriteTest {
                 List.of("Salary", "50000.00", "Bi-Weekly", "80")
         );
         CsvDataWriter.writeAllLinesToCsv(TEST_CSV_DIRECTORY.concat("temp_2.csv"), lines, headers);
-        List<List<String>> parsedLines = CsvDataParser.readAllLines("csv/temp_2.csv");
+        List<List<String>> parsedLines = CsvDataParser.readAllLines(TEST_CSV_DIRECTORY.concat("temp_2.csv"));
 
         Assert.assertEquals(
                 lastElementOf(firstElementOf(parsedLines)),
@@ -52,7 +51,11 @@ public class CsvDataReadWriteTest {
                 lastElementOf(lastElementOf(parsedLines)),
                 ""
         );
+    }
 
+    @AfterClass(alwaysRun = true)
+    public void cleanUp() {
+        FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_1.csv"));
         FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_2.csv"));
     }
 

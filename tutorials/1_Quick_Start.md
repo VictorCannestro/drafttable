@@ -25,7 +25,7 @@ is read in as a `String`. To prepare our dataset to perform numerical operations
 interested in operating on to a more fitting data type.
 
 ```java
-String filePath = "csv/tornadoes_1950-2014.csv";
+Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
 DraftTable tornadoes = FlexibleDraftTable.create()
         .fromCSV().at(filePath)
         .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
@@ -47,7 +47,7 @@ underlying processing operations. See [OpenCSV's documentation](https://opencsv.
 more. Using this bean-based reading approach, the pipeline we defined earlier would change to something like the 
 following:
 ```java
-FlexibleDraftTable.create().fromCSV(DefaultCsvLoader.class).load(filePath, TornadoDataBean.class)
+FlexibleDraftTable.create().fromCSV(DefaultCsvLoader.class).load(Path.of(filePath), TornadoDataBean.class)
 ```
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
 columns vs optional columns, etc. When using this approach, *the key names specified in `asMap()` will become the column
@@ -610,7 +610,8 @@ Note that this only works here because the filter conditions are *mutually exclu
 
 #### The complete pipeline
 ```java
-FlexibleDraftTable.create().fromCSV().at("csv/tornadoes_1950-2014.csv")
+FlexibleDraftTable.create().fromCSV()
+                 .at(Path.of("csv/tornadoes_1950-2014.csv"))
                  .dropAllExcept(these("Date", "Time", "State", "Injuries", "Fatalities"))
                  .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                  .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
