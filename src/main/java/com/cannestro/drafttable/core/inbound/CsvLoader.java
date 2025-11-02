@@ -24,4 +24,6 @@ public interface CsvLoader {
 
     DraftTable at(@NonNull URL url);
 
+    DraftTable at(@NonNull URL url, @NonNull CsvOptions loadingOptions);
+
 }

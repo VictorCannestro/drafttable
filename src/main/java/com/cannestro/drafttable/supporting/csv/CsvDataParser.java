@@ -35,6 +35,7 @@ public class CsvDataParser {
         CsvToListTransferrer<T> csvToListTransferrer = new CsvToListTransferrer<>();
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
             CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
+                    .withSkipLines(loadingOptions.skipLines())
                     .withEscapeChar(loadingOptions.escapeCharacter())
                     .withQuoteChar(loadingOptions.quoteCharacter())
                     .withIgnoreEmptyLine(loadingOptions.ignoreEmptyLines())

@@ -15,11 +15,12 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.supporting.csv.CsvDataParser.buildBeansFrom;
 import static com.cannestro.drafttable.supporting.csv.CsvDataParser.readAllLines;
-import static com.cannestro.drafttable.supporting.utils.FileUtils.copyFromURL;
+import static com.cannestro.drafttable.supporting.utils.FileUtils.copyToTempDirectory;
 import static com.cannestro.drafttable.supporting.utils.FileUtils.deleteFileIfPresent;
 import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
 import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 import static com.google.common.io.Files.getNameWithoutExtension;
+import static java.util.Objects.isNull;
 
 
 public class DefaultCsvLoader implements CsvLoader {
@@ -45,15 +46,19 @@ public class DefaultCsvLoader implements CsvLoader {
     @Override
     public DraftTable at(@NonNull Path path, @NonNull CsvOptions loadingOptions) {
         String pathName = path.toFile().getPath();
-        return FlexibleDraftTable.create().fromObjects(
-                getNameWithoutExtension(pathName),
-                buildBeansFrom(pathName, loadingOptions)
-        );
+        if (isNull(loadingOptions.type())) {
+            return null; // TODO
+        } else {
+            return FlexibleDraftTable.create().fromObjects(
+                    getNameWithoutExtension(pathName),
+                    buildBeansFrom(pathName, loadingOptions)
+            );
+        }
     }
 
     @Override
     public DraftTable at(@NonNull URL url) {
-        File file = copyFromURL(url);
+        File file = copyToTempDirectory(url);
         List<List<String>> fullTable = readAllLines(file.getPath());
         deleteFileIfPresent(file.getPath());
         deleteFileIfPresent(file.getParentFile().getPath());
@@ -70,6 +75,18 @@ public class DefaultCsvLoader implements CsvLoader {
                         .toList()
         );
     }
+
+    @Override
+    public DraftTable at(@NonNull URL url, @NonNull CsvOptions loadingOptions) {
+        File file = copyToTempDirectory(url);
+        DraftTable draftTable = isNull(loadingOptions.type())
+                ? null // TODO
+                : FlexibleDraftTable.create().fromObjects(getNameWithoutExtension(file.getPath()), buildBeansFrom(file.getPath(), loadingOptions));
+        deleteFileIfPresent(file.getPath());
+        deleteFileIfPresent(file.getParentFile().getPath());
+        return draftTable;
+    }
+
 
     public <T extends CsvBean & Mappable> DraftTable load(@NonNull Path path, @NonNull Class<T> csvSchema) {
         String pathName = path.toFile().getPath();

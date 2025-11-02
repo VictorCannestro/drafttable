@@ -33,7 +33,7 @@ public class FileUtils {
     private FileUtils() {}
 
 
-    public static URL url(String fileUrl) {
+    public static URL url(@NonNull String fileUrl) {
         try {
             return new URI(fileUrl).toURL();
         } catch (MalformedURLException e) {
@@ -43,9 +43,9 @@ public class FileUtils {
         }
     }
 
-    public static File copyFromURL(URL fileUrl,
-                                   int connectionTimeoutInMillis,
-                                   int readTimeoutInMillis) {
+    public static File copyToTempDirectory(@NonNull URL fileUrl,
+                                           int connectionTimeoutInMillis,
+                                           int readTimeoutInMillis) {
         try {
             Path path = Paths.get(getTempDirectory().getAbsolutePath(), UUID.randomUUID().toString());
             String tempDirectory = createDirectories(path).toFile().getPath();
@@ -63,8 +63,8 @@ public class FileUtils {
         }
     }
 
-    public static File copyFromURL(URL fileUrl) {
-        return copyFromURL(
+    public static File copyToTempDirectory(@NonNull URL fileUrl) {
+        return copyToTempDirectory(
                 fileUrl,
                 (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(10),
                 (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(10)
@@ -76,7 +76,7 @@ public class FileUtils {
      *
      * @param filePath The destination filepath, for example {@code ./src/main/resources/csv/export_file.csv}
      */
-    public static void touchFile(String filePath) {
+    public static void touchFile(@NonNull String filePath) {
         try {
             log.debug("Attempting to create or modify the resource at {}", filePath);
             Files.touch(new File(filePath));
@@ -87,11 +87,12 @@ public class FileUtils {
     }
 
     /**
-     * Deletes the specified file -- based on the UNIX command of the same name
+     * Deletes the specified file, if present, or directory, if present and empty -- based on the UNIX command of the
+     * same name.
      *
      * @param filePath The destination filepath, for example {@code ./src/main/resources/csv/export_file.csv}
      */
-    public static void deleteFileIfPresent(String filePath) {
+    public static void deleteFileIfPresent(@NonNull String filePath) {
         try {
             log.debug("Attempting to delete the resource at {}", filePath);
             if(java.nio.file.Files.deleteIfExists(Paths.get(filePath))) {
@@ -101,37 +102,6 @@ public class FileUtils {
             }
         } catch (IOException e) {
             log.error("Could not delete the resource at {}", filePath);
-        }
-    }
-
-    /**
-     * <p><b>Requires</b>: The desired resource is located within the resources directory or a sub-directory. This
-     *                     method will first attempt to locate the resource file on the class path relative to the
-     *                     {@code build/resources/}  directory. If unsuccessful, it will attempt to locate the resource
-     *                     file within the {@code src/main/resources/} directory. </p>
-     * <br>
-     * <p><b>Guarantees</b>: A Path to the desired resource file will be returned.</p>
-     *
-     * @param resourceFilePath A filepath relative to the resources directory
-     * @return A Path to the resource
-     */
-    public static Path searchForResource(String resourceFilePath) {
-        try {
-            return Paths.get(Objects.requireNonNull(
-                    Thread.currentThread().getContextClassLoader().getResource("./" + resourceFilePath)
-            ).toURI());
-        } catch (URISyntaxException | NullPointerException e) {
-            log.debug("An exception occurred loading {} from the ContextClassLoader and converting to a Path", resourceFilePath);
-        }
-        return walkFileTreeToFind(resourceFilePath);
-    }
-
-    public static Path walkFileTreeToFind(String filePath) {
-        try(Stream<Path> paths = java.nio.file.Files.walk(Paths.get(filePath))) {
-            return paths.filter(java.nio.file.Files::isRegularFile).findAny().orElseThrow();
-        } catch (IOException e) {
-            log.error("Could not locate {}", filePath);
-            throw new IllegalArgumentException("Could not locate the Path to the given URI");
         }
     }
 
@@ -145,14 +115,23 @@ public class FileUtils {
         }
         try {
             Reader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
-                Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFilePath)
+                    Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFilePath)
             )));
             log.debug("Successfully loaded {} using the ContextClassLoader.", resourceFilePath);
             return reader;
         } catch (NullPointerException e) {
             log.debug("Could not load {} using the ContextClassLoader. Attempting to search elsewhere.", resourceFilePath);
         }
-        return java.nio.file.Files.newBufferedReader(searchForResource(resourceFilePath));
+        return java.nio.file.Files.newBufferedReader(walkFileTreeToFind(resourceFilePath));
+    }
+
+    public static Path walkFileTreeToFind(@NonNull String filePath) {
+        try(Stream<Path> paths = java.nio.file.Files.walk(Paths.get(filePath))) {
+            return paths.filter(java.nio.file.Files::isRegularFile).findAny().orElseThrow();
+        } catch (IOException e) {
+            log.error("Could not locate {}", filePath);
+            throw new IllegalArgumentException("Could not locate the Path to the given URI");
+        }
     }
 
 }

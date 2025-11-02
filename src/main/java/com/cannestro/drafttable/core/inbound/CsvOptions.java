@@ -11,13 +11,15 @@ public interface CsvOptions {
 
     Character quoteCharacter();
 
-    Boolean useStrictQuotes();
+    boolean useStrictQuotes();
 
-    Boolean ignoreQuotations();
+    boolean ignoreQuotations();
 
-    Boolean ignoreLeadingWhiteSpace();
+    boolean ignoreLeadingWhiteSpace();
 
-    Boolean ignoreEmptyLines();
+    boolean ignoreEmptyLines();
+
+    int skipLines();
 
     <T extends CsvBean> Class<T> type();
 
