@@ -1,7 +1,9 @@
 package com.cannestro.drafttable.supporting.csv;
 
 import com.cannestro.drafttable.core.inbound.CsvOptions;
+import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
@@ -26,19 +28,15 @@ public class CsvDataParser {
     
     private CsvDataParser() {}
 
-
-    public static List<String> mapCsvToJsonStrings(@NonNull String resourceFilePath, @NonNull Class<? extends CsvBean> csvBeanClass) {
-        return JsonUtils.jsonStringListFrom(buildBeansFrom(resourceFilePath, csvBeanClass));
-    }
-
     public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull CsvOptions loadingOptions) {
         CsvToListTransferrer<T> csvToListTransferrer = new CsvToListTransferrer<>();
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
             CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
+                    .withSeparator(loadingOptions.delimiter())
                     .withSkipLines(loadingOptions.skipLines())
                     .withEscapeChar(loadingOptions.escapeCharacter())
                     .withQuoteChar(loadingOptions.quoteCharacter())
-                    .withIgnoreEmptyLine(loadingOptions.ignoreEmptyLines())
+                    .withStrictQuotes(loadingOptions.useStrictQuotes())
                     .withIgnoreQuotations(loadingOptions.ignoreQuotations())
                     .withIgnoreLeadingWhiteSpace(loadingOptions.ignoreLeadingWhiteSpace())
                     .withType(loadingOptions.type())
@@ -76,21 +74,37 @@ public class CsvDataParser {
      * @return A List of arrays, each corresponding to a row in the CSV file
      */
     public static List<List<String>> readAllLines(@NonNull String resourceFilePath) {
-        try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
-            return handleReadAllCallUsing(reader);
-        } catch (IOException e) {
+        try (CSVReader csvReader = new CSVReader(FileUtils.createReaderFromResource(resourceFilePath))) {
+            return csvReader.readAll().stream()
+                    .map(line -> Arrays.stream(line).toList())
+                    .toList();
+        } catch (IOException | CsvException e) {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE);
         }
     }
 
-    static List<List<String>> handleReadAllCallUsing(@NonNull Reader reader) {
-        try (CSVReader csvReader = new CSVReader(reader)) {
+    public static List<List<String>> readAllLines(@NonNull String resourceFilePath, @NonNull CsvOptions loadingOptions) {
+        try (CSVReader csvReader = new CSVReaderBuilder(FileUtils.createReaderFromResource(resourceFilePath))
+                .withSkipLines(loadingOptions.skipLines())
+                .withCSVParser(new CSVParserBuilder()
+                        .withSeparator(loadingOptions.delimiter())
+                        .withEscapeChar(loadingOptions.escapeCharacter())
+                        .withQuoteChar(loadingOptions.quoteCharacter())
+                        .withStrictQuotes(loadingOptions.useStrictQuotes())
+                        .withIgnoreQuotations(loadingOptions.ignoreQuotations())
+                        .withIgnoreLeadingWhiteSpace(loadingOptions.ignoreLeadingWhiteSpace())
+                        .build())
+                .build()) {
             return csvReader.readAll().stream()
                     .map(line -> Arrays.stream(line).toList())
                     .toList();
         } catch (CsvException | IOException e) {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE);
         }
+    }
+
+    public static List<String> mapCsvToJsonStrings(@NonNull String resourceFilePath, @NonNull Class<? extends CsvBean> csvBeanClass) {
+        return JsonUtils.jsonStringListFrom(buildBeansFrom(resourceFilePath, csvBeanClass));
     }
 
 }

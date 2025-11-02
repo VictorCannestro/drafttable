@@ -14,7 +14,6 @@ public record DefaultCsvOptions(Character delimiter,
                                 boolean useStrictQuotes,
                                 boolean ignoreLeadingWhiteSpace,
                                 boolean ignoreQuotations,
-                                boolean ignoreEmptyLines,
                                 int skipLines,
                                 Class<? extends CsvBean> type) implements CsvOptions {
 

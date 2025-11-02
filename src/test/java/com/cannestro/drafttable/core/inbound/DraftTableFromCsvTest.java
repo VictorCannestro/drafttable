@@ -39,7 +39,7 @@ public class DraftTableFromCsvTest {
 
         DraftTable df = FlexibleDraftTable.create()
                 .fromCSV(DefaultCsvLoader.class)
-                .load(Path.of("csv/temp_3.csv"), PayDetails.class)
+                .load(Path.of(TEST_CSV_DIRECTORY.concat("temp_3.csv")), PayDetails.class)
                 .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);
 

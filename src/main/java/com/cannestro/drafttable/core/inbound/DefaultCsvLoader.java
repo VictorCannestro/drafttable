@@ -6,6 +6,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import lombok.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.File;
 import java.net.URL;
@@ -28,26 +29,14 @@ public class DefaultCsvLoader implements CsvLoader {
     @Override
     public DraftTable at(@NonNull Path path) {
         String pathName = path.toFile().getPath();
-        List<List<String>> fullTable = readAllLines(pathName);
-        if (fullTable.isEmpty()) {
-            return FlexibleDraftTable.create().emptyDraftTable();
-        }
-        List<String> headers = firstElementOf(fullTable);
-        List<List<String>> tableData = fullTable.subList(1, fullTable.size());
-        return FlexibleDraftTable.create().fromRows(
-                getNameWithoutExtension(pathName),
-                IntStream.range(1, tableData.size())
-                        .mapToObj(rowIndex -> zip(headers, tableData.get(rowIndex)))
-                        .map(HashMapRow::new)
-                        .toList()
-        );
+        return createWithoutSchema(pathName, null);
     }
 
     @Override
     public DraftTable at(@NonNull Path path, @NonNull CsvOptions loadingOptions) {
         String pathName = path.toFile().getPath();
         if (isNull(loadingOptions.type())) {
-            return null; // TODO
+            return createWithoutSchema(pathName, loadingOptions);
         } else {
             return FlexibleDraftTable.create().fromObjects(
                     getNameWithoutExtension(pathName),
@@ -59,31 +48,18 @@ public class DefaultCsvLoader implements CsvLoader {
     @Override
     public DraftTable at(@NonNull URL url) {
         File file = copyToTempDirectory(url);
-        List<List<String>> fullTable = readAllLines(file.getPath());
-        deleteFileIfPresent(file.getPath());
-        deleteFileIfPresent(file.getParentFile().getPath());
-        if (fullTable.isEmpty()) {
-            return FlexibleDraftTable.create().emptyDraftTable();
-        }
-        List<String> headers = firstElementOf(fullTable);
-        List<List<String>> tableData = fullTable.subList(1, fullTable.size());
-        return FlexibleDraftTable.create().fromRows(
-                getNameWithoutExtension(file.getPath()),
-                IntStream.range(1, tableData.size())
-                        .mapToObj(rowIndex -> zip(headers, tableData.get(rowIndex)))
-                        .map(HashMapRow::new)
-                        .toList()
-        );
+        DraftTable draftTable = createWithoutSchema(file.getPath(), null);
+        cleanUpTemporaryFiles(file);
+        return draftTable;
     }
 
     @Override
     public DraftTable at(@NonNull URL url, @NonNull CsvOptions loadingOptions) {
         File file = copyToTempDirectory(url);
         DraftTable draftTable = isNull(loadingOptions.type())
-                ? null // TODO
+                ? createWithoutSchema(file.getPath(), loadingOptions)
                 : FlexibleDraftTable.create().fromObjects(getNameWithoutExtension(file.getPath()), buildBeansFrom(file.getPath(), loadingOptions));
-        deleteFileIfPresent(file.getPath());
-        deleteFileIfPresent(file.getParentFile().getPath());
+        cleanUpTemporaryFiles(file);
         return draftTable;
     }
 
@@ -94,6 +70,29 @@ public class DefaultCsvLoader implements CsvLoader {
                 getNameWithoutExtension(pathName),
                 buildBeansFrom(pathName, csvSchema)
         );
+    }
+
+    DraftTable createWithoutSchema(@NonNull String pathName, @Nullable CsvOptions loadingOptions) {
+        List<List<String>> fullTable = isNull(loadingOptions)
+                ? readAllLines(pathName)
+                : readAllLines(pathName, loadingOptions);
+        if (fullTable.isEmpty()) {
+            return FlexibleDraftTable.create().emptyDraftTable();
+        }
+        List<String> headers = firstElementOf(fullTable);
+        List<List<String>> tableData = fullTable.subList(1, fullTable.size());
+        return FlexibleDraftTable.create().fromRows(
+                getNameWithoutExtension(pathName),
+                IntStream.range(1, tableData.size())
+                        .mapToObj(rowIndex -> zip(headers, tableData.get(rowIndex)))
+                        .map(HashMapRow::new)
+                        .toList()
+        );
+    }
+
+    void cleanUpTemporaryFiles(@NonNull File file) {
+        deleteFileIfPresent(file.getPath());
+        deleteFileIfPresent(file.getParentFile().getPath());
     }
 
 }
