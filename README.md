@@ -14,8 +14,8 @@ underlying data of a `Column` may be of an arbitrary type, and a `DraftTable` ma
 types. `DraftTable` objects have a variety of capabilities to process tabular data.
 
 ## Features
-- Import data from CSV or a collection of user defined Java objects
-- Export data to CSV, JSON string, or a collection of user defined Java objects 
+- Import data from CSV, URL, or a collection of user defined Java objects
+- Export data to a CSV, JSON, or a collection of user defined Java objects 
 - Map/Filter/Reduce operations
 - Sorting capabilities
 - Grouping and aggregation
@@ -51,8 +51,11 @@ FlexibleDraftTable.create().fromCSV()
 ```
 ### Example 2: Pretty printing a rich tabular display after combining and sorting by multiple columns
 ```java
-tornadoes.melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
-         .orderByMultiple(using("Injuries", "DateTime"), DESCENDING).top(10)
+FlexibleDraftTable.create().fromCSV()
+         .at(url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/master/src/test/resources/csv/tornadoes_1950-2014.csv"))
+         .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
+         .orderByMultiple(using("Injuries", "DateTime"), DESCENDING)
+         .top(10)
          .write()
          .prettyPrint();
 ```
