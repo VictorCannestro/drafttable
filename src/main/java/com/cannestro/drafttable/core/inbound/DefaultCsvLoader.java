@@ -22,31 +22,36 @@ import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf
 import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 import static com.google.common.io.Files.getNameWithoutExtension;
 import static java.util.Objects.isNull;
+import static org.apache.commons.io.FilenameUtils.getExtension;
 
 
 public class DefaultCsvLoader implements CsvLoader {
 
+    public static final String CSV_EXTENSION = "csv";
+
+
     @Override
     public DraftTable at(@NonNull Path path) {
-        String pathName = path.toFile().getPath();
-        return createWithoutSchema(pathName, null);
+        File file = path.toFile();
+        assumeInputIsCsv(file.getName());
+        return createWithoutSchema(file.getPath(), null);
     }
 
     @Override
     public DraftTable at(@NonNull Path path, @NonNull CsvOptions loadingOptions) {
-        String pathName = path.toFile().getPath();
-        if (isNull(loadingOptions.type())) {
-            return createWithoutSchema(pathName, loadingOptions);
-        } else {
-            return FlexibleDraftTable.create().fromObjects(
-                    getNameWithoutExtension(pathName),
-                    buildBeansFrom(pathName, loadingOptions)
-            );
-        }
+        File file = path.toFile();
+        assumeInputIsCsv(file.getName());
+        return isNull(loadingOptions.type())
+                ? createWithoutSchema(file.getPath(), loadingOptions)
+                : FlexibleDraftTable.create().fromObjects(
+                        getNameWithoutExtension(file.getName()),
+                        buildBeansFrom(path.toFile().getPath(), loadingOptions)
+                  );
     }
 
     @Override
     public DraftTable at(@NonNull URL url) {
+        assumeInputIsCsv(url.toString());
         File file = copyToTempDirectory(url);
         DraftTable draftTable = createWithoutSchema(file.getPath(), null);
         cleanUpTemporaryFiles(file);
@@ -55,34 +60,45 @@ public class DefaultCsvLoader implements CsvLoader {
 
     @Override
     public DraftTable at(@NonNull URL url, @NonNull CsvOptions loadingOptions) {
+        assumeInputIsCsv(url.toString());
         File file = copyToTempDirectory(url);
         DraftTable draftTable = isNull(loadingOptions.type())
                 ? createWithoutSchema(file.getPath(), loadingOptions)
-                : FlexibleDraftTable.create().fromObjects(getNameWithoutExtension(file.getPath()), buildBeansFrom(file.getPath(), loadingOptions));
+                : FlexibleDraftTable.create().fromObjects(
+                        getNameWithoutExtension(file.getName()),
+                        buildBeansFrom(file.getPath(), loadingOptions)
+                  );
         cleanUpTemporaryFiles(file);
         return draftTable;
     }
 
 
     public <T extends CsvBean & Mappable> DraftTable load(@NonNull Path path, @NonNull Class<T> csvSchema) {
-        String pathName = path.toFile().getPath();
+        File file = path.toFile();
+        assumeInputIsCsv(file.getName());
         return FlexibleDraftTable.create().fromObjects(
-                getNameWithoutExtension(pathName),
-                buildBeansFrom(pathName, csvSchema)
+                getNameWithoutExtension(file.getName()),
+                buildBeansFrom(file.getPath(), csvSchema)
         );
     }
 
-    DraftTable createWithoutSchema(@NonNull String pathName, @Nullable CsvOptions loadingOptions) {
+    void assumeInputIsCsv(@NonNull String input) {
+        if (!CSV_EXTENSION.equalsIgnoreCase(getExtension(input))) {
+            throw new IllegalArgumentException(String.format("Assumption broken: The input did not end with a CSV extension %s", input));
+        }
+    }
+
+    DraftTable createWithoutSchema(@NonNull String pathToFile, @Nullable CsvOptions loadingOptions) {
         List<List<String>> fullTable = isNull(loadingOptions)
-                ? readAllLines(pathName)
-                : readAllLines(pathName, loadingOptions);
+                ? readAllLines(pathToFile)
+                : readAllLines(pathToFile, loadingOptions);
         if (fullTable.isEmpty()) {
             return FlexibleDraftTable.create().emptyDraftTable();
         }
         List<String> headers = firstElementOf(fullTable);
         List<List<String>> tableData = fullTable.subList(1, fullTable.size());
         return FlexibleDraftTable.create().fromRows(
-                getNameWithoutExtension(pathName),
+                getNameWithoutExtension(pathToFile),
                 IntStream.range(1, tableData.size())
                         .mapToObj(rowIndex -> zip(headers, tableData.get(rowIndex)))
                         .map(HashMapRow::new)
