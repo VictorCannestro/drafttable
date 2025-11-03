@@ -26,8 +26,7 @@ interested in operating on to a more fitting data type.
 
 ```java
 Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
-DraftTable tornadoes = FlexibleDraftTable.create()
-        .fromCSV().at(filePath)
+DraftTable tornadoes = FlexibleDraftTable.create().fromCSV().at(filePath)
         .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
         .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
         .transform("Start Lat", (String lat) -> Double.parseDouble(lat))
@@ -47,8 +46,14 @@ underlying processing operations. See [OpenCSV's documentation](https://opencsv.
 more. Using this bean-based reading approach, the pipeline we defined earlier would change to something like the 
 following:
 ```java
-FlexibleDraftTable.create().fromCSV(DefaultCsvLoader.class).load(Path.of(filePath), TornadoDataBean.class)
-```
+Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
+CsvOptions csvOptions = DefaultCsvOptions.builder().type(TornadoDataBean.class).build();
+FlexibleDraftTable.create().fromCSV().at(filePath, csvOptions);
+``` 
+or 
+```java
+FlexibleDraftTable.create().fromCSV(DefaultCsvLoader.class).load(filePath, TornadoDataBean.class);
+``` 
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
 columns vs optional columns, etc. When using this approach, *the key names specified in `asMap()` will become the column
 names* of the `DraftTable`, *not the CSV column names*. 

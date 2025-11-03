@@ -35,8 +35,8 @@ directory, in general, for access to the latest tutorials.
 ## Examples
 ### Example 1: Reading in a CSV, processing it, then exporting the results to another CSV
 ```java
-FlexibleDraftTable.create().fromCSV()
-                 .at(Path.of("./src/main/resources/csv/employee_data.csv"))
+Path path = Path.of("./src/main/resources/csv/employee_data.csv");
+FlexibleDraftTable.create().fromCSV().at(path)
                  .where("state", is(not("CA")))
                  .where("jobName", endsWith("manager"))
                  .transform("nonExempt", (String exemptValue) -> exemptValue.equals("1"))
@@ -51,8 +51,8 @@ FlexibleDraftTable.create().fromCSV()
 ```
 ### Example 2: Pretty printing a rich tabular display after combining and sorting by multiple columns
 ```java
-FlexibleDraftTable.create().fromCSV()
-         .at(url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/master/src/test/resources/csv/tornadoes_1950-2014.csv"))
+URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/master/src/test/resources/csv/tornadoes_1950-2014.csv");
+FlexibleDraftTable.create().fromCSV().at(url)
          .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
          .orderByMultiple(using("Injuries", "DateTime"), DESCENDING)
          .top(10)
