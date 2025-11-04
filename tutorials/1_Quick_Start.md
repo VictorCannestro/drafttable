@@ -376,7 +376,7 @@ tornadoes.where("Fatalities", greaterThan(0))
          .where("DateTime", LocalDateTime::getMonth, is(APRIL))
          .melt("Length", "Width", as("Dimension"), Dimension::new)
          .where("Dimension", (Dimension dim) -> (dim.length() > 10) || (dim.width() > 300), is(true))
-         .select(using("State", "DateTime"));
+         .select(these("State", "DateTime"));
 ```
 We end the pipeline by filtering out all columns other than `"State"` and `"DateTime"`.  Using this bundling strategy
 we can create increasingly sophisticated filtering conditions that incorporate multiple columns. For example:
@@ -390,7 +390,7 @@ tornadoes.melt("Length", "Width", as("Dimension"), Dimension::new)
          .melt("Coordinate", "Dimension",  into("PathInfo"), TornadoPathInfo::new)
          .where("PathInfo", (TornadoPathInfo pathInfo) -> (pathInfo.dimension().length() > 10 || pathInfo.dimension().width() > 300) 
                                                        && (pathInfo.coordinate().lat() > 30.0 && pathInfo.coordinate().lat() < 40.0), is(true))
-         .select(using("State", "DateTime"));
+         .select(these("State", "DateTime"));
 ```
 
 Now, for fun, let's use our pipeline to answer a variety of questions before moving on:
@@ -419,7 +419,7 @@ tornadoes = tornadoes.orderBy("Fatalities", DESCENDING)
 We can also order by multiple columns, up to the total column count. For example, let's order by `"Fatalities"` and
 `"DateTime"` and view the top 4 results:
 ```java
-tornadoes.orderBy(using("Fatalities", "DateTime"), DESCENDING).top(4).write().prettyPrint();
+tornadoes.orderBy(these("Fatalities", "DateTime"), DESCENDING).top(4).write().prettyPrint();
 ```
 ```
                                                          tornadoes_1950-2014                                                          
