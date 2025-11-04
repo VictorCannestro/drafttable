@@ -61,7 +61,7 @@ public class TornadoExample {
 
         // Mapping example 2: Drop columns
         System.out.println("Using dropColumns: " +
-                tornadoes.dropColumns(named("State No", "Start Lat", "Start Lon")).columnNames()
+                tornadoes.drop(named("State No", "Start Lat", "Start Lon")).columnNames()
         );
         System.out.println("Using dropAllExcept: " +
                 tornadoes.dropAllExcept(these("State", "Time", "Scale", "DateTime", "Injuries", "Fatalities", "Length", "Width")).columnNames()
@@ -80,7 +80,7 @@ public class TornadoExample {
             case "WA", "OR", "CA" -> "Pacific";
             default ->  null;
         };
-        tornadoes = tornadoes.deriveNewColumnFrom("State", as("Region"), censusBureauDivisions);
+        tornadoes = tornadoes.deriveFrom("State", as("Region"), censusBureauDivisions);
         System.out.println("Should contain new column 'Region': " + tornadoes.columnNames());
         System.out.println();
 
@@ -109,7 +109,7 @@ public class TornadoExample {
                 tornadoes.gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
                         .top(1)
                         .where("Fatalities", is(-1))
-                        .selectMultiple(these("DateTime", "Measurements"))
+                        .select(these("DateTime", "Measurements"))
                         .write()
                         .toJsonString()
         );
@@ -135,7 +135,7 @@ public class TornadoExample {
                  .melt("Start Lat", "Start Lon", into("Coordinate"), Coordinate::new)
                  .melt("Coordinate", "Dimension",  into("PathInfo"), TornadoPathInfo::new)
                  .where("PathInfo", (TornadoPathInfo pathInfo) -> (pathInfo.dimension().length() > 10 || pathInfo.dimension().width() > 300) && (pathInfo.coordinate().lat() > 30.0 && pathInfo.coordinate().lat() < 40.0), is(true))
-                 .selectMultiple(using("State", "DateTime"));
+                 .select(using("State", "DateTime"));
 
         // Filtering to answer questions
         System.out.println(
@@ -151,7 +151,7 @@ public class TornadoExample {
 
 
         // Sorting and Ordering data
-        tornadoes.orderByMultiple(using("Fatalities", "DateTime"), DESCENDING)
+        tornadoes.orderBy(using("Fatalities", "DateTime"), DESCENDING)
                  .top(4)
                  .write()
                  .prettyPrint();

@@ -280,7 +280,7 @@ tornadoes = tornadoes.melt("Date", "Time", into("DateTime"), (String date, Strin
 
 Removing columns is simple. We can call one of the flavors of the "drop" method to load shed or tidy up our table:
 ```java
-tornadoes = tornadoes.dropColumns(named("State No", "Start Lat", "Start Lon"));
+tornadoes = tornadoes.drop(these("State No", "Start Lat", "Start Lon"));
 ```
 
 Equivalently, we could've written:
@@ -293,19 +293,19 @@ tornadoes = tornadoes.dropAllExcept(
 To add a new column(s), we, again, have several options, the simplest of which is to pass a `Colunmn` directly.
 ```java
 Column c = FlexibleColumn.from("NewColumnName", List.of(importantData));
-tornadoes = tornadoes.addColumn(c);
+tornadoes = tornadoes.add(c);
 ```
 
 For example, to add an index column, filling any missing values with `null`, we could write:
 ```java
-tornadoes = tornadoes.addColumn("Index", IntStream.range(0, tornadoes.rowCount()).boxed().toList(), null)
+tornadoes = tornadoes.add("Index", IntStream.range(0, tornadoes.rowCount()).boxed().toList(), null)
 ```
 **Note:** that newly added columns should contain *at most* as many data points as the receiving `DraftTable`. Missing
 entries will be padded with a user defined fill value. Attempting to add a column with *more* entries than the
 `DraftTable` will result in an exception.
 
 More often, however, we're interested in deriving or updating a column based on the existing data. To accomplish
-these tasks we can call a flavor of `deriveNewColumnFrom`, `transform`, `melt`, or `gatherInto`. We've already seen an
+these tasks we can call a flavor of `deriveFrom`, `transform`, `melt`, or `gatherInto`. We've already seen an
 example of this after reading in the tornado CSV file, when we cast several `String` columns into numeric types.
 
 Now let's look at a few examples. Suppose we want to introduce a new column containing information about whether the
@@ -324,7 +324,7 @@ Function<String, String> toCensusBureauDivision = (String state) -> switch (stat
     case "WA", "OR", "CA" -> "Pacific"; // Minus AK and HI - we're considering the mainland US
     default -> null;
 };
-tornadoes = tornadoes.deriveNewColumnFrom("State", as("Region"), toCensusBureauDivision);
+tornadoes = tornadoes.deriveFrom("State", as("Region"), toCensusBureauDivision);
 ```
 
 Next, suppose we're interested in assigning a severity category to each tornado based on rules around its `Length` and
@@ -338,7 +338,7 @@ BiFunction<Double, Double, String> categorize = (Double length, Double width) ->
     else
         return "Low";
 };
-tornadoes = tornadoes.deriveNewColumnFrom("Length", "Width", into("Category"), categorize);
+tornadoes = tornadoes.deriveFrom("Length", "Width", into("Category"), categorize);
 ```
 
 **Note:** If the explicit type reference looks cumbersome, there is the option of using Java 17+ syntax. For example,
@@ -376,7 +376,7 @@ tornadoes.where("Fatalities", greaterThan(0))
          .where("DateTime", LocalDateTime::getMonth, is(APRIL))
          .melt("Length", "Width", as("Dimension"), Dimension::new)
          .where("Dimension", (Dimension dim) -> (dim.length() > 10) || (dim.width() > 300), is(true))
-         .selectMultiple(using("State", "DateTime"));
+         .select(using("State", "DateTime"));
 ```
 We end the pipeline by filtering out all columns other than `"State"` and `"DateTime"`.  Using this bundling strategy
 we can create increasingly sophisticated filtering conditions that incorporate multiple columns. For example:
@@ -390,7 +390,7 @@ tornadoes.melt("Length", "Width", as("Dimension"), Dimension::new)
          .melt("Coordinate", "Dimension",  into("PathInfo"), TornadoPathInfo::new)
          .where("PathInfo", (TornadoPathInfo pathInfo) -> (pathInfo.dimension().length() > 10 || pathInfo.dimension().width() > 300) 
                                                        && (pathInfo.coordinate().lat() > 30.0 && pathInfo.coordinate().lat() < 40.0), is(true))
-         .selectMultiple(using("State", "DateTime"));
+         .select(using("State", "DateTime"));
 ```
 
 Now, for fun, let's use our pipeline to answer a variety of questions before moving on:
@@ -419,7 +419,7 @@ tornadoes = tornadoes.orderBy("Fatalities", DESCENDING)
 We can also order by multiple columns, up to the total column count. For example, let's order by `"Fatalities"` and
 `"DateTime"` and view the top 4 results:
 ```java
-tornadoes.orderByMultiple(using("Fatalities", "DateTime"), DESCENDING).top(4).write().prettyPrint();
+tornadoes.orderBy(using("Fatalities", "DateTime"), DESCENDING).top(4).write().prettyPrint();
 ```
 ```
                                                          tornadoes_1950-2014                                                          
@@ -624,7 +624,7 @@ FlexibleDraftTable.create().fromCSV()
                  .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                  .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
                  .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
-                 .deriveNewColumnFrom("State", as("Region"), toCensusBureauDivision)
+                 .deriveFrom("State", as("Region"), toCensusBureauDivision)
                  .where("DateTime", isInSummer, is(true))
                  .where("Region", is("Middle Atlantic"))
                  .orderBy(ASCENDING)

@@ -83,7 +83,7 @@ public record ColumnOutput(Column column) {
      */
     public void prettyPrint() {
         FlexibleDraftTable.create().fromColumns(EMPTY_LABEL, List.of(column()))
-                         .introspect(df -> df.addColumn(INDEX_LABEL, IntStream.range(0, df.rowCount()).boxed().toList(), null))
+                         .introspect(df -> df.add(INDEX_LABEL, IntStream.range(0, df.rowCount()).boxed().toList(), null))
                          .write()
                          .prettyPrint();
     }

@@ -136,7 +136,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable selectMultiple(@NonNull Items<String> columnNames) {
+    public DraftTable select(@NonNull Items<String> columnNames) {
         columnNames.params().forEach(columnName -> assumeColumnExists(columnName, this));
         return new FlexibleDraftTable(
                 tableName(),
@@ -291,7 +291,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable orderByMultiple(@NonNull Items<String> columnNames, SortingOrderType sortingOrderType) {
+    public DraftTable orderBy(@NonNull Items<String> columnNames, SortingOrderType sortingOrderType) {
         columnNames.params().forEach(columnName -> assumeColumnExists(columnName, this));
         List<Row> sortedRows = new ArrayList<>(rows());
         Comparator<Row> comparator = Comparator.nullsFirst(Comparator.comparing((Row row) -> row.valueOf(firstElementOf(columnNames.params()))));
@@ -337,22 +337,22 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable addColumn(@NonNull Column newColumn) {
-        return addColumn(newColumn, null);
+    public DraftTable add(@NonNull Column newColumn) {
+        return add(newColumn, null);
     }
 
     @Override
-    public <T> DraftTable addColumn(@NonNull Column newColumn, T fillValue) {
+    public <T> DraftTable add(@NonNull Column newColumn, T fillValue) {
         if (isCompletelyEmpty()) {
             return create().fromColumns(tableName(), Collections.singletonList(newColumn));
         }
-        return addColumn(newColumn.label(), newColumn.values(), fillValue);
+        return add(newColumn.label(), newColumn.values(), fillValue);
     }
 
     @Override
-    public <T> DraftTable addColumn(@NonNull String newColumnName,
-                                    @NonNull List<T> newColumnValues,
-                                    T fillValue) {
+    public <T> DraftTable add(@NonNull String newColumnName,
+                              @NonNull List<T> newColumnValues,
+                              T fillValue) {
         if (isCompletelyEmpty()) {
             return create().fromColumns(
                     tableName(),
@@ -369,7 +369,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable addColumns(@NonNull Items<Column> newColumns) {
+    public DraftTable add(@NonNull Items<Column> newColumns) {
         newColumns.params().forEach(newColumn -> assumeColumnDoesNotExist(newColumn.label(), this));
         assumeColumnsHaveCompatibleSize(newColumns.params(), this);
         List<Column> updatedColumnList = new ArrayList<>(listOfColumns());
@@ -378,7 +378,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable dropColumn(@NonNull String columnToDrop) {
+    public DraftTable drop(@NonNull String columnToDrop) {
         assumeColumnExists(columnToDrop, this);
         if (columnNames().equals(List.of(columnToDrop))) {
             return create().emptyDraftTable();
@@ -392,7 +392,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable dropColumns(@NonNull Items<String> columnsToDrop) {
+    public DraftTable drop(@NonNull Items<String> columnsToDrop) {
         columnsToDrop.params().forEach(columnName -> assumeColumnExists(columnName, this));
         if (columnNames().equals(columnsToDrop.params())) {
             return create().emptyDraftTable();
@@ -409,30 +409,30 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable dropAllExcept(@NonNull Items<String> columnsToKeep) {
         List<String> columnsToDrop = columnNames();
         columnsToDrop.removeIf(columnsToKeep.params()::contains);
-        return dropColumns(Items.these(columnsToDrop));
+        return drop(Items.these(columnsToDrop));
     }
 
     @Override
-    public DraftTable deriveNewColumnFrom(@NonNull String columnName,
-                                          @NonNull Item<String> newColumnName,
-                                          @NonNull Function<?, ?> operationToApply) {
-        return addColumn(
+    public DraftTable deriveFrom(@NonNull String columnName,
+                                 @NonNull Item<String> newColumnName,
+                                 @NonNull Function<?, ?> operationToApply) {
+        return add(
                 select(columnName).transform(newColumnName.value(), operationToApply),
                 null
         );
     }
 
     @Override
-    public <T, R> DraftTable deriveNewColumnFrom(@NonNull String firstColumnName,
-                                                 @NonNull String secondColumnName,
-                                                 @NonNull Item<String> newColumnName,
-                                                 @NonNull BiFunction<T, R, ?> operationToApply) {
+    public <T, R> DraftTable deriveFrom(@NonNull String firstColumnName,
+                                        @NonNull String secondColumnName,
+                                        @NonNull Item<String> newColumnName,
+                                        @NonNull BiFunction<T, R, ?> operationToApply) {
         List<?> combinedColumnValues = StreamsUtils.zip(
                 ((List<T>) select(firstColumnName).values()).stream(),
                 ((List<R>) select(secondColumnName).values()).stream(),
                 operationToApply
         ).toList();
-        return addColumn(newColumnName.value(), combinedColumnValues, null);
+        return add(newColumnName.value(), combinedColumnValues, null);
     }
 
     @Override
@@ -459,9 +459,9 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public <T> DraftTable gatherInto(Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
-        return addColumn(selectMultiple(selectColumnNames)
+        return add(select(selectColumnNames)
                 .gatherInto(aggregate, aggregateColumnName), null)
-                .dropColumns(selectColumnNames);
+                .drop(selectColumnNames);
     }
 
     @Override

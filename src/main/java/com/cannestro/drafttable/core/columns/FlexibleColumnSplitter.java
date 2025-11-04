@@ -22,14 +22,14 @@ public class FlexibleColumnSplitter implements ColumnSplitter {
 
     @Override
     public <T, R> FlexibleColumnSplitter intoColumn(@NonNull String newLabel, Function<T, R> aspect) {
-        outputTable = outputTable.addColumn(column.transform(newLabel, aspect));
+        outputTable = outputTable.add(column.transform(newLabel, aspect));
         return this;
     }
 
     @Override
     public DraftTable gatherIntoNewTable() {
         if (outputTable.isCompletelyEmpty()) {
-            return outputTable.addColumn(column);
+            return outputTable.add(column);
         }
         return outputTable;
     }

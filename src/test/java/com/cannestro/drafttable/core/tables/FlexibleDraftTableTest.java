@@ -116,7 +116,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canSelectMultipleColumns() {
-        DraftTable slice = exampleDraftTableFromColumns().selectMultiple(from("contractType", "exempt", "minor"));
+        DraftTable slice = exampleDraftTableFromColumns().select(from("contractType", "exempt", "minor"));
 
         Assert.assertEquals(slice.columnCount(), 3);
         Assert.assertEquals(slice.rowCount(), exampleDraftTableFromColumns().rowCount());
@@ -363,33 +363,33 @@ public class FlexibleDraftTableTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void willThrowExceptionWhenAppendingDraftTablesWithMoreColumns() {
         exampleDraftTableFromColumns().top(1)
-                .selectMultiple(using("payType", "exempt", "minor"))
+                .select(these("payType", "exempt", "minor"))
                 .append(exampleDraftTableFromColumns().bottom(1));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void willThrowExceptionWhenAppendingDraftTablesWithFewerColumns() {
         exampleDraftTableFromColumns().bottom(1).append(
-                exampleDraftTableFromColumns().top(1).selectMultiple(using("payType", "exempt", "minor"))
+                exampleDraftTableFromColumns().top(1).select(using("payType", "exempt", "minor"))
         );
     }
 
     @Test
     public void whenAddingNonEmptyColumnToEmptyDraftTableANonEmptyDraftTableIsProduced() {
         Assert.assertEquals(
-                FlexibleDraftTable.create().emptyDraftTable().addColumn("contractType", asList("", "", ""), ""),
+                FlexibleDraftTable.create().emptyDraftTable().add("contractType", asList("", "", ""), ""),
                 FlexibleDraftTable.create().fromColumns(List.of(FlexibleColumn.from("contractType", asList("", "", ""))))
         );
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotAddColumnWithSameNameAsExisting() {
-        exampleDraftTableFromColumns().addColumn("contractType", asList("", "", ""), "");
+        exampleDraftTableFromColumns().add("contractType", asList("", "", ""), "");
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void cannotAddColumnWithMoreEntriesThanExisting() {
-        exampleDraftTableFromColumns().addColumn(
+        exampleDraftTableFromColumns().add(
                 "loginName",
                 asList("US112233", "CA112244", "US112255", "US112266", "extra row"),
                 ""
@@ -398,7 +398,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canAddNewUniqueColumnAndFillMissingRowValue() {
-        DraftTable dt = exampleDraftTableFromColumns().addColumn("loginName", asList("US112233", "CA112244"), "");
+        DraftTable dt = exampleDraftTableFromColumns().add("loginName", asList("US112233", "CA112244"), "");
 
         Assert.assertEquals(dt.columnCount(), 5);
         Assert.assertEquals(dt.rowCount(), 3);
@@ -411,7 +411,7 @@ public class FlexibleDraftTableTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void whenAddingMultipleEmptyColumnsThenExceptionIsThrown() {
-        exampleDraftTableFromColumns().addColumns(of(
+        exampleDraftTableFromColumns().add(of(
                 FlexibleColumn.from("col n+1", Collections.emptyList()),
                 FlexibleColumn.from("col n+1", Collections.emptyList())
         ));
@@ -419,7 +419,7 @@ public class FlexibleDraftTableTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void whenAddingMultipleJaggedColumnsThenExceptionIsThrown() {
-        exampleDraftTableFromColumns().addColumns(of(
+        exampleDraftTableFromColumns().add(of(
                 FlexibleColumn.from("col n+1", List.of(1,2,3)),
                 FlexibleColumn.from("col n+2", List.of(0))
         ));
@@ -427,7 +427,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canAddMultipleColumnsOfSameLength() {
-        DraftTable dt = exampleDraftTableFromColumns().addColumns(
+        DraftTable dt = exampleDraftTableFromColumns().add(
                 these(exampleDraftTableFromColumnValues().columns())
         );
 
@@ -451,7 +451,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenDropping1ColumnTheResultingDraftTableDoesNotContainTheDroppedColumn() {
-        DraftTable updatedFrame = exampleDraftTableFromColumns().dropColumn("minor");
+        DraftTable updatedFrame = exampleDraftTableFromColumns().drop("minor");
 
         Assert.assertEquals(updatedFrame.rowCount(), exampleDraftTableFromColumns().rowCount());
         Assert.assertEquals(updatedFrame.columnCount(), exampleDraftTableFromColumns().columnCount() - 1);
@@ -460,7 +460,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenDroppingMultipleColumnsTheResultingDraftTableDoesNotContainTheDroppedColumns() {
-        DraftTable updatedFrame = exampleDraftTableFromColumns().dropColumns(these("payType", "minor"));
+        DraftTable updatedFrame = exampleDraftTableFromColumns().drop(these("payType", "minor"));
 
         Assert.assertEquals(updatedFrame.rowCount(), exampleDraftTableFromColumns().rowCount());
         Assert.assertEquals(updatedFrame.columnCount(), exampleDraftTableFromColumns().columnCount() - 2);
@@ -469,7 +469,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canDropSingleColumn() {
-        DraftTable dt = exampleDraftTableFromColumnValues().dropColumn("days");
+        DraftTable dt = exampleDraftTableFromColumnValues().drop("days");
 
         assertThat(dt.columnNames(), not(contains("days")));
     }
@@ -477,7 +477,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void whenDroppingAllColumnsAnEmptyDraftTableIsReturned() {
         DraftTable dt = exampleDraftTableFromColumnValues();
-        dt = dt.dropColumns(these(dt.columnNames()));
+        dt = dt.drop(these(dt.columnNames()));
 
         Assert.assertTrue(dt.isEmpty());
         Assert.assertTrue(dt.isCompletelyEmpty());
@@ -485,7 +485,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canDropMultipleColumns() {
-        DraftTable dt = exampleDraftTableFromColumnValues().dropColumns(these("days", "dates"));
+        DraftTable dt = exampleDraftTableFromColumnValues().drop(these("days", "dates"));
 
         assertThat(dt.columnNames(), not(contains("days", "dates")));
     }
@@ -550,7 +550,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void canDeriveNewColumnOfDifferentTypeFromSingleInputColumnType() {
         DraftTable dt = exampleDraftTableFromColumnValues()
-                .deriveNewColumnFrom("dates", as("modifiedDates"), (LocalDate date) -> date.getDayOfWeek());
+                .deriveFrom("dates", as("modifiedDates"), (LocalDate date) -> date.getDayOfWeek());
 
         Assert.assertEquals(
                 dt.select("modifiedDates").values(),
@@ -561,7 +561,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void canDeriveNewColumnOfDifferentTypeFromMultipleInputColumnTypes() {
         DraftTable dt = exampleDraftTableFromColumnValues()
-                .deriveNewColumnFrom("days", "dates", as("modifiedDates"),
+                .deriveFrom("days", "dates", as("modifiedDates"),
                         (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd).getDayOfWeek());
 
         Assert.assertEquals(
@@ -662,7 +662,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void canSortByContractTypeThenExempt() {
         DraftTable sortedFrame = exampleDraftTableFromColumns()
-                .orderByMultiple(using("contractType", "exempt"), ASCENDING);
+                .orderBy(using("contractType", "exempt"), ASCENDING);
 
         Assert.assertEquals(
                 sortedFrame.top(1).select("contractType").firstValue().get(),
@@ -695,7 +695,7 @@ public class FlexibleDraftTableTest {
     @Test
     public void canSortByRowComparator() {
         DraftTable sortedFrame = exampleDraftTableFromColumnValues()
-                .deriveNewColumnFrom("days", "dates",
+                .deriveFrom("days", "dates",
                         as("modifiedDates"),
                         (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd))
                 .orderBy(Comparator.comparing((Row row) -> row.valueOf("modifiedDates")));
@@ -752,7 +752,7 @@ public class FlexibleDraftTableTest {
         DraftTable dt = FlexibleDraftTable.create().fromRows(List.of(
                         HashMapRow.from(new PayDetails("Hourly", "18.50", "Bi-Weekly", "80")),
                         HashMapRow.from(new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"))))
-                .addColumn(FlexibleColumn.from("country", List.of("US", "CA")))
+                .add(FlexibleColumn.from("country", List.of("US", "CA")))
                 .gatherInto(PayDetails.class, as("pay"), using("type", "rate", "period", "workHours"));
 
         Assert.assertEquals(dt.columnNames(), List.of("country", "pay"));

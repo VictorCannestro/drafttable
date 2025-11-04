@@ -105,7 +105,7 @@ public interface DraftTable {
      * @param columnNames A list of string labels
      * @return A new {@code DraftTable} subset
      */
-    DraftTable selectMultiple(@NonNull Items<String> columnNames);
+    DraftTable select(@NonNull Items<String> columnNames);
 
     /**
      * Selects the subset of the {@code DraftTable} that matches the specified column label and selection criteria within
@@ -284,7 +284,7 @@ public interface DraftTable {
      * @param sortingOrderType Specifying ascending or descending order
      * @return A new {@code DraftTable}
      */
-    DraftTable orderByMultiple(@NonNull Items<String> columnNames, SortingOrderType sortingOrderType);
+    DraftTable orderBy(@NonNull Items<String> columnNames, SortingOrderType sortingOrderType);
 
     /**
      * <p><b>Requires</b>: This method assumes that the provided {@code DraftTable} is non-null and its columns exactly
@@ -327,7 +327,7 @@ public interface DraftTable {
      * @param newColumn A compatible {@code Column}
      * @return A new {@code DraftTable}
      */
-    DraftTable addColumn(@NonNull Column newColumn);
+    DraftTable add(@NonNull Column newColumn);
 
     /**
      * Horizontally appends the new column to the {@code DraftTable}. If the new column is shorter than the
@@ -339,7 +339,7 @@ public interface DraftTable {
      * @return A new {@code DraftTable}
      * @param <T> A type compatible with the column
      */
-    <T> DraftTable addColumn(@NonNull Column newColumn, T fillValue);
+    <T> DraftTable add(@NonNull Column newColumn, T fillValue);
 
     /**
      * Constructs and horizontally appends a new column to the {@code DraftTable}. If the new column is shorter than the
@@ -352,9 +352,9 @@ public interface DraftTable {
      * @return A new {@code DraftTable}
      * @param <T> A type compatible with the column values
      */
-    <T> DraftTable addColumn(@NonNull String newColumnName,
-                             @NonNull List<T> newColumnValues,
-                             T fillValue);
+    <T> DraftTable add(@NonNull String newColumnName,
+                       @NonNull List<T> newColumnValues,
+                       T fillValue);
 
     /**
      * Horizontally appends the new columns to the {@code DraftTable}.
@@ -362,7 +362,7 @@ public interface DraftTable {
      * @param newColumns A collection of compatible {@code Column} objects
      * @return A new {@code DraftTable}
      */
-    DraftTable addColumns(@NonNull Items<Column> newColumns);
+    DraftTable add(@NonNull Items<Column> newColumns);
 
     /**
      * Removes the specified column from the {@code DraftTable}. Will produce an empty {@code DraftTable} if no columns
@@ -371,7 +371,7 @@ public interface DraftTable {
      * @param columnToDrop A string label
      * @return A new {@code DraftTable} subset
      */
-    DraftTable dropColumn(@NonNull String columnToDrop);
+    DraftTable drop(@NonNull String columnToDrop);
 
     /**
      * Removes the specified columns from the {@code DraftTable}. Will produce an empty {@code DraftTable} if no columns
@@ -380,7 +380,7 @@ public interface DraftTable {
      * @param columnsToDrop A list of string labels
      * @return A new {@code DraftTable} subset
      */
-    DraftTable dropColumns(@NonNull Items<String> columnsToDrop);
+    DraftTable drop(@NonNull Items<String> columnsToDrop);
 
     /**
      * Retains only the specified columns from the {@code DraftTable}. Will produce an empty {@code DraftTable} if no
@@ -400,17 +400,15 @@ public interface DraftTable {
      * @param operationToApply The function to apply to the values of columnName
      * @return A new {@code DraftTable}
      */
-    DraftTable deriveNewColumnFrom(@NonNull String columnName,
-                                   @NonNull Item<String> newColumnName,
-                                   @NonNull Function<?, ?> operationToApply);
+    DraftTable deriveFrom(@NonNull String columnName,
+                          @NonNull Item<String> newColumnName,
+                          @NonNull Function<?, ?> operationToApply);
 
     /**
      * Creates a new column derived from the two specified columns via a mapping by the provided function. The specified
      * columns will be left intact and the derived column will be added. For example:
      * <pre>{@code
-     *         DraftTable df = exampleDraftTable().deriveNewColumn("dayModifier", "dates",
-     *                         "modifiedDates",
-     *                         (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd).getDayOfWeek());
+     *         DraftTable df = exampleDraftTable().deriveFrom("dayModifier", "dates", as("modifiedDates"), (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd).getDayOfWeek());
      * }</pre>
      *
      * @param firstColumnName A string label
@@ -421,10 +419,10 @@ public interface DraftTable {
      * @param <X> A type compatible with the first column
      * @param <Y> A type compatible with the second column
      */
-    <X, Y> DraftTable deriveNewColumnFrom(@NonNull String firstColumnName,
-                                          @NonNull String secondColumnName,
-                                          @NonNull Item<String> newColumnName,
-                                          @NonNull BiFunction<X, Y, ?> operationToApply);
+    <X, Y> DraftTable deriveFrom(@NonNull String firstColumnName,
+                                 @NonNull String secondColumnName,
+                                 @NonNull Item<String> newColumnName,
+                                 @NonNull BiFunction<X, Y, ?> operationToApply);
 
     /**
      * Applies the provided consumer to the selected {@code Column}. May mutate underlying state if the {@code Column}
@@ -511,9 +509,9 @@ public interface DraftTable {
     default DraftTable transform(@NonNull String columnName,
                                  @NonNull Item<String> newColumnName,
                                  @NonNull Function<?, ?> operationToApply)  {
-        return deriveNewColumnFrom(
+        return deriveFrom(
                 columnName, newColumnName, operationToApply
-        ).dropColumn(columnName);
+        ).drop(columnName);
     }
 
     /**
@@ -524,7 +522,7 @@ public interface DraftTable {
      * @return A new {@code DraftTable}
      */
     default DraftTable transform(@NonNull String columnName, @NonNull Function<?, ?> operationToApply)  {
-        return dropColumn(columnName).addColumn(
+        return drop(columnName).add(
                 select(columnName).transform(columnName, operationToApply),
                 null
         );
@@ -546,9 +544,9 @@ public interface DraftTable {
                                    @NonNull String secondColumnName,
                                    @NonNull Item<String> newColumnName,
                                    @NonNull BiFunction<T, R, ?> operationToApply)  {
-        return deriveNewColumnFrom(
+        return deriveFrom(
                 firstColumnName, secondColumnName, newColumnName, operationToApply
-        ).dropColumns(these(firstColumnName, secondColumnName));
+        ).drop(these(firstColumnName, secondColumnName));
     }
 
 }
