@@ -19,7 +19,7 @@ public record DefaultCsvOptions(Character delimiter,
 
     public static final char COMMA = ',';
     public static final char NEW_LINE = '\n';
-    public static final char QUOTE = '\'';
+    public static final char QUOTE = '\"';
 
 
     public DefaultCsvOptions {
