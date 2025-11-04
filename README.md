@@ -90,27 +90,3 @@ draftTableVersion = 0.+
 ## Development and Release
 Development happens on the `develop` branch, which has the version number of the next release with "-SNAPSHOT" appended
 to it in the `gradle.properties` file. All `master` branch releases will drop the  "-SNAPSHOT" post-fix in the version.
-
-## Contributing
-We welcome contributions! Development currently is active and ongoing. Suggestions for improvements and refactorings
-are welcome and encouraged. If you have an idea or suggestion, please raise an 
-[Issue](https://github.com/VictorCannestro/drafttable/issues) with the details.
-
-### Policies and Expectations
-If you are interested in contributing please ...todo
-
-#### Pull Request Template
-```
-#### Title: 
-#### Summary
-* Add a summary of why the changes needed to be made here 
-* What those changes accomplish?
-
-#### Checklist
-This PR:
-- [x] Adds new tests
-- [x] Adds new features
-- [x] Includes refactorings of existing functionality
-- [x] Includes a design document
-- [ ] Modifies public-facing APIs
-```
