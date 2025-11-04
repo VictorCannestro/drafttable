@@ -1,7 +1,9 @@
 # Exploring the Tornado Dataset
-*Note: Special thanks to the TableSaw project for being the inspiration for this document. Our goal here is to
-showcase the DraftTable library and provide a basis of comparison for users interested in adapting Java dataframe
-capabilities.*
+*Author(s): Victor Cannestro*
+
+*Note: Special thanks to the TableSaw project. Their documentation provided the inspiration for this document. Our goal
+here is to showcase the DraftTable library and provide a basis of comparison for users interested in adopting Java 
+dataframe capabilities.*
 
 ## Introduction
 Here we'll explore the [tornado dataset](https://www.ncei.noaa.gov/access/monitoring/tornadoes/) maintained by
@@ -20,9 +22,10 @@ Center (SPC). In doing so we’ll cover a variety of functionality provided by t
 The data used in this tutorial can be found in the `test/resources/csv` folder.
 
 ## Reading a CSV file
-Here we read in a CSV file of tornado data directly and specify mapping rules for several columns. By default, CSV data
-is read in as a `String`. To prepare our dataset to perform numerical operations, we'll need to parse any columns we're
-interested in operating on to a more fitting data type.
+Here we read in the CSV file of tornado data directly and specify mapping rules for several columns. Our data is comma 
+delimited (`','`) with rows separated by new lines (`'\n'`). Alternatively, `.txt` or `.tsv` formats could have also 
+been used. By default, CSV data is read in as a `String`. To prepare our dataset to perform numerical operations, we'll 
+need to parse any columns we're interested in operating on to a more fitting data type.
 
 ```java
 Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
@@ -47,7 +50,7 @@ more. Using this bean-based reading approach, the pipeline we defined earlier wo
 following:
 ```java
 Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
-CsvOptions csvOptions = DefaultCsvOptions.builder().type(TornadoDataBean.class).build();
+CsvOptions csvOptions = CustomizableCsvOptions.builder().type(TornadoDataBean.class).build();
 FlexibleDraftTable.create().fromCSV().at(filePath, csvOptions);
 ``` 
 or 

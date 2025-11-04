@@ -7,6 +7,7 @@ import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
 import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
@@ -19,6 +20,11 @@ import static org.hamcrest.Matchers.is;
 
 @Test(groups = {"component"})
 public class DraftTableFromCsvTest {
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void unsupportedFileFormatsRaiseException() {
+        FlexibleDraftTable.create().fromCSV().at(Path.of("something.json"));
+    }
 
     @Test
     public void endToEndDataFrameCsvTest() {
@@ -42,8 +48,6 @@ public class DraftTableFromCsvTest {
                 .load(Path.of(TEST_CSV_DIRECTORY.concat("temp_3.csv")), PayDetails.class)
                 .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);
-
-        FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_3.csv"));
     }
 
     @Test
@@ -63,7 +67,11 @@ public class DraftTableFromCsvTest {
                 df.columnNames(),
                 List.of("type", "rate", "period", "workHours")
         );
+    }
 
+    @AfterClass(alwaysRun = true)
+    public void cleanUp() {
+        FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_3.csv"));
         FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_4.csv"));
     }
 
