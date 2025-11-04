@@ -45,7 +45,7 @@ FlexibleDraftTable.create().fromCSV().at(path)
                  .orderBy("yearsOfService", DESCENDING)
                  .top(50)
                  .melt("countryCode", "employeeId", into("managerLoginName"), String::concat)
-                 .selectMultiple(from("managerLoginName", "locationNumber"))
+                 .select(these("managerLoginName", "locationNumber"))
                  .write()
                  .toCSV("output/manager_login_information.csv");
 ```
@@ -54,7 +54,7 @@ FlexibleDraftTable.create().fromCSV().at(path)
 URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/master/src/test/resources/csv/tornadoes_1950-2014.csv");
 FlexibleDraftTable.create().fromCSV().at(url)
          .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
-         .orderByMultiple(using("Injuries", "DateTime"), DESCENDING)
+         .orderBy(using("Injuries", "DateTime"), DESCENDING)
          .top(10)
          .write()
          .prettyPrint();
