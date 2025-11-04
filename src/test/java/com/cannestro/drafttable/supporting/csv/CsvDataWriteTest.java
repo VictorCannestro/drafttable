@@ -1,28 +1,20 @@
 package com.cannestro.drafttable.supporting.csv;
 
-import com.cannestro.drafttable.core.inbound.CsvOptions;
-import com.cannestro.drafttable.supporting.csv.pojo.CustomizableCsvOptions;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
 import com.cannestro.drafttable.supporting.utils.helper.PayDetails;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.List;
 
 import static com.cannestro.drafttable.supporting.utils.Constants.TEST_CSV_DIRECTORY;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.*;
+import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
+import static com.cannestro.drafttable.supporting.utils.ListUtils.lastElementOf;
 
 
 @Test(groups = {"component"})
-public class CsvDataReadWriteTest {
-
-    @Test(dataProvider = "supportedFormatsData")
-    public void canReadAndParseSupportedFormats(String filePath, CsvOptions options) {
-        List<List<String>> parsedLines = CsvDataParser.readAllLines(filePath, options);
-        Assert.assertEquals(parsedLines.size(), 11);
-    }
+public class CsvDataWriteTest {
 
     @Test
     public void endToEndWriteAllLinesToCsvTest() {
@@ -66,15 +58,6 @@ public class CsvDataReadWriteTest {
     public void cleanUp() {
         FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_1.csv"));
         FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_2.csv"));
-    }
-
-    @DataProvider(name = "supportedFormatsData")
-    public Object[][] supportedFormatsData() {
-        return new Object[][] {
-                {TEST_CSV_DIRECTORY.concat("some_tornadoes.csv"), CustomizableCsvOptions.allDefaults()},
-                {TEST_CSV_DIRECTORY.concat("some_tornadoes.tsv"), CustomizableCsvOptions.builder().delimiter('\t').build()},
-                {TEST_CSV_DIRECTORY.concat("some_tornadoes.txt"), CustomizableCsvOptions.builder().delimiter('|').build()}
-        };
     }
 
 }

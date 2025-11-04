@@ -7,7 +7,6 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
-import com.cannestro.drafttable.supporting.csv.pojo.CsvToListTransferrer;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
 import com.cannestro.drafttable.supporting.utils.JsonUtils;
 import lombok.NonNull;
@@ -29,7 +28,6 @@ public class CsvDataParser {
     private CsvDataParser() {}
 
     public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull CsvOptions loadingOptions) {
-        CsvToListTransferrer<T> csvToListTransferrer = new CsvToListTransferrer<>();
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
             CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
                     .withSeparator(loadingOptions.delimiter())
@@ -41,11 +39,10 @@ public class CsvDataParser {
                     .withIgnoreLeadingWhiteSpace(loadingOptions.ignoreLeadingWhiteSpace())
                     .withType(loadingOptions.type())
                     .build();
-            csvToListTransferrer.setCsvList(csvBean.parse());
+            return csvBean.parse();
         } catch (IOException e) {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE);
         }
-        return csvToListTransferrer.getCsvList();
     }
 
 
@@ -57,16 +54,14 @@ public class CsvDataParser {
      * @return A List of extracted {@code CsvBean} types where each bean maps to a row in the CSV
      */
     public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull Class<T> csvBeanClass) {
-        CsvToListTransferrer<T> csvToListTransferrer = new CsvToListTransferrer<>();
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath)) {
             CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
                     .withType(csvBeanClass)
                     .build();
-            csvToListTransferrer.setCsvList(csvBean.parse());
+            return csvBean.parse();
         } catch (IOException e) {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE);
         }
-        return csvToListTransferrer.getCsvList();
     }
 
     /**
