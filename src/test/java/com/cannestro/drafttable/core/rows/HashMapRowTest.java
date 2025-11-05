@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.core.rows;
 
-import com.cannestro.drafttable.supporting.utils.helper.DailyHireCount;
+import com.cannestro.drafttable.helper.DailyHireCount;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

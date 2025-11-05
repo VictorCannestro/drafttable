@@ -18,45 +18,6 @@ public class ListUtils {
     private ListUtils() {}
 
     /**
-     * Performs the transpose operation on a 2D collection. Jagged collections are not allowed. Time complexity is
-     * O(N^2) so be wary of using with very large collections. For example:
-     * <pre>{@code
-     *         List<List<Integer>> table = Arrays.asList(
-     *                 Arrays.asList(0, 1, 2, 3),
-     *                 Arrays.asList(4, 5, 6, 7),
-     *                 Arrays.asList(8, 9, 10, 11)
-     *         );
-     *         Assert.assertEquals(
-     *                 ListUtils.transpose(table),
-     *                 Arrays.asList(
-     *                         Arrays.asList(0, 4, 8),
-     *                         Arrays.asList(1, 5, 9),
-     *                         Arrays.asList(2, 6, 10),
-     *                         Arrays.asList(3, 7, 11)
-     *                 )
-     *         );
-     *
-     * }</pre>
-     *
-     * @param list Any 2D collection
-     * @return A new 2D collection in which the rows and column values are swapped
-     * @param <T> Any object type
-     */
-    public static <T> List<List<T>> transpose(@NonNull List<List<T>> list) {
-        if (list.isEmpty()) {
-            return list;
-        }
-        if (!list.stream().map(List::size).allMatch(rowSize -> rowSize == firstElementOf(list).size())) {
-            throw new IllegalArgumentException("Collections cannot be jagged, they must be of the same length");
-        }
-        return IntStream.range(0, firstElementOf(list).size())
-                .mapToObj(rowIndex -> list.stream()
-                        .map(column -> column.get(rowIndex))
-                        .toList())
-                .toList();
-    }
-
-    /**
      * Produces a new list padded with the provided fill value. Will throw an exception if the provided list is longer
      * than the target length.
      *

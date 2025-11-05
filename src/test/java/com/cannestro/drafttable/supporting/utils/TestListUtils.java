@@ -1,76 +1,15 @@
 package com.cannestro.drafttable.supporting.utils;
 
-import com.cannestro.drafttable.supporting.utils.ListUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 
 @Test(groups = "unit")
 public class TestListUtils {
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void transposeThrowsExceptionWhen2DCollectionIsJagged_FirstRowShorter() {
-        List<List<Integer>> table = Arrays.asList(
-                Arrays.asList(0, 1, 2),
-                Arrays.asList(4, 5, 6, 7),
-                Arrays.asList(8, 9, 10, 11)
-        );
-        ListUtils.transpose(table);
-    }
-
-    @Test(expectedExceptions = IllegalArgumentException.class)
-    public void transposeThrowsExceptionWhen2DCollectionIsJagged_FirstRowLonger() {
-        List<List<Integer>> table = Arrays.asList(
-                Arrays.asList(0, 1, 2, 4, 4),
-                Arrays.asList(4, 5, 6, 7),
-                Arrays.asList(8, 9, 10, 11)
-        );
-        ListUtils.transpose(table);
-    }
-
-    @Test
-    public void canTransposeRowsAndColumns() {
-        List<List<Integer>> table = Arrays.asList(
-                Arrays.asList(0, 1, 2, 3),
-                Arrays.asList(4, 5, 6, 7),
-                Arrays.asList(8, 9, 10, 11)
-        );
-        Assert.assertEquals(
-                ListUtils.transpose(table),
-                Arrays.asList(
-                        Arrays.asList(0, 4, 8),
-                        Arrays.asList(1, 5, 9),
-                        Arrays.asList(2, 6, 10),
-                        Arrays.asList(3, 7, 11)
-                )
-        );
-    }
-
-    @Test
-    public void doubleTransposeReturnsOriginal() {
-        List<List<Integer>> testCollection = Arrays.asList(
-                Arrays.asList(0, 1, 2),
-                Arrays.asList(3, 4, 5),
-                Arrays.asList(6, 7, 8)
-        );
-        Assert.assertEquals(
-                testCollection,
-                ListUtils.transpose(ListUtils.transpose(testCollection))
-        );
-    }
-
-    @Test
-    public void transposeOfEmptyListIsSameList() {
-        Assert.assertEquals(
-                ListUtils.transpose(new ArrayList<>()),
-                new ArrayList<>()
-        );
-    }
 
     @Test
     public void fillingEmptyCollectionToLengthNProducesListWithNFillValues() {

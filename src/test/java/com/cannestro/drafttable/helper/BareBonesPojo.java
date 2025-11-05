@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.supporting.utils.helper;
+package com.cannestro.drafttable.helper;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

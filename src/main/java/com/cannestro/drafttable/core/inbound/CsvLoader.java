@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.core.inbound;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
 import lombok.NonNull;
 
 import java.net.URL;
@@ -20,10 +21,10 @@ public interface CsvLoader {
      */
     DraftTable at(@NonNull Path path);
 
-    DraftTable at(@NonNull Path path, @NonNull CsvOptions loadingOptions);
+    DraftTable at(@NonNull Path path, @NonNull CsvParsingOptions loadingOptions);
 
     DraftTable at(@NonNull URL url);
 
-    DraftTable at(@NonNull URL url, @NonNull CsvOptions loadingOptions);
+    DraftTable at(@NonNull URL url, @NonNull CsvParsingOptions loadingOptions);
 
 }

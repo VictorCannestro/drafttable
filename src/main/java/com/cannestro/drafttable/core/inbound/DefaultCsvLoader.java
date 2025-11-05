@@ -5,6 +5,7 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
+import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
 import lombok.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -14,8 +15,8 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.cannestro.drafttable.supporting.csv.CsvDataParser.buildBeansFrom;
-import static com.cannestro.drafttable.supporting.csv.CsvDataParser.readAllLines;
+import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.buildBeansFrom;
+import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.readAllLines;
 import static com.cannestro.drafttable.supporting.utils.FileUtils.copyToTempDirectory;
 import static com.cannestro.drafttable.supporting.utils.FileUtils.deleteFileIfPresent;
 import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
@@ -38,7 +39,7 @@ public class DefaultCsvLoader implements CsvLoader {
     }
 
     @Override
-    public DraftTable at(@NonNull Path path, @NonNull CsvOptions loadingOptions) {
+    public DraftTable at(@NonNull Path path, @NonNull CsvParsingOptions loadingOptions) {
         File file = path.toFile();
         assumeInputIsCsvCompatible(file.getName());
         if (isNull(loadingOptions.type())) {
@@ -61,7 +62,7 @@ public class DefaultCsvLoader implements CsvLoader {
     }
 
     @Override
-    public DraftTable at(@NonNull URL url, @NonNull CsvOptions loadingOptions) {
+    public DraftTable at(@NonNull URL url, @NonNull CsvParsingOptions loadingOptions) {
         assumeInputIsCsvCompatible(url.toString());
         File file = copyToTempDirectory(url);
         DraftTable draftTable = isNull(loadingOptions.type())
@@ -90,7 +91,7 @@ public class DefaultCsvLoader implements CsvLoader {
         }
     }
 
-    DraftTable createWithoutSchema(@NonNull String pathToFile, @Nullable CsvOptions loadingOptions) {
+    DraftTable createWithoutSchema(@NonNull String pathToFile, @Nullable CsvParsingOptions loadingOptions) {
         List<List<String>> fullTable = isNull(loadingOptions)
                 ? readAllLines(pathToFile)
                 : readAllLines(pathToFile, loadingOptions);

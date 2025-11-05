@@ -1,6 +1,6 @@
 package tutorials;
 
-import com.cannestro.drafttable.supporting.utils.helper.CookBook;
+import com.cannestro.drafttable.helper.CookBook;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 
 import java.io.FileReader;

@@ -1,16 +1,9 @@
-package com.cannestro.drafttable.core.inbound;
+package com.cannestro.drafttable.supporting.csv;
 
 import com.cannestro.drafttable.core.rows.Mappable;
-import com.cannestro.drafttable.supporting.csv.CsvBean;
 
 
-public interface CsvOptions {
-
-    Character delimiter();
-
-    Character escapeCharacter();
-
-    Character quoteCharacter();
+public interface CsvParsingOptions extends CsvEssentials {
 
     boolean useStrictQuotes();
 

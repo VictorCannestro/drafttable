@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.supporting.utils.helper;
+package com.cannestro.drafttable.helper;
 
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;

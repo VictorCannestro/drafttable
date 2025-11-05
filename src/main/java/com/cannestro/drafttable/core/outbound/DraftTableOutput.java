@@ -1,13 +1,15 @@
 package com.cannestro.drafttable.core.outbound;
 
+import com.cannestro.drafttable.supporting.csv.CsvWritingOptions;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
+import com.cannestro.drafttable.supporting.csv.options.CustomizableWritingOptions;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.cannestro.drafttable.supporting.csv.CsvDataWriter;
+import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
 import com.google.common.base.Strings;
 import lombok.NonNull;
 import org.apache.commons.lang3.StringUtils;
@@ -44,24 +46,28 @@ public record DraftTableOutput(DraftTable draftTable) {
         }
     }
 
-    /**
-     * Exports the table to a destination filepath using comma delimiters and String values. Will create a new
-     * file, if necessary, otherwise the existing file will be updated.
-     *
-     * @param filePath The destination filepath
-     */
-    public void toCSV(@NonNull String filePath, String fillValue) {
+    public void toCSV(@NonNull String filePath, @NonNull CsvWritingOptions options) {
         CsvDataWriter.writeAllLinesToCsv(
                 filePath,
+                draftTable().columnNames(),
                 draftTable().rows().stream()
                         .map(row -> draftTable().columnNames().stream()
                                 .map(row::valueOf)
                                 .map(String.class::cast)
                                 .toList())
                         .toList(),
-                draftTable().columnNames(),
-                fillValue
+                options
         );
+    }
+
+    /**
+     * Exports the table to a destination filepath using comma delimiters and String values. Will create a new
+     * file, if necessary, otherwise the existing file will be updated.
+     *
+     * @param filePath The destination filepath
+     */
+    public void toCSV(@NonNull String filePath) {
+        toCSV(filePath, CustomizableWritingOptions.allDefaults());
     }
 
     /**
