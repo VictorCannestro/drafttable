@@ -50,7 +50,7 @@ more. Using this bean-based reading approach, the pipeline we defined earlier wo
 following:
 ```java
 Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
-CsvOptions csvOptions = CustomizableCsvOptions.builder().type(TornadoDataBean.class).build();
+CsvParsingOptions csvOptions = CustomizableParsingOptions.builder().type(TornadoDataBean.class).build();
 FlexibleDraftTable.create().fromCSV().at(filePath, csvOptions);
 ``` 
 or 
@@ -543,9 +543,19 @@ tornadoes.where("DateTime", LocalDateTime::getYear, allOf(greaterThan(1999), les
 ### To CSV
 We can write our data to a CSV file using:
 ```java
-tornadoes.write().toCSV("./src/test/resources/csv/temp.csv", "NULL")
+tornadoes.write().toCSV("./src/test/resources/csv/temp.csv");
 ```
-where `NULL` is the specified fill value for missing entries.
+or 
+```java
+CsvWritingOptions writingOptions = CustomizableWritingOptions.builder()
+        .delimiter('|')
+        .fillerValue("NULL")
+        .lineEnder(";")
+        .build();
+tornadoes.write().toCSV("./src/test/resources/csv/temp.csv", writingOptions);
+```
+where the addition of the `CsvWritingOptions` argument enables us to overwrite the defaults of things like export
+delimiters, quote characters, fill values for missing entries, etc.
 
 **Note:** that this is a terminal operation (of return type `void`) and will end the data processing pipeline.
 
