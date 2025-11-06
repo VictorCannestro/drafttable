@@ -1,7 +1,7 @@
 package com.cannestro.drafttable.core.columns;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Function;
 
@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 public interface ColumnSplitter {
 
-    <T, R> ColumnSplitter intoColumn(@NonNull String newLabel, Function<T, R> aspect);
+    <T, R> ColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<T, R> aspect);
 
     DraftTable gatherIntoNewTable();
 

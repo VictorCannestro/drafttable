@@ -2,7 +2,7 @@ package com.cannestro.drafttable.core.columns;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Function;
 
@@ -21,7 +21,7 @@ public class FlexibleColumnSplitter implements ColumnSplitter {
     }
 
     @Override
-    public <T, R> FlexibleColumnSplitter intoColumn(@NonNull String newLabel, Function<T, R> aspect) {
+    public <T, R> FlexibleColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<T, R> aspect) {
         outputTable = outputTable.add(column.transform(newLabel, aspect));
         return this;
     }

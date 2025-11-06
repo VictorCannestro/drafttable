@@ -4,6 +4,7 @@ import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.annotations.Beta;
+import org.jspecify.annotations.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -27,11 +28,11 @@ public record HashMapRow(Map<String, ?> map) implements Row {
         }
     }
 
-    public static HashMapRow from(List<String> keys, List<?> values) {
+    public static HashMapRow from(@NonNull List<String> keys, @NonNull List<?> values) {
         return new HashMapRow(zip(keys, values));
     }
 
-    public static HashMapRow from(Mappable object) {
+    public static HashMapRow from(@NonNull Mappable object) {
         return new HashMapRow(object.asMap());
     }
 
@@ -46,12 +47,12 @@ public record HashMapRow(Map<String, ?> map) implements Row {
     }
 
     @Override
-    public boolean hasKey(String columnName) {
+    public boolean hasKey(@NonNull String columnName) {
         return map().containsKey(columnName);
     }
 
     @Override
-    public <T> T valueOf(String columnName) {
+    public <T> T valueOf(@NonNull String columnName) {
         if (isNull(map.get(columnName))) {
             return null;
         }
@@ -83,7 +84,7 @@ public record HashMapRow(Map<String, ?> map) implements Row {
     }
 
     @Override
-    public <T> T as(Class<T> target) {
+    public <T> T as(@NonNull Class<T> target) {
         try {
             return ObjectMapperManager.getInstance().defaultMapper().readValue(
                     ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(map()),

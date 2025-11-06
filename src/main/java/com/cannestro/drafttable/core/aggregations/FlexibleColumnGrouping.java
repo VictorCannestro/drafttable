@@ -4,6 +4,7 @@ import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
+import org.jspecify.annotations.NonNull;
 import org.hamcrest.Matcher;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
 
 
     @Override
-    public <B, R> DraftTable byCountsOf(Function<? super B, ? extends R> mapping) {
+    public <B, R> DraftTable byCountsOf(@NonNull Function<? super B, ? extends R> mapping) {
         DraftTable grouping = by(mapping, Collectors.counting());
         Column valueColumn = grouping.select(VALUE).conditionalAction(
                 col -> column().hasNulls(),
@@ -44,7 +45,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
     }
 
     @Override
-    public <R, A, D> DraftTable byValuesUsing(Collector<? super R, A, D> aggregation) {
+    public <R, A, D> DraftTable byValuesUsing(@NonNull Collector<? super R, A, D> aggregation) {
         DraftTable grouping = by(Function.identity(), aggregation);
         Column valueColumn = grouping.select(VALUE).conditionalAction(
                 col -> column().hasNulls(),
@@ -60,7 +61,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
     }
 
     @Override
-    public <B, R, A, D> DraftTable by(Function<? super B, ? extends R> mapping, Collector<? super B, A, D> aggregation) {
+    public <B, R, A, D> DraftTable by(@NonNull Function<? super B, ? extends R> mapping, @NonNull Collector<? super B, A, D> aggregation) {
         List<B> nonNullValues = column()
                 .where(notNullValue())
                 .where((Function<? super B, R>) mapping, (Matcher<R>) notNullValue())

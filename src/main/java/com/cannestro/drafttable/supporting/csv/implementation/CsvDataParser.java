@@ -10,7 +10,7 @@ import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
 import com.cannestro.drafttable.supporting.utils.JsonUtils;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.io.Reader;

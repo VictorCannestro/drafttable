@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.supporting.utils;
 
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.Collections;

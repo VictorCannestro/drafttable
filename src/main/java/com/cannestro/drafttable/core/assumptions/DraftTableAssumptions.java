@@ -3,7 +3,7 @@ package com.cannestro.drafttable.core.assumptions;
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.Row;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;

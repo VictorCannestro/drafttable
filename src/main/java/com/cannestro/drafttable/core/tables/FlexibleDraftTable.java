@@ -15,11 +15,12 @@ import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hamcrest.Matcher;
+import org.jspecify.annotations.Nullable;
 import org.paumard.streams.StreamsUtils;
 
 import java.util.*;
@@ -83,7 +84,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable rename(Items<String> targetColumnNames, Items<String> newColumnNames) {
+    public DraftTable rename(@NonNull Items<String> targetColumnNames, @NonNull Items<String> newColumnNames) {
         return create().fromColumns(
                 tableName(),
                 columns().stream()
@@ -98,7 +99,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public boolean hasColumn(String name) {
+    public boolean hasColumn(@NonNull String name) {
         return listOfColumns().stream().anyMatch(column -> column.label().equals(name));
     }
 
@@ -215,7 +216,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public <T> DraftTable replaceAll(T target, T replacement) {
+    public <T> DraftTable replaceAll(@Nullable T target, @Nullable T replacement) {
         if (columns().stream().noneMatch(column -> column.has(target))) {
             return this;
         }
@@ -228,14 +229,14 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable introspect(UnaryOperator<DraftTable> action) {
+    public DraftTable introspect(@NonNull UnaryOperator<DraftTable> action) {
         return action.apply(this);
     }
 
     @Override
-    public DraftTable conditionalAction(Predicate<DraftTable> conditional,
-                                        UnaryOperator<DraftTable> actionIfTrue,
-                                        UnaryOperator<DraftTable> actionIfFalse) {
+    public DraftTable conditionalAction(@NonNull Predicate<DraftTable> conditional,
+                                        @NonNull UnaryOperator<DraftTable> actionIfTrue,
+                                        @NonNull UnaryOperator<DraftTable> actionIfFalse) {
         if (conditional.test(this)) {
             return introspect(actionIfTrue);
         }
@@ -275,14 +276,14 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable orderBy(Comparator<Row> comparator) {
+    public DraftTable orderBy(@NonNull Comparator<Row> comparator) {
         List<Row> sortedRows = new ArrayList<>(rows());
         sortedRows.sort(comparator);
         return create().fromRows(tableName(), sortedRows);
     }
 
     @Override
-    public DraftTable orderBy(@NonNull String columnName, SortingOrderType sortingOrderType) {
+    public DraftTable orderBy(@NonNull String columnName, @NonNull SortingOrderType sortingOrderType) {
         assumeColumnExists(columnName, this);
         List<Row> sortedRows = new ArrayList<>(rows());
         Comparator<Row> comparator = Comparator.nullsFirst(Comparator.comparing((Row row) -> row.valueOf(columnName)));
@@ -291,7 +292,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable orderBy(@NonNull Items<String> columnNames, SortingOrderType sortingOrderType) {
+    public DraftTable orderBy(@NonNull Items<String> columnNames, @NonNull SortingOrderType sortingOrderType) {
         columnNames.params().forEach(columnName -> assumeColumnExists(columnName, this));
         List<Row> sortedRows = new ArrayList<>(rows());
         Comparator<Row> comparator = Comparator.nullsFirst(Comparator.comparing((Row row) -> row.valueOf(firstElementOf(columnNames.params()))));
@@ -342,7 +343,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public <T> DraftTable add(@NonNull Column newColumn, T fillValue) {
+    public <T> DraftTable add(@NonNull Column newColumn, @Nullable T fillValue) {
         if (isCompletelyEmpty()) {
             return create().fromColumns(tableName(), Collections.singletonList(newColumn));
         }
@@ -352,7 +353,7 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public <T> DraftTable add(@NonNull String newColumnName,
                               @NonNull List<T> newColumnValues,
-                              T fillValue) {
+                              @Nullable T fillValue) {
         if (isCompletelyEmpty()) {
             return create().fromColumns(
                     tableName(),
@@ -448,7 +449,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public <T> Column gatherInto(Class<T> aggregate, @NonNull Item<String> aggregateColumnName) {
+    public <T> Column gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName) {
         return new FlexibleColumn(
                 aggregateColumnName.value(),
                 rows().stream()
@@ -458,7 +459,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public <T> DraftTable gatherInto(Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
+    public <T> DraftTable gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
         return add(select(selectColumnNames)
                 .gatherInto(aggregate, aggregateColumnName), null)
                 .drop(selectColumnNames);

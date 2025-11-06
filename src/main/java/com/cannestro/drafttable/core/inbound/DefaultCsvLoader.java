@@ -6,7 +6,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;

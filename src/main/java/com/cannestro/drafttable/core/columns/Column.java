@@ -5,8 +5,9 @@ import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
 import com.google.common.annotations.Beta;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.hamcrest.Matcher;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.Comparator;
@@ -89,7 +90,7 @@ public interface Column {
      *
      * @return True if and only if the column contains the provided non-null value
      */
-    <T> boolean has(T element);
+    <T> boolean has(@NonNull T element);
 
     /**
      * <p> Can be used to inspect and access the current state of the pipeline inline without using intermediate
@@ -98,7 +99,7 @@ public interface Column {
      * @param action The function to apply
      * @return A new {@code Column}
      */
-    Column introspect(UnaryOperator<Column> action);
+    Column introspect(@NonNull UnaryOperator<Column> action);
 
     /**
      * <p> Selects between alternative pipeline paths based upon the provided predicate. </p>
@@ -108,9 +109,9 @@ public interface Column {
      * @param actionIfFalse The function to apply if the conditional evaluates to false
      * @return A new {@code Column}
      */
-    Column conditionalAction(Predicate<Column> conditional,
-                             UnaryOperator<Column> actionIfTrue,
-                             UnaryOperator<Column> actionIfFalse);
+    Column conditionalAction(@NonNull Predicate<Column> conditional,
+                             @NonNull UnaryOperator<Column> actionIfTrue,
+                             @NonNull UnaryOperator<Column> actionIfFalse);
 
     /**
      * <p> Produces a new {@code Column} by selecting rows, from the top, up to {@code n} or the total row count,
@@ -179,7 +180,7 @@ public interface Column {
      * @return A new {@code Column}
      * @param <T> Type of the underlying column data (often an implementation detail)
      */
-    <T> Column orderBy(SortingOrderType sortingOrderType);
+    <T> Column orderBy(@NonNull SortingOrderType sortingOrderType);
 
     /**
      * <p> <b>Requires</b>: Null safe comparator behavior must be specified if relevant. To ensure compilation, a casting
@@ -195,7 +196,7 @@ public interface Column {
      * @return A new {@code Column}
      * @param <T> Type of the underlying column data
      */
-    <T> Column orderBy(Comparator<T> comparator);
+    <T> Column orderBy(@NonNull Comparator<T> comparator);
 
     /**
      * <p><b>Requires</b>: This method assumes that the provided value is of an arbitrary, yet homogeneous type
@@ -206,7 +207,7 @@ public interface Column {
      * @return A new instance of {@code Column}
      * @param <T> An arbitrary type, consistent with the current column type
      */
-    <T> Column append(T element);
+    <T> Column append(@Nullable T element);
 
     /**
      * <p><b>Requires</b>: This method assumes that the provided list is non-null and contains values of an arbitrary,
@@ -219,7 +220,7 @@ public interface Column {
      * @return A new instance of {@code Column}
      * @param <T> An arbitrary type, consistent with the current column type
      */
-    <T> Column append(List<T> otherCollection);
+    <T> Column append(@NonNull List<T> otherCollection);
 
     /**
      * <p><b>Requires</b>: This method assumes that the provided column is non-null and contains values of an arbitrary,
@@ -231,7 +232,7 @@ public interface Column {
      * @param otherColumn A column of an arbitrary type, consistent with the calling column's type
      * @return A new instance of {@code Column}
      */
-    Column append(Column otherColumn);
+    Column append(@NonNull Column otherColumn);
 
     /**
      * <p><b>Requires</b>: This method assumes that the provided column contains a mix of zero-or-more null values
@@ -284,13 +285,13 @@ public interface Column {
 
     <T, R> Column transform(@NonNull String newLabel, @NonNull Function<T, R> function);
 
-    <T> Optional<T> aggregate(BinaryOperator<T> accumulator);
+    <T> Optional<T> aggregate(@NonNull BinaryOperator<T> accumulator);
 
-    <T> T aggregate(T identity, BinaryOperator<T> accumulator);
+    <T> T aggregate(T identity, @NonNull BinaryOperator<T> accumulator);
 
     <T, R> R aggregate(R identity,
-                       BiFunction<R, ? super T, R> accumulator,
-                       BinaryOperator<R> combiner);
+                       @NonNull BiFunction<R, ? super T, R> accumulator,
+                       @NonNull BinaryOperator<R> combiner);
 
     ColumnSplitter split();
 

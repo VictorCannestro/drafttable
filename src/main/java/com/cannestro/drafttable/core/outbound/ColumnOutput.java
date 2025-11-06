@@ -6,7 +6,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.File;
 import java.io.IOException;

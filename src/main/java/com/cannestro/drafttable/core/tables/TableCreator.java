@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.inbound.CsvLoader;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;

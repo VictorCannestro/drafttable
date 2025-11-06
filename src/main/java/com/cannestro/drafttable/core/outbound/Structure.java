@@ -1,12 +1,13 @@
 package com.cannestro.drafttable.core.outbound;
 
 import com.cannestro.drafttable.core.rows.Mappable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Map;
 
 
-public record Structure(String columnName,
-                        String type,
+public record Structure(@NonNull String columnName,
+                        @NonNull String type,
                         double nullCount) implements Mappable {
 
     @Override

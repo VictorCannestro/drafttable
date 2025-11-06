@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.core.rows;
 
 import com.google.common.annotations.Beta;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -32,14 +33,14 @@ public interface Row {
      *
      * @return True if and only if the {@code Row} contains the provided key
      */
-    boolean hasKey(String columnName);
+    boolean hasKey(@NonNull String columnName);
 
     /**
      * <p> <b>Guarantees</b>: The value associated with provided key is returned, given they both exist. </p>
      *
      * @return The value associated with the provided key
      */
-    <T> T valueOf(String columnName);
+    <T> T valueOf(@NonNull String columnName);
 
     /**
      * <p> <b>Guarantees</b>: A collection of every key contained within the {@code Row} is returned. It may be empty. </p>
@@ -70,6 +71,6 @@ public interface Row {
      *
      * @return A user defined object
      */
-    <T> T as(Class<T> target);
+    <T> T as(@NonNull Class<T> target);
 
 }

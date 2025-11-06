@@ -2,7 +2,7 @@ package com.cannestro.drafttable.core.inbound;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.net.URL;
 import java.nio.file.Path;

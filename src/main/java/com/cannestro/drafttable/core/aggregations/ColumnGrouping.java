@@ -2,6 +2,7 @@ package com.cannestro.drafttable.core.aggregations;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.options.SortingOrderType;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Function;
 import java.util.stream.Collector;
@@ -31,7 +32,7 @@ public interface ColumnGrouping {
      * @param <B> Input mapping type
      * @param <R> Output mapping type
      */
-    <B, R> DraftTable byCountsOf(Function<? super B, ? extends R> mapping);
+    <B, R> DraftTable byCountsOf(@NonNull Function<? super B, ? extends R> mapping);
 
     /**
      * <p> Creates an aggregation of unique values according to a user-defined reduction operation. The resulting object
@@ -46,7 +47,7 @@ public interface ColumnGrouping {
      * @param <A> The mutable accumulation type of the reduction operation (often hidden as an implementation detail)
      * @param <D> The result type of the reduction operation
      */
-    <R, A, D> DraftTable byValuesUsing(Collector<? super R, A, D> aggregation);
+    <R, A, D> DraftTable byValuesUsing(@NonNull Collector<? super R, A, D> aggregation);
 
     /**
      * <p> Creates an aggregation of unique values according to a user-defined aggregation mapping. The resulting object
@@ -63,7 +64,7 @@ public interface ColumnGrouping {
      * @param <A> The mutable accumulation type of the reduction operation (often hidden as an implementation detail)
      * @param <D> The result type of the reduction operation
      */
-    <B, R, A, D> DraftTable by(Function<? super B, ? extends R> mapping, Collector<? super B, A, D> aggregation);
+    <B, R, A, D> DraftTable by(@NonNull Function<? super B, ? extends R> mapping, @NonNull Collector<? super B, A, D> aggregation);
 
 
     /**
@@ -88,7 +89,7 @@ public interface ColumnGrouping {
      *
      * @return A new {@code DraftTable}
      */
-    default DraftTable byValueCounts(SortingOrderType orderType) {
+    default DraftTable byValueCounts(@NonNull SortingOrderType orderType) {
         return byValueCounts().orderBy(COUNT, orderType);
     }
 

@@ -7,8 +7,9 @@ import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.google.common.annotations.Beta;
 import com.cannestro.drafttable.core.outbound.DraftTableOutput;
-import lombok.NonNull;
 import org.hamcrest.Matcher;
+import org.jspecify.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 import java.util.function.*;
@@ -22,7 +23,7 @@ import static com.cannestro.drafttable.core.options.Items.these;
 @Beta
 public interface DraftTable {
 
-    String DEFAULT_TABLE_NAME = "data";
+    String DEFAULT_TABLE_NAME = "important data";
 
     /**
      * Fetches the current number of rows or records present in the {@code DraftTable}.
@@ -59,7 +60,7 @@ public interface DraftTable {
      * @param newColumnNames The new column names to apply
      * @return A new {@code DraftTable}
      */
-    DraftTable rename(Items<String> targetColumnNames, Items<String> newColumnNames);
+    DraftTable rename(@NonNull Items<String> targetColumnNames, @NonNull Items<String> newColumnNames);
 
     /**
      * Will be true if and only if the provided label is an exact match to any column label in the {@code DraftTable}.
@@ -67,7 +68,7 @@ public interface DraftTable {
      * @param name A string label
      * @return true or false
      */
-    boolean hasColumn(String name);
+    boolean hasColumn(@NonNull String name);
 
     /**
      * Constructs a replica of the current state of the {@code DraftTable}.
@@ -205,7 +206,7 @@ public interface DraftTable {
      * @return A new {@code DraftTable}
      * @param <T> The type of the data value in 1 or more columns
      */
-    <T> DraftTable replaceAll(T target, T replacement);
+    <T> DraftTable replaceAll(@Nullable T target, @Nullable T replacement);
 
     /**
      * Can be used to inspect and access the current state of the pipeline inline without using intermediate variables.
@@ -213,7 +214,7 @@ public interface DraftTable {
      * @param action The function to apply
      * @return A new {@code DraftTable}
      */
-    DraftTable introspect(UnaryOperator<DraftTable> action);
+    DraftTable introspect(@NonNull UnaryOperator<DraftTable> action);
 
     /**
      * Selects between alternative pipeline paths based upon the provided predicate. Can be used to fork the pipeline
@@ -224,9 +225,9 @@ public interface DraftTable {
      * @param actionIfFalse The function to apply if the conditional evaluates to false
      * @return A new {@code DraftTable}
      */
-    DraftTable conditionalAction(Predicate<DraftTable> conditional,
-                                 UnaryOperator<DraftTable> actionIfTrue,
-                                 UnaryOperator<DraftTable> actionIfFalse);
+    DraftTable conditionalAction(@NonNull Predicate<DraftTable> conditional,
+                                 @NonNull UnaryOperator<DraftTable> actionIfTrue,
+                                 @NonNull UnaryOperator<DraftTable> actionIfFalse);
 
     /**
      * Produces a new {@code DraftTable} by selecting rows, from the top, up to {@code nRows} or the total row count,
@@ -264,7 +265,7 @@ public interface DraftTable {
      * @param comparator A compatible comparator
      * @return A new {@code DraftTable}
      */
-    DraftTable orderBy(Comparator<Row> comparator);
+    DraftTable orderBy(@NonNull Comparator<Row> comparator);
 
     /**
      * Orders the data in ascending or descending order as specified. Null values will appear first, followed by any
@@ -274,7 +275,7 @@ public interface DraftTable {
      * @param sortingOrderType Specifying ascending or descending order
      * @return A new {@code DraftTable}
      */
-    DraftTable orderBy(@NonNull String columnName, SortingOrderType sortingOrderType);
+    DraftTable orderBy(@NonNull String columnName, @NonNull SortingOrderType sortingOrderType);
 
     /**
      * Orders the data in ascending or descending order as specified. Null values will appear first, followed by any
@@ -284,7 +285,7 @@ public interface DraftTable {
      * @param sortingOrderType Specifying ascending or descending order
      * @return A new {@code DraftTable}
      */
-    DraftTable orderBy(@NonNull Items<String> columnNames, SortingOrderType sortingOrderType);
+    DraftTable orderBy(@NonNull Items<String> columnNames, @NonNull SortingOrderType sortingOrderType);
 
     /**
      * <p><b>Requires</b>: This method assumes that the provided {@code DraftTable} is non-null and its columns exactly
@@ -339,7 +340,7 @@ public interface DraftTable {
      * @return A new {@code DraftTable}
      * @param <T> A type compatible with the column
      */
-    <T> DraftTable add(@NonNull Column newColumn, T fillValue);
+    <T> DraftTable add(@NonNull Column newColumn, @Nullable T fillValue);
 
     /**
      * Constructs and horizontally appends a new column to the {@code DraftTable}. If the new column is shorter than the
@@ -354,7 +355,7 @@ public interface DraftTable {
      */
     <T> DraftTable add(@NonNull String newColumnName,
                        @NonNull List<T> newColumnValues,
-                       T fillValue);
+                       @Nullable T fillValue);
 
     /**
      * Horizontally appends the new columns to the {@code DraftTable}.
@@ -444,7 +445,7 @@ public interface DraftTable {
      * @return A new {@code Column}
      * @param <T> The target type
      */
-    <T> Column gatherInto(Class<T> aggregate, @NonNull Item<String> aggregateColumnName);
+    <T> Column gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName);
 
     /**
      * Attempts to map the current state of the {@code DraftTable} into a new {@code DraftTable} subset. The selected
@@ -457,7 +458,7 @@ public interface DraftTable {
      * @return A new {@code DraftTable} subset
      * @param <T> The target type
      */
-    <T> DraftTable gatherInto(Class<T> aggregate,
+    <T> DraftTable gatherInto(@NonNull Class<T> aggregate,
                               @NonNull Item<String> aggregateColumnName,
                               @NonNull Items<String> selectColumnNames);
 

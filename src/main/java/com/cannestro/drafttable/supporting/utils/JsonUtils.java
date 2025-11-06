@@ -1,7 +1,7 @@
 package com.cannestro.drafttable.supporting.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 

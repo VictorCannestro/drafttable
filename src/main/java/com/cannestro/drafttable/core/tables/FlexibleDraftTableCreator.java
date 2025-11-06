@@ -8,7 +8,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.inbound.CsvLoader;
 import com.cannestro.drafttable.core.inbound.DefaultCsvLoader;
 import com.cannestro.drafttable.supporting.utils.MapUtils;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.paumard.streams.StreamsUtils;
 
 import java.util.List;

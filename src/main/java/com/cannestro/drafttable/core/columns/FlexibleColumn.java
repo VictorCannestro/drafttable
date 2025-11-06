@@ -14,6 +14,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.hamcrest.Matcher;
+import org.jspecify.annotations.Nullable;
 
 import java.lang.reflect.Type;
 import java.util.*;
@@ -144,14 +145,14 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column introspect(UnaryOperator<Column> action) {
+    public Column introspect(@NonNull UnaryOperator<Column> action) {
         return action.apply(this);
     }
 
     @Override
-    public Column conditionalAction(Predicate<Column> conditional,
-                                    UnaryOperator<Column> actionIfTrue,
-                                    UnaryOperator<Column> actionIfFalse) {
+    public Column conditionalAction(@NonNull Predicate<Column> conditional,
+                                    @NonNull UnaryOperator<Column> actionIfTrue,
+                                    @NonNull UnaryOperator<Column> actionIfFalse) {
         if (conditional.test(this)) {
             return introspect(actionIfTrue);
         }
@@ -187,7 +188,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Column orderBy(SortingOrderType sortingOrderType) {
+    public <T> Column orderBy(@NonNull SortingOrderType sortingOrderType) {
         List<T> sortedValues = new ArrayList<>((List<T>) values());
         Comparator<? super T> comparator = (Comparator<? super T>) Comparator.nullsFirst(Comparator.naturalOrder());
         sortedValues.sort(sortingOrderType.equals(SortingOrderType.ASCENDING)
@@ -198,14 +199,14 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Column orderBy(Comparator<T> comparator) {
+    public <T> Column orderBy(@NonNull Comparator<T> comparator) {
         List<T> sortedValues = new ArrayList<>((List<T>) values());
         sortedValues.sort(comparator);
         return new FlexibleColumn(label(), sortedValues);
     }
 
     @Override
-    public <T> Column append(T element) {
+    public <T> Column append(@Nullable T element) {
         if (!isEmpty() && !hasNulls() && !isNull(element)) {
             assumeDataTypesMatch(dataType(), element.getClass());
         }
@@ -215,7 +216,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Column append(List<T> otherCollection) {
+    public <T> Column append(@NonNull List<T> otherCollection) {
         if (!isEmpty() && !hasNulls()) {
             otherCollection.forEach(element -> assumeDataTypesMatch(dataType(), element.getClass()));
         }
@@ -225,7 +226,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column append(Column otherColumn) {
+    public Column append(@NonNull Column otherColumn) {
         if (!this.hasNulls() && !otherColumn.isEmpty() && !otherColumn.hasNulls()) {
             assumeDataTypesMatch(dataType(), otherColumn.dataType());
         }
@@ -298,7 +299,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Optional<T> aggregate(BinaryOperator<T> accumulator) {
+    public <T> Optional<T> aggregate(@NonNull BinaryOperator<T> accumulator) {
         try {
             return ((List<T>) values()).stream().reduce(accumulator);
         } catch (ClassCastException e) {
@@ -307,7 +308,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> T aggregate(T identity, BinaryOperator<T> accumulator) {
+    public <T> T aggregate(T identity, @NonNull BinaryOperator<T> accumulator) {
         try {
             return ((List<T>) values()).stream().reduce(identity, accumulator);
         } catch (ClassCastException e) {
@@ -317,8 +318,8 @@ public class FlexibleColumn implements Column {
 
     @Override
     public <T, R> R aggregate(R identity,
-                              BiFunction<R, ? super T, R> accumulator,
-                              BinaryOperator<R> combiner) {
+                              @NonNull BiFunction<R, ? super T, R> accumulator,
+                              @NonNull BinaryOperator<R> combiner) {
         try {
             return ((List<T>) values()).stream().reduce(identity, accumulator, combiner);
         } catch (ClassCastException e) {

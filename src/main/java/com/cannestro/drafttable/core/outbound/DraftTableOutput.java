@@ -13,7 +13,7 @@ import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
