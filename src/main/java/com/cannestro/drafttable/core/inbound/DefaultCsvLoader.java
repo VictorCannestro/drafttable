@@ -22,6 +22,8 @@ import static com.cannestro.drafttable.supporting.utils.FileUtils.deleteFileIfPr
 import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
 import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 import static com.google.common.io.Files.getNameWithoutExtension;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.nCopies;
 import static java.util.Objects.isNull;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
@@ -100,6 +102,9 @@ public class DefaultCsvLoader implements CsvLoader {
         }
         List<String> headers = firstElementOf(fullTable);
         List<List<String>> tableData = fullTable.subList(1, fullTable.size());
+        if (tableData.isEmpty()) {
+            return FlexibleDraftTable.create().fromColumnValues(headers, nCopies(headers.size(), emptyList()));
+        }
         return FlexibleDraftTable.create().fromRows(
                 getNameWithoutExtension(pathToFile),
                 IntStream.range(1, tableData.size())

@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.core.rows;
 
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
@@ -26,6 +27,6 @@ public interface Mappable {
      * }</pre>
      * @return A {@code Map}
      */
-    Map<String, @Nullable ?> asMap();
+    Map<@NonNull String, @Nullable ?> asMap();
 
 }

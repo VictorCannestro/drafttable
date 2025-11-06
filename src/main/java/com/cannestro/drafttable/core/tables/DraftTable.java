@@ -23,7 +23,7 @@ import static com.cannestro.drafttable.core.options.Items.these;
 @Beta
 public interface DraftTable {
 
-    String DEFAULT_TABLE_NAME = "important data";
+    String DEFAULT_TABLE_NAME = "important_data";
 
     /**
      * Fetches the current number of rows or records present in the {@code DraftTable}.

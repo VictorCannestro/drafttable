@@ -21,6 +21,13 @@ public class CsvDataReadTest {
         Assert.assertEquals(parsedLines.get(0).size(), 11);
     }
 
+    @Test
+    public void canReadCsvWithOnlyHeadersPresent() {
+        List<List<String>> parsedLines = CsvDataParser.readAllLines(TEST_CSV_DIRECTORY.concat("no_tornadoes.csv"));
+        Assert.assertEquals(parsedLines.size(), 1);
+        Assert.assertEquals(parsedLines.get(0).size(), 11);
+    }
+
     @DataProvider(name = "supportedFormatsData")
     public Object[][] supportedFormatsData() {
         return new Object[][] {

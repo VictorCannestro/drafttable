@@ -27,6 +27,13 @@ public class DraftTableFromCsvTest {
     }
 
     @Test
+    public void canCreateFromCsvWhenOnlyHeadersPresent() {
+        DraftTable df = FlexibleDraftTable.create().fromCSV().at(Path.of(TEST_CSV_DIRECTORY.concat("no_tornadoes.csv")));
+        Assert.assertEquals(df.rowCount(), 0);
+        Assert.assertEquals(df.columnCount(), 11);
+    }
+
+    @Test
     public void endToEndDataFrameCsvTest() {
         List<String> headers = List.of("type", "rate", "period", "workHours");
         List<List<?>> lines = List.of(

@@ -81,7 +81,7 @@ public interface TableCreator {
         } catch (InstantiationException | InvocationTargetException e) {
             throw new IllegalStateException(e);
         } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new IllegalStateException("An accessible zero args constructor was not found.", e);
+            throw new IllegalArgumentException("An accessible zero args constructor was not found.", e);
         }
     }
 
