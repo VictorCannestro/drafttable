@@ -59,6 +59,7 @@ public class CsvDataParser {
     public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull CsvParsingOptions loadingOptions) {
         try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath, loadingOptions.charset())) {
             CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
+                    .withIgnoreEmptyLine(true)
                     .withSeparator(loadingOptions.delimiter())
                     .withSkipLines(loadingOptions.skipLines())
                     .withEscapeChar(loadingOptions.escapeCharacter())
