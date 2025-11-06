@@ -6,9 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -32,16 +29,6 @@ public class FileUtils {
 
     private FileUtils() {}
 
-
-    public static URL url(@NonNull String fileUrl) {
-        try {
-            return new URI(fileUrl).toURL();
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Either no legal protocol could be found in a specification string or the string could not be parsed.", e);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("The String could not be parsed as a URI reference.", e);
-        }
-    }
 
     public static File copyToTempDirectory(@NonNull URL fileUrl,
                                            int connectionTimeoutInMillis,
@@ -76,14 +63,14 @@ public class FileUtils {
      *
      * @param filePath The destination filepath, for example {@code ./src/main/resources/csv/export_file.csv}
      */
-    public static void touchFile(@NonNull String filePath) {
+    public static void touchFile(@NonNull File file) {
         try {
-            log.debug("Attempting to create or modify the resource at {}", filePath);
-            Files.touch(new File(filePath));
+            log.debug("Attempting to create or modify the resource at {}", file.getAbsolutePath());
+            Files.touch(file);
         } catch (IOException e) {
-            log.error("Could not create or modify the resource at {}", filePath);
+            log.error("Could not create or modify the resource at {}", file.getAbsolutePath());
         }
-        log.debug("Successfully created or modified the resource at {}", filePath);
+        log.debug("Successfully created or modified the resource at {}", file.getAbsolutePath());
     }
 
     /**

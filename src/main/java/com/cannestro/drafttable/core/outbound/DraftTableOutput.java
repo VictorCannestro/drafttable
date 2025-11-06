@@ -11,7 +11,10 @@ import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
 import com.google.common.base.Strings;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -30,7 +33,8 @@ import static org.hamcrest.Matchers.nullValue;
 /**
  * @author Victor Cannestro
  */
-public record DraftTableOutput(DraftTable draftTable) {
+@Accessors(fluent = true)
+public class DraftTableOutput {
 
     public static final String DIVIDER = "=";
     public static final String EMPTY_DELIMITER = "";
@@ -39,16 +43,19 @@ public record DraftTableOutput(DraftTable draftTable) {
     public static final String SEPARATE_BY_NEW_LINE_FORMAT_STRING = "%s%n%s";
     public static final String NULL_STRING = "null";
 
+    @Getter(AccessLevel.PRIVATE) private final DraftTable draftTable;
 
-    public DraftTableOutput {
+
+    public DraftTableOutput(DraftTable draftTable) {
         if (isNull(draftTable)) {
             throw new IllegalStateException("Cannot output a null object");
         }
+        this.draftTable = draftTable;
     }
 
-    public void toCSV(@NonNull String filePath, @NonNull CsvWritingOptions options) {
+    public void toCSV(@NonNull File file, @NonNull CsvWritingOptions options) {
         CsvDataWriter.writeAllLinesToCsv(
-                filePath,
+                file,
                 draftTable().columnNames(),
                 draftTable().rows().stream()
                         .map(row -> draftTable().columnNames().stream()
@@ -64,10 +71,10 @@ public record DraftTableOutput(DraftTable draftTable) {
      * Exports the table to a destination filepath using comma delimiters and String values. Will create a new
      * file, if necessary, otherwise the existing file will be updated.
      *
-     * @param filePath The destination filepath
+     * @param file The destination file containing the filepath
      */
-    public void toCSV(@NonNull String filePath) {
-        toCSV(filePath, CustomizableWritingOptions.allDefaults());
+    public void toCSV(@NonNull File file) {
+        toCSV(file, CustomizableWritingOptions.allDefaults());
     }
 
     /**

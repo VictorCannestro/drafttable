@@ -10,6 +10,7 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class DraftTableFromCsvTest {
         FlexibleDraftTable.create()
                 .fromRowValues(headers, lines)
                 .write()
-                .toCSV(TEST_CSV_DIRECTORY.concat("temp_3.csv"), CustomizableWritingOptions.builder().fillerValue("NULL").build());
+                .toCSV(new File(TEST_CSV_DIRECTORY.concat("temp_3.csv")), CustomizableWritingOptions.builder().fillerValue("NULL").build());
         Assert.assertEquals(
                 CsvDataParser.mapCsvToJsonStrings(TEST_CSV_DIRECTORY.concat("temp_3.csv"), PayDetails.class).size(),
                 3
@@ -60,7 +61,7 @@ public class DraftTableFromCsvTest {
 
         FlexibleDraftTable.create().fromRowValues(headers, lines)
                 .write()
-                .toCSV(TEST_CSV_DIRECTORY.concat("temp_4.csv"), CustomizableWritingOptions.allDefaults());
+                .toCSV(new File(TEST_CSV_DIRECTORY.concat("temp_4.csv")), CustomizableWritingOptions.allDefaults());
         DraftTable df = FlexibleDraftTable.create().fromCSV().at(Path.of(TEST_CSV_DIRECTORY.concat("temp_4.csv")));
         Assert.assertEqualsNoOrder(
                 df.columnNames(),

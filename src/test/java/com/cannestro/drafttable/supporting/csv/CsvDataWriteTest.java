@@ -9,11 +9,10 @@ import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.util.List;
 
 import static com.cannestro.drafttable.Constants.TEST_CSV_DIRECTORY;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.lastElementOf;
 
 
 @Test(groups = {"component"})
@@ -27,7 +26,7 @@ public class CsvDataWriteTest {
                 List.of("Hourly", "18.50", "", "80"),
                 List.of("Salary", "50000.00", "Bi-Weekly", "80")
         );
-        CsvDataWriter.writeAllLinesToCsv(TEST_CSV_DIRECTORY.concat("temp_1.csv"), headers, lines, CustomizableWritingOptions.builder().fillerValue("NULL").build());
+        CsvDataWriter.writeAllLinesToCsv(new File(TEST_CSV_DIRECTORY.concat("temp_1.csv")), headers, lines, CustomizableWritingOptions.builder().fillerValue("NULL").build());
 
         Assert.assertEquals(lines.size(), 3);
         Assert.assertEquals(

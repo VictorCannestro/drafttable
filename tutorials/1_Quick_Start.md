@@ -543,16 +543,12 @@ tornadoes.where("DateTime", LocalDateTime::getYear, allOf(greaterThan(1999), les
 ### To CSV
 We can write our data to a CSV file using:
 ```java
-tornadoes.write().toCSV("./src/test/resources/csv/temp.csv");
+tornadoes.write().toCSV(new File("./src/test/resources/csv/temp.csv"));
 ```
 or 
 ```java
-CsvWritingOptions writingOptions = CustomizableWritingOptions.builder()
-        .delimiter('|')
-        .fillerValue("NULL")
-        .lineEnder(";")
-        .build();
-tornadoes.write().toCSV("./src/test/resources/csv/temp.csv", writingOptions);
+CsvWritingOptions writingOptions = CustomizableWritingOptions.builder().delimiter('|').fillerValue("NULL").lineEnder(";").build();
+tornadoes.write().toCSV(new File("./src/test/resources/csv/temp.csv"), writingOptions);
 ```
 where the addition of the `CsvWritingOptions` argument enables us to overwrite the defaults of things like export
 delimiters, quote characters, fill values for missing entries, etc.
@@ -628,8 +624,9 @@ Note that this only works here because the filter conditions are *mutually exclu
 
 #### The complete pipeline
 ```java
-FlexibleDraftTable.create().fromCSV()
-                 .at(Path.of("csv/tornadoes_1950-2014.csv"))
+Path inputFilepath = Path.of("csv/tornadoes_1950-2014.csv");
+File outputFile = new File("./data/mid-atlantic_tornadoes_summer_1950-2014.csv");
+FlexibleDraftTable.create().fromCSV().at(inputFilepath)
                  .dropAllExcept(these("Date", "Time", "State", "Injuries", "Fatalities"))
                  .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                  .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
@@ -639,7 +636,7 @@ FlexibleDraftTable.create().fromCSV()
                  .where("Region", is("Middle Atlantic"))
                  .orderBy(ASCENDING)
                  .write()
-                 .toCSV("./data/mid-atlantic_tornadoes_summer_1950-2014.csv", "");
+                 .toCSV(outputFile);
 ```
 
 

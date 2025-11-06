@@ -9,9 +9,9 @@ import com.opencsv.ResultSetHelperService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,28 +26,28 @@ public class CsvDataWriter {
     private CsvDataWriter() {}
 
     /**
-     * Exports the provided list of line data to the destination filepath using comma delimiters <b>in the user's
-     * defined order</b>. Will create a new file, if necessary, otherwise the existing file will be updated. Note that
-     * the order of the headers <b>must match</b> the order of the data within each line to establish data integrity.
-     * All missing data in a given line, relative to the number of headers, will be filled with a user defined value.
+     * Exports the provided list of line data to the destination filepath using comma delimiters, unless otherwise
+     * specified, <b>in the user's defined order</b>. Will create a new file, if necessary, otherwise the existing file
+     * will be updated. Note that the order of the headers <b>must match</b> the order of the data within each line to
+     * establish data integrity.
      *
-     * @param filePath The destination filepath, for example {@code ./src/main/resources/csv/export_file.csv}
+     * @param file The destination file containing the filepath, for example {@code ./src/main/resources/csv/export_file.csv}
      * @param lines A nested list of data where each line will be mapped to a row
      * @param headers The column name labels
      * @param writeOptions Any customized CSV export options
      * @return A flag indicating success or failure of the write operation
      */
-    public static boolean writeAllLinesToCsv(@NonNull String filePath,
+    public static boolean writeAllLinesToCsv(@NonNull File file,
                                              @NonNull List<String> headers,
                                              @NonNull List<List<String>> lines,
                                              @NonNull CsvWritingOptions writeOptions) {
-        log.debug("Attempting CSV export to: {}", filePath);
-        FileUtils.touchFile(filePath);
+        log.debug("Attempting CSV export to: {}", file.getName());
+        FileUtils.touchFile(file);
         List<List<String>> data = new ArrayList<>(List.of(headers));
         data.addAll(lines);
         ResultSetHelperService resultSetHelper = new ResultSetHelperService();
         resultSetHelper.setNullDefault(writeOptions.fillerValue());
-        try (CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(Paths.get(filePath).toAbsolutePath().toFile()))
+        try (CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(file))
                 .withSeparator(writeOptions.delimiter())
                 .withEscapeChar(writeOptions.escapeCharacter())
                 .withQuoteChar(writeOptions.quoteCharacter())
@@ -59,25 +59,25 @@ public class CsvDataWriter {
             log.error("Could not export data to CSV. Encountered the following: {}", e.toString());
             return false;
         }
-        log.debug("Successfully completed CSV export to: {}", filePath);
+        log.debug("Successfully completed CSV export to: {}", file.getAbsolutePath());
         return true;
     }
 
     /**
-     * Exports the provided list of line data to the destination filepath using comma delimiters <b>in the user's
+     * Exports the provided list of line data to the destination filepath using a comma delimiter, new line escape
+     * character, double quote as the quote character, and an empty string as the filler value <b>in the user's
      * defined order</b>. Will create a new file, if necessary, otherwise the existing file will be updated. Note that
      * the order of the headers <b>must match</b> the order of the data within each line to establish data integrity.
-     * All missing data in a given line, relative to the number of headers, will be filled with an empty string.
      *
-     * @param filePath The destination filepath, for example {@code ./src/main/resources/csv/export_file.csv}
+     * @param file The destination file containing the filepath, for example {@code ./src/main/resources/csv/export_file.csv}
      * @param lines A nested list of data where each line will be mapped to a row
      * @param headers The column name labels
      * @return A flag indicating success or failure of the write operation
      */
-    public static boolean writeAllLinesToCsv(@NonNull String filePath,
+    public static boolean writeAllLinesToCsv(@NonNull File file,
                                              @NonNull List<String> headers,
                                              @NonNull List<List<String>> lines) {
-        return writeAllLinesToCsv(filePath, headers, lines, CustomizableWritingOptions.allDefaults());
+        return writeAllLinesToCsv(file, headers, lines, CustomizableWritingOptions.allDefaults());
     }
 
 }
