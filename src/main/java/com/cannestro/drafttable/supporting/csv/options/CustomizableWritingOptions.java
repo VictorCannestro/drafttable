@@ -5,6 +5,8 @@ import com.cannestro.drafttable.supporting.csv.CsvWritingOptions;
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
 
+import java.nio.charset.Charset;
+
 import static java.util.Objects.isNull;
 
 
@@ -13,6 +15,7 @@ import static java.util.Objects.isNull;
  * @param delimiter defaults to {@code ','}
  * @param escapeCharacter defaults to {@code '\n'}
  * @param quoteCharacter defaults to {@code '\"'}
+ * @param charset defaults to {@code StandardCharsets.UTF_8}
  * @param lineEnder defaults to {@code "\n"}
  * @param fillerValue defaults to {@code ""}
  */
@@ -20,6 +23,7 @@ import static java.util.Objects.isNull;
 public record CustomizableWritingOptions(Character delimiter,
                                          Character escapeCharacter,
                                          Character quoteCharacter,
+                                         Charset charset,
                                          String lineEnder,
                                          String fillerValue) implements CsvWritingOptions {
 
@@ -32,6 +36,9 @@ public record CustomizableWritingOptions(Character delimiter,
         }
         if (isNull(quoteCharacter)) {
             quoteCharacter = CsvEssentials.DEFAULT_QUOTE_CHAR;
+        }
+        if (isNull(charset)) {
+            charset = CsvEssentials.DEFAULT_CHARSET;
         }
         if (isNull(lineEnder)) {
             lineEnder = String.valueOf(CsvEssentials.DEFAULT_ESCAPE_CHAR);

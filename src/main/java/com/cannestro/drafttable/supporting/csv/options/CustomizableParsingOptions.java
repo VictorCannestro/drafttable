@@ -5,6 +5,8 @@ import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import lombok.Builder;
 
+import java.nio.charset.Charset;
+
 import static java.util.Objects.isNull;
 
 
@@ -13,6 +15,7 @@ import static java.util.Objects.isNull;
  * @param delimiter defaults to {@code ','}
  * @param escapeCharacter defaults to {@code '\n'}
  * @param quoteCharacter defaults to {@code '\"'}
+ * @param charset defaults to {@code StandardCharsets.UTF_8}
  * @param useStrictQuotes defaults to {@code false}
  * @param ignoreLeadingWhiteSpace defaults to {@code false}
  * @param ignoreQuotations defaults to {@code false}
@@ -23,6 +26,7 @@ import static java.util.Objects.isNull;
 public record CustomizableParsingOptions(Character delimiter,
                                          Character escapeCharacter,
                                          Character quoteCharacter,
+                                         Charset charset,
                                          boolean useStrictQuotes,
                                          boolean ignoreLeadingWhiteSpace,
                                          boolean ignoreQuotations,
@@ -38,6 +42,9 @@ public record CustomizableParsingOptions(Character delimiter,
         }
         if (isNull(quoteCharacter)) {
             quoteCharacter = CsvEssentials.DEFAULT_QUOTE_CHAR;
+        }
+        if (isNull(charset)) {
+            charset = CsvEssentials.DEFAULT_CHARSET;
         }
     }
 

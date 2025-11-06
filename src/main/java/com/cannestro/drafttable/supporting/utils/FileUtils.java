@@ -7,7 +7,7 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.temporal.ChronoUnit;
@@ -92,24 +92,28 @@ public class FileUtils {
         }
     }
 
-    public static Reader createReaderFromResource(@NonNull String resourceFilePath) throws IOException {
+    public static Reader createReaderFromResource(@NonNull String resourceFilePath, Charset charset) throws IOException {
         try {
-            Reader reader = new BufferedReader(new InputStreamReader(new FileInputStream(resourceFilePath), StandardCharsets.UTF_8));
+            Reader reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(resourceFilePath),
+                    charset
+            ));
             log.debug("Successfully loaded {} using the FileInputStream.", resourceFilePath);
             return reader;
         } catch (FileNotFoundException e) {
             log.debug("Could not find {} through FileInputStream. Attempting to search for the resource.", resourceFilePath);
         }
         try {
-            Reader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(
-                    Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFilePath)
-            )));
+            Reader reader = new BufferedReader(new InputStreamReader(
+                    Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceFilePath)),
+                    charset
+            ));
             log.debug("Successfully loaded {} using the ContextClassLoader.", resourceFilePath);
             return reader;
         } catch (NullPointerException e) {
             log.debug("Could not load {} using the ContextClassLoader. Attempting to search elsewhere.", resourceFilePath);
         }
-        return java.nio.file.Files.newBufferedReader(walkFileTreeToFind(resourceFilePath));
+        return java.nio.file.Files.newBufferedReader(walkFileTreeToFind(resourceFilePath), charset);
     }
 
     public static Path walkFileTreeToFind(@NonNull String filePath) {

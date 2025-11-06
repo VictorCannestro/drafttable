@@ -47,7 +47,7 @@ public class CsvDataWriter {
         data.addAll(lines);
         ResultSetHelperService resultSetHelper = new ResultSetHelperService();
         resultSetHelper.setNullDefault(writeOptions.fillerValue());
-        try (CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(file))
+        try (CSVWriter writer = (CSVWriter) new CSVWriterBuilder(new FileWriter(file, writeOptions.charset()))
                 .withSeparator(writeOptions.delimiter())
                 .withEscapeChar(writeOptions.escapeCharacter())
                 .withQuoteChar(writeOptions.quoteCharacter())
