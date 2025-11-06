@@ -25,19 +25,6 @@ types. `DraftTable` objects have a variety of capabilities to process data in a 
 - Handle missing values
 - Edit existing values
 
-### Supported Formats
-|        Format        | Import | Export |
-|:--------------------:|:------:|:------:|
-|   Delimited `.txt`   |   x    |   x    |
-|        `.csv`        |   x    |   x    |
-|        `.tsv`        |   x    |   x    |
-|       `.json`        |        |   x    |
-|        Excel         |   *    |        |
-|    Apache Parquet    |   *    |        |
-| User defined objects |   x    |   x    |
-
-*indicates work on the table
-
 ## Tutorials
 Ready to explore more? 
 
@@ -91,6 +78,19 @@ FlexibleDraftTable.create().fromCSV().at(url)
 |    -91.02 |  198.5 |    MS |         58 |   4.0 |     12.0 |  100.0 |      795 |      32.7 | 1971-02-21T16:00 |
 ```
 
+## Supported Formats
+|        Format        | Import | Export |
+|:--------------------:|:------:|:------:|
+|   Delimited `.txt`   |   x    |   x    |
+|        `.csv`        |   x    |   x    |
+|        `.tsv`        |   x    |   x    |
+|       `.json`        |        |   x    |
+|        Excel         |   *    |        |
+|    Apache Parquet    |   *    |        |
+| User defined objects |   x    |   x    |
+
+*indicates work on the table
+
 ## Binaries
 Binaries are available on ___. To pull all the Java 17 compatible components of the DraftTable library, in
 your `build.gradle` file dependencies include:
@@ -101,7 +101,3 @@ where `gradle.properties` contains the latest version. For example:
 ```groovy
 draftTableVersion = 0.+
 ```
-
-## Development and Release
-Development happens on the `develop` branch, which has the version number of the next release with "-SNAPSHOT" appended
-to it in the `gradle.properties` file. All `master` branch releases will drop the  "-SNAPSHOT" post-fix in the version.
