@@ -50,32 +50,37 @@ FlexibleDraftTable.create().fromCSV().at(inputFilepath)
                  .write()
                  .toCSV(outputFile);
 ```
+
 ### Example 2: Pretty printing a rich tabular display after combining and sorting by multiple columns
 ```java
+record Dimension(Double length, Double width) {}
 URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/master/src/test/resources/csv/tornadoes_1950-2014.csv");
 FlexibleDraftTable.create().fromCSV().at(url)
-         .nameTable("tornadoes_by_highest_injuries")     
-         .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
-         .orderBy(using("Injuries", "DateTime"), DESCENDING)
-         .top(10)
-         .write()
-         .prettyPrint();
+                 .nameTable("tornadoes_by_highest_injuries")
+                 .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
+                 .transform("Length", (String length) -> Double.parseDouble(length))
+                 .transform("Width", (String width) -> Double.parseDouble(width))
+                 .melt("Length", "Width", into("Dimension"), Dimension::new)
+                 .orderBy(these("Injuries", "DateTime"), DESCENDING)
+                 .top(10)
+                 .write()
+                 .prettyPrint();
 ```
 ```
-                                          tornadoes_by_highest_injuries                                                 
-=================================================================================================================
-| Start Lon | Length | State | Fatalities | Scale | State No | Width  | Injuries | Start Lat |     DateTime     |
-=================================================================================================================
-|    -98.65 |   46.9 |    TX |         42 |   4.0 |     43.0 | 1320.0 |     1740 |     33.82 | 1979-04-10T17:50 |
-|    -98.65 |   34.1 |    TX |         42 |   4.0 |     43.0 | 1320.0 |     1740 |     33.82 | 1979-04-10T17:50 |
-|   -87.935 |  80.68 |    AL |         64 |   4.0 |    103.0 | 2600.0 |     1500 |   33.0297 | 2011-04-27T15:43 |
-|    -72.17 |   34.9 |    MA |         94 |   4.0 |      1.0 |  900.0 |     1228 |     42.47 | 1953-06-09T14:25 |
-|  -94.5932 |  21.62 |    MO |        158 |   5.0 |     38.0 | 1600.0 |     1150 |   37.0524 | 2011-05-22T16:34 |
-|    -84.05 |   31.3 |    OH |         36 |   5.0 |      3.0 |  533.0 |     1150 |     39.63 | 1974-04-03T13:30 |
-|    -83.85 |   18.9 |    MI |        116 |   5.0 |     10.0 |  833.0 |      844 |      43.1 | 1953-06-08T19:30 |
-|    -86.38 |   48.0 |    IN |         25 |   4.0 |     14.0 |  880.0 |      835 |      40.4 | 1965-04-11T18:20 |
-|    -91.02 |  202.1 |    MS |         58 |   4.0 |     12.0 |  100.0 |      795 |      32.7 | 1971-02-21T16:00 |
-|    -91.02 |  198.5 |    MS |         58 |   4.0 |     12.0 |  100.0 |      795 |      32.7 | 1971-02-21T16:00 |
+                                                    tornadoes_by_highest_injuries                                                     
+======================================================================================================================================
+| Start Lon | State | Fatalities | Scale | State No |              Dimension               | Injuries | Start Lat |     DateTime     |
+======================================================================================================================================
+|    -84.92 |    KY |        1.0 |   3.0 |     15.0 |   Dimension[length=21.1, width=10.0] |     98.0 |     37.43 | 1974-04-03T17:35 |
+|    -85.38 |    IN |        2.0 |   4.0 |     16.0 |   Dimension[length=30.9, width=10.0] |     97.0 |     40.55 | 1965-04-11T19:10 |
+|    -94.03 |    LA |        1.0 |   3.0 |     11.0 |  Dimension[length=32.0, width=500.0] |     96.0 |      32.1 | 1987-11-15T18:45 |
+|    -90.72 |    AR |        3.0 |   3.0 |     17.0 |  Dimension[length=51.8, width=880.0] |     96.0 |      35.6 | 1952-03-21T18:45 |
+|    -96.05 |    OK |        8.0 |   3.0 |     21.0 | Dimension[length=22.0, width=1760.0] |     95.0 |     35.47 | 1984-04-26T23:33 |
+|     -82.7 |    FL |        3.0 |   3.0 |     36.0 |   Dimension[length=1.5, width=200.0] |     94.0 |     27.92 | 1978-05-04T09:47 |
+|     -82.8 |    OH |        7.0 |   5.0 |      6.0 |  Dimension[length=34.0, width=400.0] |     93.0 |      38.7 | 1968-04-23T15:05 |
+|    -95.95 |    KS |        1.0 |   4.0 |     23.0 |  Dimension[length=27.5, width=880.0] |     92.0 |     39.18 | 1960-05-19T17:47 |
+|    -83.25 |    MI |        0.0 |   2.0 |     15.0 |  Dimension[length=5.0, width=2500.0] |     90.0 |      42.4 | 1997-07-02T16:00 |
+|    -88.47 |    IL |        2.0 |   2.0 |     22.0 |  Dimension[length=35.9, width=120.0] |     90.0 |      41.4 | 1965-11-12T14:35 |
 ```
 
 ## Supported Formats
