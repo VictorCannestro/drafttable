@@ -11,11 +11,11 @@ of Java streams, lambdas, records, and generics to enable a more declarative sty
 
 At a glance, `DraftTable` objects can be created from a collection of `Row`, `Column`, or other serializable objects. The
 underlying data of a `Column` may be of an arbitrary type, and a `DraftTable` may have multiple columns of different 
-types. `DraftTable` objects have a variety of capabilities to process tabular data.
+types. `DraftTable` objects have a variety of capabilities to process data in a tabular fashion.
 
 ## Features
-- Import data from CSV, TSV, URL, Fixed Width text file, or a collection of user defined Java objects
-- Export data to a CSV, JSON, Fixed Width text file, or a collection of user defined Java objects 
+- Import data from local or URL
+- Export data 
 - Map/Filter/Reduce operations
 - Sorting capabilities
 - Grouping and aggregation
@@ -24,6 +24,18 @@ types. `DraftTable` objects have a variety of capabilities to process tabular da
 - Add and remove columns or rows
 - Handle missing values
 - Edit existing values
+
+### Supported Formats
+| Format               | Import | Export |
+|----------------------|:------:|:------:|
+| Delimited `.txt`     |   x    |   x    |
+| `.csv`               |   x    |   x    |
+| `.tsv`               |   x    |   x    |
+| `.json`              |        |   x    |
+| Excel                |   *    |        |
+| Apache Parquet       |   *    |        |
+| User defined objects |   x    |   x    |
+*indicates work on the table
 
 ## Tutorials
 Ready to explore more? 
