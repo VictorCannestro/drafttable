@@ -14,8 +14,8 @@ underlying data of a `Column` may be of an arbitrary type, and a `DraftTable` ma
 types. `DraftTable` objects have a variety of capabilities to process tabular data.
 
 ## Features
-- Import data from CSV, URL, or a collection of user defined Java objects
-- Export data to a CSV, JSON, or a collection of user defined Java objects 
+- Import data from CSV, TSV, URL, Fixed Width text file, or a collection of user defined Java objects
+- Export data to a CSV, JSON, Fixed Width text file, or a collection of user defined Java objects 
 - Map/Filter/Reduce operations
 - Sorting capabilities
 - Grouping and aggregation
@@ -35,8 +35,9 @@ directory, in general, for access to the latest tutorials.
 ## Examples
 ### Example 1: Reading in a CSV, processing it, then exporting the results to another CSV
 ```java
-Path path = Path.of("./src/main/resources/csv/employee_data.csv");
-FlexibleDraftTable.create().fromCSV().at(path)
+Path inputFilepath = Path.of("./src/main/resources/csv/employee_data.csv");
+File outputFile = new File("output/manager_login_information.csv");
+FlexibleDraftTable.create().fromCSV().at(inputFilepath)
                  .where("state", is(not("CA")))
                  .where("jobName", endsWith("manager"))
                  .transform("nonExempt", (String exemptValue) -> exemptValue.equals("1"))
@@ -47,12 +48,13 @@ FlexibleDraftTable.create().fromCSV().at(path)
                  .melt("countryCode", "employeeId", into("managerLoginName"), String::concat)
                  .select(these("managerLoginName", "locationNumber"))
                  .write()
-                 .toCSV("output/manager_login_information.csv");
+                 .toCSV(outputFile);
 ```
 ### Example 2: Pretty printing a rich tabular display after combining and sorting by multiple columns
 ```java
 URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/master/src/test/resources/csv/tornadoes_1950-2014.csv");
 FlexibleDraftTable.create().fromCSV().at(url)
+         .nameTable("tornadoes_by_highest_injuries")     
          .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
          .orderBy(using("Injuries", "DateTime"), DESCENDING)
          .top(10)
@@ -60,7 +62,7 @@ FlexibleDraftTable.create().fromCSV().at(url)
          .prettyPrint();
 ```
 ```
-                                             tornadoes_1950-2014                                                 
+                                          tornadoes_by_highest_injuries                                                 
 =================================================================================================================
 | Start Lon | Length | State | Fatalities | Scale | State No | Width  | Injuries | Start Lat |     DateTime     |
 =================================================================================================================
