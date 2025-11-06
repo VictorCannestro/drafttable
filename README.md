@@ -26,15 +26,16 @@ types. `DraftTable` objects have a variety of capabilities to process data in a 
 - Edit existing values
 
 ### Supported Formats
-| Format               | Import | Export |
-|----------------------|:------:|:------:|
-| Delimited `.txt`     |   x    |   x    |
-| `.csv`               |   x    |   x    |
-| `.tsv`               |   x    |   x    |
-| `.json`              |        |   x    |
-| Excel                |   *    |        |
-| Apache Parquet       |   *    |        |
+|        Format        | Import | Export |
+|:--------------------:|:------:|:------:|
+|   Delimited `.txt`   |   x    |   x    |
+|        `.csv`        |   x    |   x    |
+|        `.tsv`        |   x    |   x    |
+|       `.json`        |        |   x    |
+|        Excel         |   *    |        |
+|    Apache Parquet    |   *    |        |
 | User defined objects |   x    |   x    |
+
 *indicates work on the table
 
 ## Tutorials
