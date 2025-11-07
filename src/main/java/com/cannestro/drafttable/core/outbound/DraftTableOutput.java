@@ -10,7 +10,6 @@ import com.cannestro.drafttable.supporting.csv.options.CustomizableWritingOption
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
-import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.jspecify.annotations.NonNull;
@@ -294,7 +293,7 @@ public class DraftTableOutput {
         return String.format(
                 SEPARATE_BY_NEW_LINE_FORMAT_STRING,
                 StringUtils.center(draftTable().tableName(), length),
-                Strings.repeat(DIVIDER, length)
+                StringUtils.repeat(DIVIDER, length)
         );
     }
 

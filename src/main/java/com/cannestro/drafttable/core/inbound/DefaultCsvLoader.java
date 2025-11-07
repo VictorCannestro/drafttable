@@ -6,6 +6,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
+import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -21,13 +22,15 @@ import static com.cannestro.drafttable.supporting.utils.FileUtils.copyToTempDire
 import static com.cannestro.drafttable.supporting.utils.FileUtils.deleteFileIfPresent;
 import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
 import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
-import static com.google.common.io.Files.getNameWithoutExtension;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.nCopies;
 import static java.util.Objects.isNull;
 import static org.apache.commons.io.FilenameUtils.getExtension;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public class DefaultCsvLoader implements CsvLoader {
 
     public static final List<String> SUPPORTED_EXTENSIONS = List.of("csv", "txt", "tsv");
@@ -48,7 +51,7 @@ public class DefaultCsvLoader implements CsvLoader {
             return createWithoutSchema(file.getPath(), loadingOptions);
         } else {
             return FlexibleDraftTable.create().fromObjects(
-                    getNameWithoutExtension(file.getName()),
+                    FilenameUtils.getName(file.getName()),
                     buildBeansFrom(path.toFile().getPath(), loadingOptions)
             );
         }
@@ -70,7 +73,7 @@ public class DefaultCsvLoader implements CsvLoader {
         DraftTable draftTable = isNull(loadingOptions.type())
                 ? createWithoutSchema(file.getPath(), loadingOptions)
                 : FlexibleDraftTable.create().fromObjects(
-                        getNameWithoutExtension(file.getName()),
+                        FilenameUtils.getName(file.getName()),
                         buildBeansFrom(file.getPath(), loadingOptions)
                   );
         cleanUpTemporaryFiles(file);
@@ -82,7 +85,7 @@ public class DefaultCsvLoader implements CsvLoader {
         File file = path.toFile();
         assumeInputIsCsvCompatible(file.getName());
         return FlexibleDraftTable.create().fromObjects(
-                getNameWithoutExtension(file.getName()),
+                FilenameUtils.getName(file.getName()),
                 buildBeansFrom(file.getPath(), csvSchema)
         );
     }
@@ -106,7 +109,7 @@ public class DefaultCsvLoader implements CsvLoader {
             return FlexibleDraftTable.create().fromColumnValues(headers, nCopies(headers.size(), emptyList()));
         }
         return FlexibleDraftTable.create().fromRows(
-                getNameWithoutExtension(pathToFile),
+                FilenameUtils.getName(pathToFile),
                 IntStream.range(1, tableData.size())
                         .mapToObj(rowIndex -> zip(headers, tableData.get(rowIndex)))
                         .map(HashMapRow::new)

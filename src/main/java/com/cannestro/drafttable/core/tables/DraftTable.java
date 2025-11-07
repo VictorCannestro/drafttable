@@ -5,7 +5,7 @@ import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.options.Item;
 import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
-import com.google.common.annotations.Beta;
+
 import com.cannestro.drafttable.core.outbound.DraftTableOutput;
 import org.hamcrest.Matcher;
 import org.jspecify.annotations.Nullable;
@@ -20,7 +20,6 @@ import static com.cannestro.drafttable.core.options.Items.these;
 /**
  * @author Victor Cannestro
  */
-@Beta
 public interface DraftTable {
 
     String DEFAULT_TABLE_NAME = "important_data";

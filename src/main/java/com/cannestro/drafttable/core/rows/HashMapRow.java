@@ -3,7 +3,7 @@ package com.cannestro.drafttable.core.rows;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.annotations.Beta;
+
 import org.jspecify.annotations.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -18,7 +18,6 @@ import static java.util.Objects.isNull;
 /**
  * @author Victor Cannestro
  */
-@Beta
 @Slf4j
 public record HashMapRow(Map<String, ?> map) implements Row {
 

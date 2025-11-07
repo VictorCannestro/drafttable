@@ -1,6 +1,5 @@
 package com.cannestro.drafttable.supporting.utils;
 
-import com.google.common.io.Files;
 import org.jspecify.annotations.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -61,12 +60,12 @@ public class FileUtils {
     /**
      * Creates an empty file or updates the last updated timestamp on the same as in the UNIX command of the same name
      *
-     * @param filePath The destination filepath, for example {@code ./src/main/resources/csv/export_file.csv}
+     * @param file The destination file containing the filepath, for example {@code ./src/main/resources/csv/export_file.csv}
      */
     public static void touchFile(@NonNull File file) {
         try {
             log.debug("Attempting to create or modify the resource at {}", file.getAbsolutePath());
-            Files.touch(file);
+            org.apache.commons.io.FileUtils.touch(file);
         } catch (IOException e) {
             log.error("Could not create or modify the resource at {}", file.getAbsolutePath());
         }

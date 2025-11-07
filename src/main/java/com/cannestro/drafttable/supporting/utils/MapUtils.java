@@ -1,6 +1,8 @@
 package com.cannestro.drafttable.supporting.utils;
 
-import com.google.common.collect.Streams;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.paumard.streams.StreamsUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +21,7 @@ public class MapUtils {
             throw new IllegalArgumentException("Each key must have a corresponding value and vice versa");
         }
         Map<K, V> map = new HashMap<>();
-        Streams.forEachPair(keys.stream(), values.stream(), map::put);
+        StreamsUtils.zip(keys.stream(), values.stream(), Entry::new).forEach(kvEntry -> map.put(kvEntry.key(), kvEntry.value()));
         return map;
     }
 

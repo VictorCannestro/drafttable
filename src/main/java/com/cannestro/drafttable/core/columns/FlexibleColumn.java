@@ -3,7 +3,7 @@ package com.cannestro.drafttable.core.columns;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.databind.JavaType;
-import com.google.common.annotations.Beta;
+
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
 import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
@@ -33,7 +33,6 @@ import static java.util.Objects.isNull;
 /**
  * @author Victor Cannestro
  */
-@Beta
 @Getter
 @Accessors(fluent = true)
 @EqualsAndHashCode

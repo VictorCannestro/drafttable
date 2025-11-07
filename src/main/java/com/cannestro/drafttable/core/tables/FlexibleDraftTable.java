@@ -7,7 +7,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.options.Item;
 import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
-import com.google.common.annotations.Beta;
+
 import com.cannestro.drafttable.core.outbound.DraftTableOutput;
 import com.cannestro.drafttable.supporting.utils.ListUtils;
 import com.cannestro.drafttable.supporting.utils.MapUtils;
@@ -36,7 +36,6 @@ import static org.hamcrest.Matchers.*;
 /**
  * @author Victor Cannestro
  */
-@Beta
 @Accessors(fluent = true)
 @EqualsAndHashCode
 public class FlexibleDraftTable implements DraftTable {

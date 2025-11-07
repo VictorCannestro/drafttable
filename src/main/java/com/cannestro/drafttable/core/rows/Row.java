@@ -1,6 +1,5 @@
 package com.cannestro.drafttable.core.rows;
 
-import com.google.common.annotations.Beta;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Map;
 /**
  * @author Victor Cannestro
  */
-@Beta
 public interface Row {
 
     /**

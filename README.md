@@ -7,23 +7,26 @@
 ## Introduction
 **DraftTable** is a pure Java 17+ library loosely inspired by the Python DataFrame API and Java library Tablesaw that 
 enables the creation of chainable data processing pipelines. It can be considered a collection of patterns built on top
-of Java streams, lambdas, records, and generics to enable a more declarative style of programming. 
+of Java streams, lambdas, records, generics, and other open source libraries to enable a more declarative style of
+programming. 
 
-At a glance, `DraftTable` objects can be created from a collection of `Row`, `Column`, or other serializable objects. The
-underlying data of a `Column` may be of an arbitrary type, and a `DraftTable` may have multiple columns of different 
-types. `DraftTable` objects have a variety of capabilities to process data in a tabular fashion.
+At a glance, a `DraftTable` object is a collection of `Row` or `Column` objects. The underlying data of a `Column` may 
+have an arbitrary, homogeneous type, and a `DraftTable` may have zero, one, or more columns, each having potentially 
+different types. A `Row`, on the other hand, may have an arbitrary number of types (with data corresponding to the type
+of each `Column`). `DraftTable` objects have a variety of capabilities to process tabular or nested data in a *tabular 
+fashion*.
 
 ## Features
-- Import data from local or URL
-- Export data 
-- Map/Filter/Reduce operations
+- Import data from a [supported format](#supported-formats) via local or URL
+- Export data to [supported format](#supported-formats)
+- Map/Filter/Reduce operations (powered in part by [Java Hamcrest Matchers](https://github.com/hamcrest/JavaHamcrest))
 - Sorting capabilities
 - Grouping and aggregation
-- Pipeline introspection in-line 
-- Combine tables by appending 
-- Add and remove columns or rows
-- Handle missing values
-- Edit existing values
+- Pipeline introspection in-line for conditional or branching actions
+- Combining compatible tables via appending 
+- Add or drop columns (or rows)
+- Fill missing values
+- Edit/transform existing values
 
 ## Tutorials
 Ready to explore more? 
@@ -86,13 +89,13 @@ FlexibleDraftTable.create().fromCSV().at(url)
 ## Supported Formats
 |        Format        | Import | Export |
 |:--------------------:|:------:|:------:|
-|   Delimited `.txt`   |   x    |   x    |
-|        `.csv`        |   x    |   x    |
-|        `.tsv`        |   x    |   x    |
-|       `.json`        |        |   x    |
+|   Delimited `.txt`   |   ✅    |   ✅    |
+|        `.csv`        |   ✅    |   ✅    |
+|        `.tsv`        |   ✅    |   ✅    |
+|       `.json`        |   *    |   ✅    |
 |        Excel         |   *    |        |
 |    Apache Parquet    |   *    |        |
-| User defined objects |   x    |   x    |
+| User defined objects |   ✅    |   ✅    |
 
 *indicates work on the table
 

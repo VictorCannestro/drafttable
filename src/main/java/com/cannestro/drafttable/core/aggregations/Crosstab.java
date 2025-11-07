@@ -1,7 +1,7 @@
 package com.cannestro.drafttable.core.aggregations;
 
 import com.cannestro.drafttable.core.tables.DraftTable;
-import com.google.common.annotations.Beta;
+
 
 import static java.util.Objects.isNull;
 
@@ -11,7 +11,6 @@ import static java.util.Objects.isNull;
  *
  * @author Victor Cannestro
  */
-@Beta
 public record Crosstab(DraftTable draftTable) {
 
     public Crosstab {

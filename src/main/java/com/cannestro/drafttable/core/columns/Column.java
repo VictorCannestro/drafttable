@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.aggregations.ColumnGrouping;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
-import com.google.common.annotations.Beta;
+
 import org.jspecify.annotations.NonNull;
 import org.hamcrest.Matcher;
 import org.jspecify.annotations.Nullable;
@@ -20,7 +20,6 @@ import java.util.function.*;
 /**
  * @author Victor Cannestro
  */
-@Beta
 public interface Column {
 
     /**
