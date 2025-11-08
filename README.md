@@ -49,7 +49,7 @@ FlexibleDraftTable.create().fromCSV().at(inputFilepath)
                  .orderBy("yearsOfService", DESCENDING)
                  .top(50)
                  .melt("countryCode", "employeeId", into("managerLoginName"), String::concat)
-                 .select(these("managerLoginName", "locationNumber"))
+                 .select("managerLoginName", "locationNumber")
                  .write()
                  .toCSV(outputFile);
 ```

@@ -376,7 +376,7 @@ tornadoes.where("Fatalities", greaterThan(0))
          .where("DateTime", LocalDateTime::getMonth, is(APRIL))
          .melt("Length", "Width", as("Dimension"), Dimension::new)
          .where("Dimension", (Dimension dim) -> (dim.length() > 10) || (dim.width() > 300), is(true))
-         .select(these("State", "DateTime"));
+         .select("State", "DateTime");
 ```
 We end the pipeline by filtering out all columns other than `"State"` and `"DateTime"`.  Using this bundling strategy
 we can create increasingly sophisticated filtering conditions that incorporate multiple columns. For example:
@@ -390,7 +390,7 @@ tornadoes.melt("Length", "Width", as("Dimension"), Dimension::new)
          .melt("Coordinate", "Dimension",  into("PathInfo"), TornadoPathInfo::new)
          .where("PathInfo", (TornadoPathInfo pathInfo) -> (pathInfo.dimension().length() > 10 || pathInfo.dimension().width() > 300) 
                                                        && (pathInfo.coordinate().lat() > 30.0 && pathInfo.coordinate().lat() < 40.0), is(true))
-         .select(these("State", "DateTime"));
+         .select("State", "DateTime");
 ```
 
 Now, for fun, let's use our pipeline to answer a variety of questions before moving on:

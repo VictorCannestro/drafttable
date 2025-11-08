@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeSizesMatch;
+
 
 /**
  * @author Victor Cannestro
@@ -16,12 +18,16 @@ public class MapUtils {
 
     private MapUtils() {}
 
-    public static <K, V> Map<K, V> zip(List<K> keys, List<V> values)  {
-        if (keys.size() != values.size()) {
-            throw new IllegalArgumentException("Each key must have a corresponding value and vice versa");
-        }
+    public static <K, V> Map<K, V> zip(@NonNull List<@NonNull K> keys, @NonNull List<@Nullable V> values)  {
+        assumeSizesMatch(keys, values);
+        Map<K, V> map = new HashMap<>(keys.size());
+        StreamsUtils.zip(keys.stream(), values.stream(), Entry::new).forEach(entry -> map.put(entry.key(), entry.value()));
+        return map;
+    }
+
+    public static <K, V> Map<@NonNull K, @Nullable V> toMap(@NonNull List<@NonNull Entry<K, V>> entries)  {
         Map<K, V> map = new HashMap<>();
-        StreamsUtils.zip(keys.stream(), values.stream(), Entry::new).forEach(kvEntry -> map.put(kvEntry.key(), kvEntry.value()));
+        entries.forEach(entry -> map.putIfAbsent(entry.key(), entry.value()));
         return map;
     }
 

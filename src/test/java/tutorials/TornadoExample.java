@@ -109,7 +109,7 @@ public class TornadoExample {
                 tornadoes.gatherInto(PhysicalMeasurements.class, as("Measurements"), using("Scale", "Length", "Width"))
                         .top(1)
                         .where("Fatalities", is(-1))
-                        .select(these("DateTime", "Measurements"))
+                        .select("DateTime", "Measurements")
                         .write()
                         .toJsonString()
         );
@@ -135,7 +135,7 @@ public class TornadoExample {
                  .melt("Start Lat", "Start Lon", into("Coordinate"), Coordinate::new)
                  .melt("Coordinate", "Dimension",  into("PathInfo"), TornadoPathInfo::new)
                  .where("PathInfo", (TornadoPathInfo pathInfo) -> (pathInfo.dimension().length() > 10 || pathInfo.dimension().width() > 300) && (pathInfo.coordinate().lat() > 30.0 && pathInfo.coordinate().lat() < 40.0), is(true))
-                 .select(using("State", "DateTime"));
+                 .select("State", "DateTime");
 
         // Filtering to answer questions
         System.out.println(

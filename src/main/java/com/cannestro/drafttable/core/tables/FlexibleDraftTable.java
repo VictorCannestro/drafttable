@@ -136,12 +136,12 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable select(@NonNull Items<String> columnNames) {
-        columnNames.params().forEach(columnName -> assumeColumnExists(columnName, this));
+    public DraftTable select(@NonNull String... columnNames) {
+        Arrays.stream(columnNames).forEach(columnName -> assumeColumnExists(columnName, this));
         return new FlexibleDraftTable(
                 tableName(),
                 listOfColumns().stream()
-                        .filter(column -> in(columnNames.params()).matches(column.label()))
+                        .filter(column -> in(columnNames).matches(column.label()))
                         .toList()
         );
     }
@@ -459,9 +459,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public <T> DraftTable gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
-        return add(select(selectColumnNames)
-                .gatherInto(aggregate, aggregateColumnName), null)
-                .drop(selectColumnNames);
+        return add(select(selectColumnNames.paramsArray()).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames);
     }
 
     @Override

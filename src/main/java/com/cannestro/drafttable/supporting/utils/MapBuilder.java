@@ -1,12 +1,12 @@
 package com.cannestro.drafttable.supporting.utils;
 
 import com.cannestro.drafttable.core.rows.Mappable;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 
 
 /**
@@ -14,7 +14,7 @@ import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
  */
 public class MapBuilder implements Mappable {
 
-    private final List<String> keys = new ArrayList<>();
+    private final List<Object> keys = new ArrayList<>();
     private final List values = new ArrayList<>();
 
 
@@ -22,15 +22,21 @@ public class MapBuilder implements Mappable {
         return new MapBuilder();
     }
 
-    public <V> MapBuilder entry(String key, V value) {
+    public <K, V> MapBuilder entry(@NonNull K key, @Nullable V value) {
         keys.add(key);
         values.add(value);
         return this;
     }
 
+    public MapBuilder entry(@NonNull Entry<@NonNull Object, ?> entry) {
+        keys.add(entry.key());
+        values.add(entry.value());
+        return this;
+    }
+
     @Override
     public Map<String, ?> asMap() {
-        return zip(keys, values);
+        return MapUtils.zip(keys, values);
     }
 
 }

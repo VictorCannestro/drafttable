@@ -101,12 +101,16 @@ public class DefaultCsvLoader implements CsvLoader {
                 ? readAllLines(pathToFile)
                 : readAllLines(pathToFile, loadingOptions);
         if (fullTable.isEmpty()) {
-            return FlexibleDraftTable.create().emptyDraftTable();
+            return FlexibleDraftTable.create()
+                    .emptyDraftTable()
+                    .nameTable(FilenameUtils.getName(pathToFile));
         }
         List<String> headers = firstElementOf(fullTable);
         List<List<String>> tableData = fullTable.subList(1, fullTable.size());
         if (tableData.isEmpty()) {
-            return FlexibleDraftTable.create().fromColumnValues(headers, nCopies(headers.size(), emptyList()));
+            return FlexibleDraftTable.create()
+                    .fromColumnValues(headers, nCopies(headers.size(), emptyList()))
+                    .nameTable(FilenameUtils.getName(pathToFile));
         }
         return FlexibleDraftTable.create().fromRows(
                 FilenameUtils.getName(pathToFile),

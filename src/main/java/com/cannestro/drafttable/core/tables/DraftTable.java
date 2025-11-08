@@ -105,7 +105,7 @@ public interface DraftTable {
      * @param columnNames A list of string labels
      * @return A new {@code DraftTable} subset
      */
-    DraftTable select(@NonNull Items<String> columnNames);
+    DraftTable select(@NonNull String... columnNames);
 
     /**
      * Selects the subset of the {@code DraftTable} that matches the specified column label and selection criteria within

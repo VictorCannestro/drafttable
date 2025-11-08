@@ -265,7 +265,7 @@ public class DraftTableOutput {
     List<String> formattedRowContentAccordingTo(Map<String, Integer> lengthLimitsPerColumn, DraftTable draftTable) {
         return draftTable.rows().stream()
                 .map(Row::valueMap)
-                .map(valueMap -> valueMap.keySet().stream().toList().stream()
+                .map(valueMap -> lengthLimitsPerColumn.keySet().stream().toList().stream()
                         .map(Object::toString)
                         .map(columnName -> {
                             int lengthLimit = lengthLimitsPerColumn.get(columnName);

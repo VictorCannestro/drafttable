@@ -16,7 +16,7 @@ import java.util.List;
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeColumnsHaveUniformSize;
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeRowsHaveEquivalentKeySets;
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniformityOf;
-import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUnique;
+import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniquenessOf;
 import static com.cannestro.drafttable.core.tables.DraftTable.DEFAULT_TABLE_NAME;
 import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
 import static java.util.Collections.emptyList;
@@ -34,7 +34,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
         if(columns.isEmpty()) {
             return emptyDraftTable();
         }
-        assumeUnique(columns.stream().map(Column::label).toList());
+        assumeUniquenessOf(columns.stream().map(Column::label).toList());
         assumeColumnsHaveUniformSize(columns);
         return new FlexibleDraftTable(tableName, columns);
     }
@@ -64,7 +64,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
 
     @Override
     public DraftTable fromColumnValues(@NonNull List<String> columnNames, @NonNull List<List<?>> table) {
-        assumeUnique(columnNames);
+        assumeUniquenessOf(columnNames);
         assumeUniformityOf(table);
         return new FlexibleDraftTable(
                 DEFAULT_TABLE_NAME,
@@ -76,7 +76,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
 
     @Override
     public DraftTable fromRowValues(@NonNull List<String> columnNames, @NonNull List<List<?>> table) {
-        assumeUnique(columnNames);
+        assumeUniquenessOf(columnNames);
         assumeUniformityOf(table);
         return fromRows(
                 DEFAULT_TABLE_NAME,

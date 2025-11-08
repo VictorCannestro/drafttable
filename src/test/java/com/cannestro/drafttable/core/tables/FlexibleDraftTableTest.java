@@ -116,7 +116,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canSelectMultipleColumns() {
-        DraftTable slice = exampleDraftTableFromColumns().select(from("contractType", "exempt", "minor"));
+        DraftTable slice = exampleDraftTableFromColumns().select("contractType", "exempt", "minor");
 
         Assert.assertEquals(slice.columnCount(), 3);
         Assert.assertEquals(slice.rowCount(), exampleDraftTableFromColumns().rowCount());
@@ -363,14 +363,14 @@ public class FlexibleDraftTableTest {
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void willThrowExceptionWhenAppendingDraftTablesWithMoreColumns() {
         exampleDraftTableFromColumns().top(1)
-                .select(these("payType", "exempt", "minor"))
+                .select("payType", "exempt", "minor")
                 .append(exampleDraftTableFromColumns().bottom(1));
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void willThrowExceptionWhenAppendingDraftTablesWithFewerColumns() {
         exampleDraftTableFromColumns().bottom(1).append(
-                exampleDraftTableFromColumns().top(1).select(using("payType", "exempt", "minor"))
+                exampleDraftTableFromColumns().top(1).select("payType", "exempt", "minor")
         );
     }
 

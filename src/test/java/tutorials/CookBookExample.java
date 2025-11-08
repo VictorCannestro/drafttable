@@ -27,11 +27,11 @@ public class CookBookExample {
         kitchenTable.write().structure();
 
         kitchenTable.top(1)
+                .select("name", "caloriesPerServing", "difficulty", "servings", "cookTimeMinutes")
                 .write()
                 .prettyPrint();
 
         kitchenTable.where("cuisine", is("Italian"))
-                .select(using("name", "caloriesPerServing", "difficulty", "servings", "cookTimeMinutes"))
                 .orderBy(these("difficulty", "caloriesPerServing"), ASCENDING)
                 .write()
                 .prettyPrint();

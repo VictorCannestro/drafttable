@@ -2,6 +2,7 @@ package com.cannestro.drafttable.core.options;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 
 /**
@@ -72,6 +73,9 @@ public record Items<T>(List<T> params) {
         return createOptionsFrom(params);
     }
 
+    public T[] paramsArray() {
+        return (T[]) params().toArray();
+    }
 
     @SafeVarargs
     static <T> Items<T> createOptionsFrom(T... params) {
