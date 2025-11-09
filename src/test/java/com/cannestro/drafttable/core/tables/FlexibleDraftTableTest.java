@@ -460,7 +460,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenDroppingMultipleColumnsTheResultingDraftTableDoesNotContainTheDroppedColumns() {
-        DraftTable updatedFrame = exampleDraftTableFromColumns().drop(these("payType", "minor"));
+        DraftTable updatedFrame = exampleDraftTableFromColumns().drop("payType", "minor");
 
         Assert.assertEquals(updatedFrame.rowCount(), exampleDraftTableFromColumns().rowCount());
         Assert.assertEquals(updatedFrame.columnCount(), exampleDraftTableFromColumns().columnCount() - 2);
@@ -485,14 +485,14 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canDropMultipleColumns() {
-        DraftTable dt = exampleDraftTableFromColumnValues().drop(these("days", "dates"));
+        DraftTable dt = exampleDraftTableFromColumnValues().drop("days", "dates");
 
         assertThat(dt.columnNames(), not(contains("days", "dates")));
     }
 
     @Test
     public void canDropAllExceptSpecifiedColumns() {
-        DraftTable dt = exampleDraftTableFromColumnValues().dropAllExcept(these("days", "dates"));
+        DraftTable dt = exampleDraftTableFromColumnValues().dropAllExcept("days", "dates");
 
         Assert.assertEquals(dt.columnCount(), 2);
         assertThat(dt.columnNames(), contains("days", "dates"));
@@ -508,7 +508,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenDropAllExceptIsProvidedEmptyListThenAllColumnsDropped() {
-        DraftTable dt = exampleDraftTableFromColumnValues().dropAllExcept(these());
+        DraftTable dt = exampleDraftTableFromColumnValues().dropAllExcept();
 
         Assert.assertEquals(dt.columnCount(), 0);
         Assert.assertEquals(dt, FlexibleDraftTable.create().emptyDraftTable());
@@ -516,7 +516,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenDropAllExceptOfEmptyFrameIsProvidedEmptyListThenEmptyFrameIsReturned() {
-        DraftTable dt = FlexibleDraftTable.create().emptyDraftTable().dropAllExcept(these());
+        DraftTable dt = FlexibleDraftTable.create().emptyDraftTable().dropAllExcept();
 
         Assert.assertEquals(dt.columnCount(), 0);
         Assert.assertEquals(dt, FlexibleDraftTable.create().emptyDraftTable());

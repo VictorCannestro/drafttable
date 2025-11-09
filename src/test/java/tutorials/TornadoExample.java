@@ -61,10 +61,10 @@ public class TornadoExample {
 
         // Mapping example 2: Drop columns
         System.out.println("Using dropColumns: " +
-                tornadoes.drop(named("State No", "Start Lat", "Start Lon")).columnNames()
+                tornadoes.drop("State No", "Start Lat", "Start Lon").columnNames()
         );
         System.out.println("Using dropAllExcept: " +
-                tornadoes.dropAllExcept(these("State", "Time", "Scale", "DateTime", "Injuries", "Fatalities", "Length", "Width")).columnNames()
+                tornadoes.dropAllExcept("State", "Time", "Scale", "DateTime", "Injuries", "Fatalities", "Length", "Width").columnNames()
         );
 
         // Mapping example 3: derive new column

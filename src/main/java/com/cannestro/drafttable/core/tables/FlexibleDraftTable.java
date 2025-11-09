@@ -381,7 +381,7 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable drop(@NonNull String columnToDrop) {
         assumeColumnExists(columnToDrop, this);
         if (columnNames().equals(List.of(columnToDrop))) {
-            return create().emptyDraftTable();
+            return create().emptyDraftTable().nameTable(tableName());
         }
         return new FlexibleDraftTable(
                 tableName(),
@@ -392,24 +392,17 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    public DraftTable drop(@NonNull Items<String> columnsToDrop) {
-        columnsToDrop.params().forEach(columnName -> assumeColumnExists(columnName, this));
-        if (columnNames().equals(columnsToDrop.params())) {
-            return create().emptyDraftTable();
+    public DraftTable drop(@NonNull String... columnsToDrop) {
+        Arrays.stream(columnsToDrop).forEach(columnName -> assumeColumnExists(columnName, this));
+        if (columnNames().equals(Arrays.asList(columnsToDrop))) {
+            return create().emptyDraftTable().nameTable(tableName());
         }
         return new FlexibleDraftTable(
                 tableName(),
                 listOfColumns().stream()
-                        .filter(column -> not(in(columnsToDrop.params())).matches(column.label()))
+                        .filter(column -> not(in(columnsToDrop)).matches(column.label()))
                         .toList()
         );
-    }
-
-    @Override
-    public DraftTable dropAllExcept(@NonNull Items<String> columnsToKeep) {
-        List<String> columnsToDrop = columnNames();
-        columnsToDrop.removeIf(columnsToKeep.params()::contains);
-        return drop(Items.these(columnsToDrop));
     }
 
     @Override
@@ -459,7 +452,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public <T> DraftTable gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
-        return add(select(selectColumnNames.paramsArray()).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames);
+        return add(select(selectColumnNames.paramsArray()).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames.paramsArray());
     }
 
     @Override

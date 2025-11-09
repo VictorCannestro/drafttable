@@ -14,8 +14,6 @@ import org.jspecify.annotations.NonNull;
 import java.util.*;
 import java.util.function.*;
 
-import static com.cannestro.drafttable.core.options.Items.these;
-
 
 /**
  * @author Victor Cannestro
@@ -377,19 +375,10 @@ public interface DraftTable {
      * Removes the specified columns from the {@code DraftTable}. Will produce an empty {@code DraftTable} if no columns
      * are left.
      *
-     * @param columnsToDrop A list of string labels
+     * @param columnsToDrop Zero of more string labels
      * @return A new {@code DraftTable} subset
      */
-    DraftTable drop(@NonNull Items<String> columnsToDrop);
-
-    /**
-     * Retains only the specified columns from the {@code DraftTable}. Will produce an empty {@code DraftTable} if no
-     * columns are left.
-     *
-     * @param columnsToKeep A list of string labels
-     * @return A new {@code DraftTable} subset
-     */
-    DraftTable dropAllExcept(@NonNull Items<String> columnsToKeep);
+    DraftTable drop(@NonNull String... columnsToDrop);
 
     /**
      * Creates a new column derived from the specified column's mapping under the provided function. The specified
@@ -497,6 +486,36 @@ public interface DraftTable {
         return rowCount() == 0 && columnCount() == 0;
     }
 
+    default DraftTable select(@NonNull Items<String> columns) {
+        return select(columns.paramsArray());
+    }
+
+    default DraftTable drop(@NonNull Items<String> columnsToDrop) {
+        return drop(columnsToDrop.paramsArray());
+    }
+
+    /**
+     * Retains the specified columns from the {@code DraftTable}. Will produce an empty {@code DraftTable} if no
+     * columns are left.
+     *
+     * @param columnsToKeep Zero or more string labels
+     * @return A new {@code DraftTable} subset
+     */
+    default DraftTable dropAllExcept(@NonNull String... columnsToKeep) {
+        return select(columnsToKeep);
+    }
+
+    /**
+     * Retains the specified columns from the {@code DraftTable}. Will produce an empty {@code DraftTable} if no
+     * columns are left.
+     *
+     * @param columnsToKeep Zero or more string labels as items
+     * @return A new {@code DraftTable} subset
+     */
+    default DraftTable dropAllExcept(@NonNull Items<String> columnsToKeep) {
+        return select(columnsToKeep.paramsArray());
+    }
+
     /**
      * Updates the specified column's values based upon the provided function. The new column label must be distinct
      * from originating column.
@@ -546,7 +565,7 @@ public interface DraftTable {
                                    @NonNull BiFunction<T, R, ?> operationToApply)  {
         return deriveFrom(
                 firstColumnName, secondColumnName, newColumnName, operationToApply
-        ).drop(these(firstColumnName, secondColumnName));
+        ).drop(firstColumnName, secondColumnName);
     }
 
 }

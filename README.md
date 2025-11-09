@@ -38,18 +38,18 @@ directory, in general, for access to the latest tutorials.
 ## Examples
 ### Example 1: Reading in a CSV, processing it, then exporting the results to another CSV
 ```java
-Path inputFilepath = Path.of("./src/main/resources/csv/employee_data.csv");
+Path inputFilepath = Path.of("./some/path/csv/employee_data.csv");
 File outputFile = new File("output/manager_login_information.csv");
 FlexibleDraftTable.create().fromCSV().at(inputFilepath)
-                 .where("state", is(not("CA")))
+                 .drop("payRate", "benefitsEligible")
+                 .where("State", is(oneOf("NJ", "PA", "NY")))
                  .where("jobName", endsWith("manager"))
-                 .transform("nonExempt", (String exemptValue) -> exemptValue.equals("1"))
-                 .where("nonExempt", is(true))
-                 .transform("hireDate", into("yearsOfService"), (String hireDate) -> Period.between(LocalDate.parse(hireDate), now()).getYears())
+                 .where("exempt", is(true))
+                 .deriveFrom("hireDate", as("yearsOfService"), (String hireDate) -> Period.between(LocalDate.parse(hireDate), now()).years())
+                 .where("yearsOfService", is(greaterThan(10)))
                  .orderBy("yearsOfService", DESCENDING)
                  .top(50)
-                 .melt("countryCode", "employeeId", into("managerLoginName"), String::concat)
-                 .select("managerLoginName", "locationNumber")
+                 .select("preferredName", "lastName", "emailAddress")
                  .write()
                  .toCSV(outputFile);
 ```

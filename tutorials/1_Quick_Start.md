@@ -3,6 +3,7 @@
 
 *Note: Special thanks to the TableSaw project. Their documentation provided the inspiration for this document. Our goal
 here is to showcase the DraftTable library and provide a basis of comparison for users interested in adopting Java 
+here is to showcase the DraftTable library and provide a basis of comparison for users interested in adopting Java 
 dataframe capabilities.*
 
 ## Introduction
@@ -280,14 +281,12 @@ tornadoes = tornadoes.melt("Date", "Time", into("DateTime"), (String date, Strin
 
 Removing columns is simple. We can call one of the flavors of the "drop" method to load shed or tidy up our table:
 ```java
-tornadoes = tornadoes.drop(these("State No", "Start Lat", "Start Lon"));
+tornadoes = tornadoes.drop("State No", "Start Lat", "Start Lon");
 ```
 
 Equivalently, we could've written:
 ```java
-tornadoes = tornadoes.dropAllExcept(
-        these("State", "Time", "Scale", "DateTime", "Injuries", "Fatalities", "Length", "Width")
-);
+tornadoes = tornadoes.dropAllExcept("State", "Time", "Scale", "DateTime", "Injuries", "Fatalities", "Length", "Width");
 ```
 
 To add a new column(s), we, again, have several options, the simplest of which is to pass a `Colunmn` directly.
@@ -627,7 +626,7 @@ Note that this only works here because the filter conditions are *mutually exclu
 Path inputFilepath = Path.of("csv/tornadoes_1950-2014.csv");
 File outputFile = new File("./data/mid-atlantic_tornadoes_summer_1950-2014.csv");
 FlexibleDraftTable.create().fromCSV().at(inputFilepath)
-                 .dropAllExcept(these("Date", "Time", "State", "Injuries", "Fatalities"))
+                 .dropAllExcept("Date", "Time", "State", "Injuries", "Fatalities")
                  .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                  .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
                  .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
