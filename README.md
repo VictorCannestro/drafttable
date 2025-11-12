@@ -35,7 +35,7 @@ directory, in general, for access to the latest tutorials.
 ### Example 1: Reading in a CSV, processing it, then exporting the results to another CSV
 ```java
 Path inputFilepath = Path.of("./some/path/csv/employee_data.csv");
-File outputFile = new File("output/manager_login_information.csv");
+File outputFile = new File("output/longest_serving_employees.csv");
 FlexibleDraftTable.create().fromCSV().at(inputFilepath)
                  .drop("payRate", "benefitsEligible")
                  .where("State", is(oneOf("NJ", "PA", "NY")))

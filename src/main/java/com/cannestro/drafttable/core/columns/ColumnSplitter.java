@@ -19,6 +19,6 @@ public interface ColumnSplitter {
      *
      * @return A {@code DraftTable}
      */
-    DraftTable gather();
+    DraftTable thenGather();
 
 }

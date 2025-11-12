@@ -877,7 +877,7 @@ public class FlexibleDraftTableTest {
                     .intoColumn("rate", PayDetails::getRate)
                     .intoColumn("period", PayDetails::getPeriod)
                     .intoColumn("workHours", PayDetails::getWorkHours)
-                    .gather();
+                    .thenGather();
 
         Assert.assertEquals(dt1.columnCount(), 4);
         assertThat(
@@ -898,7 +898,7 @@ public class FlexibleDraftTableTest {
     public void whenSplittingColumnWithoutSpecifyingAnythingThenSameTableReturned() {
         DraftTable dt = FlexibleDraftTable.create()
                 .fromObjects(exampleEmploymentContracts());
-        DraftTable dtAfterSplit = dt.split("payDetails").gather();
+        DraftTable dtAfterSplit = dt.split("payDetails").thenGather();
 
         Assert.assertEquals(dt, dtAfterSplit);
     }

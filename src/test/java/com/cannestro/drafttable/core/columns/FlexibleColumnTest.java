@@ -584,7 +584,7 @@ public class FlexibleColumnTest {
                 .intoColumn("day", LocalDate::getDayOfMonth)
                 .intoColumn("month", LocalDate::getMonth)
                 .intoColumn("year", LocalDate::getYear)
-                .gather();
+                .thenGather();
 
         MatcherAssert.assertThat(dates.columnNames(), containsInAnyOrder("day", "month", "year"));
         Assert.assertEquals(dates.rowCount(), c.size());
@@ -596,7 +596,7 @@ public class FlexibleColumnTest {
     @Test
     public void whenSplittingColumnIntoItselfTheDraftTableContainsItself() {
         Column c = new FlexibleColumn("localDates", dateCollectionHelper());
-        DraftTable dates = c.split().gather();
+        DraftTable dates = c.split().thenGather();
 
         MatcherAssert.assertThat(dates.columnNames(), containsInAnyOrder("localDates"));
         Assert.assertEquals(dates.rowCount(), c.size());
@@ -610,7 +610,7 @@ public class FlexibleColumnTest {
                 .split()
                 .intoColumn("day", LocalDate::getDayOfMonth)
                 .intoColumn("day", LocalDate::getDayOfYear)
-                .gather();
+                .thenGather();
     }
 
     @Test(expectedExceptions = IllegalStateException.class)
@@ -618,7 +618,7 @@ public class FlexibleColumnTest {
         new FlexibleColumn("empty", List.of())
                 .split()
                 .intoColumn("day", LocalDate::getDayOfMonth)
-                .gather();
+                .thenGather();
     }
 
     @Test

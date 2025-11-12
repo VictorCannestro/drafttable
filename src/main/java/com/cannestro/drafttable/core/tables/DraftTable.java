@@ -461,7 +461,8 @@ public interface DraftTable {
      * someGeospatialDraftTable.split("coordinates")
      *      .intoColumn("lat", Coordinate::lat)
      *      .intoColumn("lon", Coordinate::lon)
-     *      .gather();
+     *      .intoColumn("classifier", WatershedClassifier::new)
+     *      .thenGather();
      * }</pre>
      * @param columnName Any existing column's name
      * @return A {@code ColumnSplitter} to perform the splitting operation

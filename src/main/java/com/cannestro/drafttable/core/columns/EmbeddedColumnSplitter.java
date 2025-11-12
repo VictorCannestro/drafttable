@@ -33,7 +33,7 @@ public class EmbeddedColumnSplitter implements ColumnSplitter {
     }
 
     @Override
-    public DraftTable gather() {
+    public DraftTable thenGather() {
         if (this.columns.isEmpty()) {
             return this.inputTable;
         }
