@@ -27,7 +27,7 @@ public class FlexibleColumnSplitter implements ColumnSplitter {
     }
 
     @Override
-    public DraftTable gatherIntoNewTable() {
+    public DraftTable gather() {
         if (outputTable.isCompletelyEmpty()) {
             return outputTable.add(column);
         }

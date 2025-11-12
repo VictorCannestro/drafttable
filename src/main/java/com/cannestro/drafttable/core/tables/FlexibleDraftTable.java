@@ -1,5 +1,7 @@
 package com.cannestro.drafttable.core.tables;
 
+import com.cannestro.drafttable.core.columns.ColumnSplitter;
+import com.cannestro.drafttable.core.columns.EmbeddedColumnSplitter;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.rows.Row;
@@ -453,6 +455,12 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public <T> DraftTable gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
         return add(select(selectColumnNames.paramsArray()).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames.paramsArray());
+    }
+
+    @Override
+    public ColumnSplitter split(@NonNull String columnName) {
+        assumeColumnExists(columnName, this);
+        return new EmbeddedColumnSplitter(columnName, this);
     }
 
     @Override

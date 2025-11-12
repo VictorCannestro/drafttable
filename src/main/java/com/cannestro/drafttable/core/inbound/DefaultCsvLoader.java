@@ -92,7 +92,7 @@ public class DefaultCsvLoader implements CsvLoader {
 
     void assumeInputIsCsvCompatible(@NonNull String input) {
         if (!SUPPORTED_EXTENSIONS.contains(getExtension(input))) {
-            throw new IllegalArgumentException(String.format("Assumption broken: The input did not end with a supported CSV extension - %s not in %s", getExtension(input), SUPPORTED_EXTENSIONS));
+            throw new IllegalArgumentException(String.format("Assumption broken - The input did not end with a supported CSV extension - %s not in %s", getExtension(input), SUPPORTED_EXTENSIONS));
         }
     }
 

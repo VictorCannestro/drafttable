@@ -842,11 +842,7 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void canMakeDraftTableFromListOfObjects() {
-        List<EmploymentContract> testData = List.of(
-                new EmploymentContract("part-time", "N", new PayDetails("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
-                new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
-                new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
-        );
+        List<EmploymentContract> testData = exampleEmploymentContracts();
         DraftTable dt = FlexibleDraftTable.create().fromObjects(testData);
 
         FlexibleDraftTable.create()
@@ -868,6 +864,43 @@ public class FlexibleDraftTableTest {
 
         Assert.assertEquals(dt.tableName(), DraftTable.DEFAULT_TABLE_NAME);
         Assert.assertEquals(dt.nameTable("newName").tableName(), "newName");
+    }
+
+    @Test
+    public void canSplitColumnWithFrameIntoOneOrMoreDerivedColumn() {
+        List<EmploymentContract> testData = exampleEmploymentContracts();
+        DraftTable dt1 = FlexibleDraftTable.create().fromObjects(testData);
+
+        DraftTable dt2 = FlexibleDraftTable.create().fromObjects(testData)
+                .split("payDetails")
+                    .intoColumn("payType", PayDetails::getType)
+                    .intoColumn("rate", PayDetails::getRate)
+                    .intoColumn("period", PayDetails::getPeriod)
+                    .intoColumn("workHours", PayDetails::getWorkHours)
+                    .gather();
+
+        Assert.assertEquals(dt1.columnCount(), 4);
+        assertThat(
+                dt1.columnNames(),
+                containsInAnyOrder("type", "exemptInd", "payDetails", "effectiveDate")
+        );
+
+        Assert.assertNotEquals(dt1, dt2);
+        assertThat(dt2.columnNames(), not(hasItem("payDetails")));
+        Assert.assertEquals(dt2.columnCount(), 7);
+        assertThat(
+                dt2.columnNames(),
+                containsInAnyOrder("type", "exemptInd", "payType", "rate", "period", "workHours", "effectiveDate")
+        );
+    }
+
+    @Test
+    public void whenSplittingColumnWithoutSpecifyingAnythingThenSameTableReturned() {
+        DraftTable dt = FlexibleDraftTable.create()
+                .fromObjects(exampleEmploymentContracts());
+        DraftTable dtAfterSplit = dt.split("payDetails").gather();
+
+        Assert.assertEquals(dt, dtAfterSplit);
     }
 
 
@@ -916,6 +949,14 @@ public class FlexibleDraftTableTest {
                         List.of(2, LocalDate.of(2024, 1, 1), "Bob"),
                         List.of(3, LocalDate.of(2024, 1, 1), "Jose")
                 )
+        );
+    }
+
+    private static List<EmploymentContract> exampleEmploymentContracts() {
+        return List.of(
+                new EmploymentContract("part-time", "N", new PayDetails("Hourly", "25.00", "Bi-Weekly", "80"), LocalDate.now()),
+                new EmploymentContract("part-time", "N", new PayDetails("Hourly", "18.50", "Bi-Weekly", "80"), LocalDate.now()),
+                new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
     }
 

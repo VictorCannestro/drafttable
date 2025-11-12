@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.columns.ColumnSplitter;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.options.Item;
 import com.cannestro.drafttable.core.options.Items;
@@ -449,6 +450,23 @@ public interface DraftTable {
     <T> DraftTable gatherInto(@NonNull Class<T> aggregate,
                               @NonNull Item<String> aggregateColumnName,
                               @NonNull Items<String> selectColumnNames);
+
+    /**
+     * Attempts to flatten the {@code DraftTable} by splitting a chosen {@code Column} into zero or more derived
+     * columns. For example:
+     * <pre>{@code
+     * public record Coordinate(double lat, double lon) {}
+     *
+     * // Assuming "coordinates" exists as a column of Coordinate objects
+     * someGeospatialDraftTable.split("coordinates")
+     *      .intoColumn("lat", Coordinate::lat)
+     *      .intoColumn("lon", Coordinate::lon)
+     *      .gather();
+     * }</pre>
+     * @param columnName Any existing column's name
+     * @return A {@code ColumnSplitter} to perform the splitting operation
+     */
+    ColumnSplitter split(@NonNull String columnName);
 
     /**
      * Terminates the pipeline from further processing by switching control to an {@code Output}. From here, users may

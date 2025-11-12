@@ -1,7 +1,6 @@
 package com.cannestro.drafttable.core.rows;
 
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -20,13 +19,13 @@ public interface Mappable {
      * <pre>{@code
      * public record Foo(int n, Bar bar) implements Mappable {
      *     @Override
-     *     public Map<String, @Nullable ?> asMap() {
+     *     public Map<String, ?> asMap() {
      *         return MapBuilder.with().entry("n", n).entry("bar", bar.copy()).asMap();
      *     }
      * }
      * }</pre>
      * @return A {@code Map}
      */
-    Map<@NonNull String, @Nullable ?> asMap();
+    Map<@NonNull String, ?> asMap();
 
 }

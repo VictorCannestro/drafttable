@@ -1,9 +1,5 @@
 # DraftTable
 
-| Branch    | Status                                                                                                                                                                                                        |
-|-----------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `master`  | [![Build Status]()]()   |
-
 ## Introduction
 **DraftTable** is a pure Java 17+ library loosely inspired by the Python DataFrame API and Java library Tablesaw that 
 enables the creation of chainable data processing pipelines. It can be considered a collection of patterns built on top
