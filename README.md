@@ -35,7 +35,7 @@ directory, in general, for access to the latest tutorials.
 ### Example 1: Reading in a CSV, processing it, then exporting the results to another CSV
 ```java
 Path inputFilepath = Path.of("./some/path/csv/employee_data.csv");
-File outputFile = new File("output/longest_serving_employees.csv");
+File outputFile = new File("output/longest_serving_employees.json");
 FlexibleDraftTable.create().fromCsv().at(inputFilepath)
                  .drop("payRate", "benefitsEligible")
                  .where("State", is(oneOf("NJ", "PA", "NY")))
@@ -47,7 +47,7 @@ FlexibleDraftTable.create().fromCsv().at(inputFilepath)
                  .top(50)
                  .select("preferredName", "lastName", "emailAddress")
                  .write()
-                 .toCsv(outputFile);
+                 .toJson(outputFile);
 ```
 
 ### Example 2: Pretty printing a rich tabular display after combining and sorting by multiple columns
@@ -88,7 +88,7 @@ FlexibleDraftTable.create().fromCsv().at(url)
 |   Delimited `.txt`   |   ✅    |   ✅    |
 |        `.csv`        |   ✅    |   ✅    |
 |        `.tsv`        |   ✅    |   ✅    |
-|       `.json`        |   *    |   ✅    |
+|       `.json`        |   ✅    |   ✅    |
 |        Excel         |   *    |        |
 |    Apache Parquet    |   *    |        |
 | User defined objects |   ✅    |   ✅    |
