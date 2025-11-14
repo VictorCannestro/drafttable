@@ -542,12 +542,12 @@ tornadoes.where("DateTime", LocalDateTime::getYear, allOf(greaterThan(1999), les
 ### To CSV
 We can write our data to a CSV file using:
 ```java
-tornadoes.write().toCSV(new File("./src/test/resources/csv/temp.csv"));
+tornadoes.write().toCsv(new File("./src/test/resources/csv/temp.csv"));
 ```
 or 
 ```java
 CsvWritingOptions writingOptions = CustomizableWritingOptions.builder().delimiter('|').fillerValue("NULL").lineEnder(";").build();
-tornadoes.write().toCSV(new File("./src/test/resources/csv/temp.csv"), writingOptions);
+tornadoes.write().toCsv(new File("./src/test/resources/csv/temp.csv"), writingOptions);
 ```
 where the addition of the `CsvWritingOptions` argument enables us to overwrite the defaults of things like export
 delimiters, quote characters, fill values for missing entries, etc.
@@ -561,8 +561,22 @@ System.out.println(
     tornadoes.top(1).write().toJsonString()
 );
 ```
-```
-{"label":"data","values":[{"Start Lon":-94.1689,"Length":15.56,"State":"TX","Fatalities":0,"Region":"West South Central","Scale":3.0,"State No":"2.0","Width":1087.0,"Injuries":0,"Start Lat":32.4869,"DateTime":"2010-01-20T17:18:00"}]}
+```json
+[
+    {
+        "Start Lon": -94.1689,
+        "Length": 15.56,
+        "State": "TX",
+        "Fatalities": 0,
+        "Region": "West South Central",
+        "Scale": 3,
+        "State No": "2.0",
+        "Width": 1087,
+        "Injuries": 0,
+        "Start Lat": 32.4869,
+        "DateTime": "2010-01-20T17:18:00"
+    }
+]
 ```
 
 Similarly, to produce a JSON output file we could write something like:

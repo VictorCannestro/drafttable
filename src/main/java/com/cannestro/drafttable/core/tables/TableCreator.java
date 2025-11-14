@@ -78,7 +78,7 @@ public interface TableCreator {
 
     JsonLoader fromJsonArray();
 
-    default <T extends CsvLoader> T fromCsv(Class<T> csvLoaderClass) {
+    default <T extends CsvLoader> T fromCsv(@NonNull Class<T> csvLoaderClass) {
         try {
             return csvLoaderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException e) {
@@ -88,7 +88,7 @@ public interface TableCreator {
         }
     }
 
-    default <T extends JsonLoader> T fromJson(Class<T> jsonLoaderClass) {
+    default <T extends JsonLoader> T fromJson(@NonNull Class<T> jsonLoaderClass) {
         try {
             return jsonLoaderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException e) {

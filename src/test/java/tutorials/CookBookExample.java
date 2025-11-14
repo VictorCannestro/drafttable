@@ -20,9 +20,9 @@ public class CookBookExample {
 
         kitchenTable.write().structure();
 
-        kitchenTable.top(1)
-                .write()
-                .prettyPrint();
+        System.out.println(
+            kitchenTable.top(2).write().toJsonString()
+        );
 
         kitchenTable.where("cuisine", is("Italian"))
                 .orderBy(these("difficulty", "caloriesPerServing"), ASCENDING)

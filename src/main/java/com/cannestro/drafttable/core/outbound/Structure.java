@@ -8,7 +8,7 @@ import java.util.Map;
 
 public record Structure(@NonNull String columnName,
                         @NonNull String type,
-                        double nullCount) implements Mappable {
+                        int nullCount) implements Mappable {
 
     @Override
     public Map<String, ?> asMap() {

@@ -34,12 +34,9 @@ public record ColumnOutput(Column column) {
     }
 
     /**
-     * <p> Produces a JSON String representation of the {@code Column} using the column "label" and "values" as root
-     * elements. If the {@code Column} is empty, then an empty JSON array will be returned under the "values" element.
-     * For example: <pre>{@code
-     * {
-     *     "label": "Date",
-     *     "values": [
+     * <p> Produces a JSON String representation of the {@code Column} using the underlying values as the elements of a
+     * JSON array. If the {@code Column} is empty, then an empty JSON array will be returned. For example: <pre>{@code
+     *     [
      *         "2005-03-21",
      *         "1976-06-28",
      *         "1964-05-10",
@@ -48,7 +45,6 @@ public record ColumnOutput(Column column) {
      *         "1973-06-26",
      *         "1998-11-10"
      *     ]
-     * }
      * }</pre>
      * </p>
      *
@@ -56,9 +52,7 @@ public record ColumnOutput(Column column) {
      */
     public String toJsonString() {
         try {
-            return ObjectMapperManager.getInstance()
-                    .defaultMapper()
-                    .writeValueAsString(new JsonOutputFormat(column().label(), column().values()));
+            return ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(column().values());
         } catch (JsonProcessingException e) {
             throw new IllegalStateException(e);
         }
@@ -66,9 +60,7 @@ public record ColumnOutput(Column column) {
 
     public void toJson(@NonNull File outputFile) {
         try {
-            ObjectMapperManager.getInstance()
-                    .defaultMapper()
-                    .writeValue(outputFile, new JsonOutputFormat(column().label(), column().values()));
+            ObjectMapperManager.getInstance().defaultMapper().writeValue(outputFile, column().values());
         } catch (JsonProcessingException e) {
             throw new IllegalStateException(e);
         } catch (IOException e) {

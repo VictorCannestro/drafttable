@@ -77,40 +77,30 @@ public class DraftTableOutput {
     }
 
     /**
-     * <p> Produces a JSON String representation of the {@code DraftTable} using the table "label" and "values" as root
-     * elements. If the {@code DraftTable} is empty, then an empty JSON array will be returned under the "values"
-     * element. Non-empty example: <pre>{@code
-     * {
-     *     "label": "tornadoes",
-     *     "values": [
-     *         {
-     *             "Start Lon": "-101.8",
-     *             "Length": "7.0",
-     *             "State": "KS",
-     *             "Fatalities": "0.0",
-     *             "Time": "19:32:00",
-     *             "Scale": "2.0",
-     *             "State No": "12.0",
-     *             "Width": "800.0",
-     *             "Date": "1994-06-07",
-     *             "Injuries": "0.0",
-     *             "Start Lat": "39.68"
-     *         },
-     *         {
-     *             "Start Lon": "-82.48",
-     *             "Length": "0.2",
-     *             "State": "MI",
-     *             "Fatalities": "0.0",
-     *             "Time": "19:20:00",
-     *             "Scale": "1.0",
-     *             "State No": "5.0",
-     *             "Width": "20.0",
-     *             "Date": "1984-05-22",
-     *             "Injuries": "1.0",
-     *             "Start Lat": "43.08"
-     *         }
-     *     ]
-     * }
+     * <p> Produces a JSON String representation of the {@code DraftTable} using the rows as elements of a JSON array.
+     * If the {@code DraftTable} is empty, then an empty JSON array will be returned. Non-empty example: <pre>{@code
+     * [
+     *     {
+     *         "Start Lon": "-74.11",
+     *         "State": "NY",
+     *         "Fatalities": "0.0",
+     *         "Scale": "2.0",
+     *         "State No": "3.0",
+     *         "Injuries": "9.0",
+     *         "Start Lat": "40.63",
+     *         "DateTime": "2007-08-08T04:22:00"
+     *     },
+     *     {
+     *         "Start Lon": "-73.88",
+     *         "State": "NY",
+     *         "Fatalities": "0.0",
+     *         "Scale": "3.0",
+     *         "State No": "2.0",
+     *         "Injuries": "9.0",
+     *         "Start Lat": "42.8",
+     *         "DateTime": "1960-06-24T17:30:00"
+     *     }
+     * ]
      * }</pre>
      * </p>
      *
@@ -120,10 +110,7 @@ public class DraftTableOutput {
         try {
             return ObjectMapperManager.getInstance()
                     .defaultMapper()
-                    .writeValueAsString(new JsonOutputFormat(
-                            draftTable().tableName(),
-                            draftTable().rows().stream().map(Row::valueMap).toList()
-                    ));
+                    .writeValueAsString(draftTable().rows().stream().map(Row::valueMap).toList());
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException(e);
         }
@@ -133,10 +120,7 @@ public class DraftTableOutput {
         try {
             ObjectMapperManager.getInstance()
                     .defaultMapper()
-                    .writeValue(
-                            outputFile,
-                            new JsonOutputFormat(draftTable().tableName(), draftTable().rows().stream().map(Row::valueMap).toList())
-                    );
+                    .writeValue(outputFile, draftTable().rows().stream().map(Row::valueMap).toList());
         } catch (JsonProcessingException e) {
             throw new IllegalStateException(e);
         } catch (IOException e) {
