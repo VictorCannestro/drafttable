@@ -2,6 +2,8 @@ package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
+import com.cannestro.drafttable.core.inbound.DefaultJsonLoader;
+import com.cannestro.drafttable.core.inbound.JsonLoader;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.rows.HashMapRow;
@@ -90,6 +92,11 @@ public class FlexibleDraftTableCreator implements TableCreator {
     @Override
     public CsvLoader fromCSV() {
         return new DefaultCsvLoader();
+    }
+
+    @Override
+    public JsonLoader fromJson() {
+        return new DefaultJsonLoader();
     }
 
 }

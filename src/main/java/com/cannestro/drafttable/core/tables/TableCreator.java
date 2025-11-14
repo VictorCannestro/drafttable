@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.inbound.JsonLoader;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.inbound.CsvLoader;
@@ -74,6 +75,8 @@ public interface TableCreator {
     DraftTable fromColumnValues(@NonNull List<String> columnNames, @NonNull List<List<?>> table);
 
     CsvLoader fromCSV();
+
+    JsonLoader fromJson();
 
     default <T extends CsvLoader> T fromCSV(Class<T> csvLoaderClass) {
         try {

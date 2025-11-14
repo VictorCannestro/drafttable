@@ -867,10 +867,9 @@ public class FlexibleDraftTableTest {
     }
 
     @Test
-    public void canSplitColumnWithFrameIntoOneOrMoreDerivedColumn() {
+    public void canSplitColumnWithinTableIntoMultipleDerivedColumn() {
         List<EmploymentContract> testData = exampleEmploymentContracts();
         DraftTable dt1 = FlexibleDraftTable.create().fromObjects(testData);
-
         DraftTable dt2 = FlexibleDraftTable.create().fromObjects(testData)
                 .split("payDetails")
                     .intoColumn("payType", PayDetails::getType)
@@ -896,11 +895,33 @@ public class FlexibleDraftTableTest {
 
     @Test
     public void whenSplittingColumnWithoutSpecifyingAnythingThenSameTableReturned() {
-        DraftTable dt = FlexibleDraftTable.create()
-                .fromObjects(exampleEmploymentContracts());
+        DraftTable dt = FlexibleDraftTable.create().fromObjects(exampleEmploymentContracts());
         DraftTable dtAfterSplit = dt.split("payDetails").thenGather();
 
         Assert.assertEquals(dt, dtAfterSplit);
+    }
+
+    @Test
+    public void canSplitTableWithOnlyOneColumnIntoMultiple() {
+        Column column = FlexibleColumn.from("x", List.of(1,2,3));
+        DraftTable dt = FlexibleDraftTable.create()
+                .fromColumns(List.of(column))
+                .split("x")
+                    .intoColumn("squared", (Integer i) -> i*i)
+                    .intoColumn("negated", (Integer i) -> -i)
+                .thenGather();
+
+        Assert.assertEquals(dt.columnCount(), 2);
+        assertThat(dt.columnNames(), containsInAnyOrder("squared", "negated"));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void tryingToSplitUnknownColumnShouldThrowException() {
+        Column column = FlexibleColumn.from("x", List.of(1,2,3));
+        FlexibleDraftTable.create()
+                .fromColumns(List.of(column))
+                .split("y")
+                .thenGather();
     }
 
 

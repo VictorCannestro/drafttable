@@ -267,7 +267,7 @@ Cannot describe non-numeric Column: 'State'
 Mapping operations take a variety inputs and produce a *new* `DraftTable` as the output, enabling data processing chains
 that do not require intermediate variables.
 
-**Note: operations in a `FlexibleDraftTable` are not performed in-place.**
+**Note: operations in a `FlexibleDraftTable` are generally not performed in-place.**
 
 We can map arbitrary expressions onto a `DraftTable`, and many common operations are already built in: transforming,
 melting, gathering, deriving, etc.

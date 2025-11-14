@@ -3,7 +3,6 @@ package com.cannestro.drafttable.helper;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.supporting.utils.MapBuilder;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ public record Recipe(int id,
                      List<String> mealType) implements Mappable {
 
     @Override
-    public Map<@NonNull String, @Nullable ?> asMap() {
+    public Map<@NonNull String, ?> asMap() {
         return new MapBuilder()
                 .entry("id", id)
                 .entry("name", name)
