@@ -32,7 +32,7 @@ for a guided walkthrough and the [tutorials](https://github.com/VictorCannestro/
 directory, in general, for access to the latest tutorials.
 
 ## Examples
-### Example 1: Reading in a CSV, processing it, then exporting the results to another CSV
+### Example 1: Reading in a CSV, processing it, then exporting the results to a JSON file
 ```java
 Path inputFilepath = Path.of("./some/path/csv/employee_data.csv");
 File outputFile = new File("output/longest_serving_employees.json");
