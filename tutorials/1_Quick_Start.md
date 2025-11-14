@@ -56,7 +56,7 @@ FlexibleDraftTable.create().fromCsv().at(filePath, csvOptions);
 ``` 
 or 
 ```java
-FlexibleDraftTable.create().fromCsv(DefaultCsvLoader.class).load(filePath, TornadoDataBean.class);
+FlexibleDraftTable.create().fromCsv(DefaultCsvLoader.class).load(filePath.toFile(), TornadoDataBean.class);
 ``` 
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
 columns vs optional columns, etc. When using this approach, *the key names specified in `asMap()` will become the column

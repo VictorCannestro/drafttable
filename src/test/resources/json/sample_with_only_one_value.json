@@ -1,0 +1,18 @@
+{
+  "id": null,
+  "name": null,
+  "ingredients": [],
+  "instructions": [],
+  "prepTimeMinutes": null,
+  "cookTimeMinutes": null,
+  "servings": null,
+  "difficulty": null,
+  "cuisine": null,
+  "caloriesPerServing": null,
+  "tags": [],
+  "userId": null,
+  "image": null,
+  "rating": null,
+  "reviewCount": null,
+  "mealType": []
+}

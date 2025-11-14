@@ -4,6 +4,7 @@ import com.cannestro.drafttable.core.inbound.DefaultJsonLoader;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.helper.Recipe;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.nio.file.Path;
 
@@ -22,7 +23,6 @@ public class CookBookExample {
         kitchenTable.write().structure();
 
         kitchenTable.top(1)
-                .select("name", "caloriesPerServing", "difficulty", "servings", "cookTimeMinutes")
                 .write()
                 .prettyPrint();
 

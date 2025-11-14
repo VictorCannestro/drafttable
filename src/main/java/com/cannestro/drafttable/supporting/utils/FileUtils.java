@@ -45,7 +45,7 @@ public class FileUtils {
             copyURLToFile(fileUrl, temp, connectionTimeoutInMillis, readTimeoutInMillis);
             return temp;
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException("An IO error occurred during copying.", e);
         }
     }
 
@@ -122,6 +122,11 @@ public class FileUtils {
             log.error("Could not locate {}", filePath);
             throw new IllegalArgumentException("Could not locate the Path to the given URI");
         }
+    }
+
+    public static void cleanUpTemporaryFiles(@NonNull File file) {
+        deleteFileIfPresent(file.getPath());
+        deleteFileIfPresent(file.getParentFile().getPath());
     }
 
 }

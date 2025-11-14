@@ -18,6 +18,7 @@ public class ObjectMapperManager {
             MAPPER.registerModule(new JavaTimeModule());
             MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
             MAPPER.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+            MAPPER.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
         }
     }
 

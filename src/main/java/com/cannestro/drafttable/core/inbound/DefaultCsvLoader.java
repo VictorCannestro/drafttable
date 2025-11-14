@@ -6,6 +6,7 @@ import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
+import com.cannestro.drafttable.supporting.utils.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -19,7 +20,6 @@ import java.util.stream.IntStream;
 import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.buildBeansFrom;
 import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.readAllLines;
 import static com.cannestro.drafttable.supporting.utils.FileUtils.copyToTempDirectory;
-import static com.cannestro.drafttable.supporting.utils.FileUtils.deleteFileIfPresent;
 import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
 import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 import static java.util.Collections.emptyList;
@@ -62,7 +62,7 @@ public class DefaultCsvLoader implements CsvLoader {
         assumeInputIsCsvCompatible(url.toString());
         File file = copyToTempDirectory(url);
         DraftTable draftTable = createWithoutSchema(file.getPath(), null);
-        cleanUpTemporaryFiles(file);
+        FileUtils.cleanUpTemporaryFiles(file);
         return draftTable;
     }
 
@@ -76,13 +76,12 @@ public class DefaultCsvLoader implements CsvLoader {
                         FilenameUtils.getName(file.getName()),
                         buildBeansFrom(file.getPath(), loadingOptions)
                   );
-        cleanUpTemporaryFiles(file);
+        FileUtils.cleanUpTemporaryFiles(file);
         return draftTable;
     }
 
 
-    public <T extends CsvBean & Mappable> DraftTable load(@NonNull Path path, @NonNull Class<T> csvSchema) {
-        File file = path.toFile();
+    public <T extends CsvBean & Mappable> DraftTable load(@NonNull File file, @NonNull Class<T> csvSchema) {
         assumeInputIsCsvCompatible(file.getName());
         return FlexibleDraftTable.create().fromObjects(
                 FilenameUtils.getName(file.getName()),
@@ -119,11 +118,6 @@ public class DefaultCsvLoader implements CsvLoader {
                         .map(HashMapRow::new)
                         .toList()
         );
-    }
-
-    void cleanUpTemporaryFiles(@NonNull File file) {
-        deleteFileIfPresent(file.getPath());
-        deleteFileIfPresent(file.getParentFile().getPath());
     }
 
 }
