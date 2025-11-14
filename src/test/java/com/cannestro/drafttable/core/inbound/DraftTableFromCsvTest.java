@@ -44,7 +44,7 @@ public class DraftTableFromCsvTest {
         FlexibleDraftTable.create()
                 .fromRowValues(headers, lines)
                 .write()
-                .toCSV(new File(TEST_CSV_DIRECTORY.concat("temp_3.csv")), CustomizableWritingOptions.builder().fillerValue("NULL").build());
+                .toCsv(new File(TEST_CSV_DIRECTORY.concat("temp_3.csv")), CustomizableWritingOptions.builder().fillerValue("NULL").build());
         Assert.assertEquals(
                 CsvDataParser.mapCsvToJsonStrings(TEST_CSV_DIRECTORY.concat("temp_3.csv"), PayDetails.class).size(),
                 3
@@ -68,7 +68,7 @@ public class DraftTableFromCsvTest {
 
         FlexibleDraftTable.create().fromRowValues(headers, lines)
                 .write()
-                .toCSV(new File(TEST_CSV_DIRECTORY.concat("temp_4.csv")), CustomizableWritingOptions.allDefaults());
+                .toCsv(new File(TEST_CSV_DIRECTORY.concat("temp_4.csv")), CustomizableWritingOptions.allDefaults());
         DraftTable df = FlexibleDraftTable.create().fromCsv().at(Path.of(TEST_CSV_DIRECTORY.concat("temp_4.csv")));
         Assert.assertEqualsNoOrder(
                 df.columnNames(),

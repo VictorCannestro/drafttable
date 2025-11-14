@@ -52,7 +52,7 @@ public class DraftTableOutput {
         this.draftTable = draftTable;
     }
 
-    public void toCSV(@NonNull File file, @NonNull CsvWritingOptions options) {
+    public void toCsv(@NonNull File file, @NonNull CsvWritingOptions options) {
         CsvDataWriter.writeAllLinesToCsv(
                 file,
                 draftTable().columnNames(),
@@ -72,8 +72,8 @@ public class DraftTableOutput {
      *
      * @param file The destination file containing the filepath
      */
-    public void toCSV(@NonNull File file) {
-        toCSV(file, CustomizableWritingOptions.allDefaults());
+    public void toCsv(@NonNull File file) {
+        toCsv(file, CustomizableWritingOptions.allDefaults());
     }
 
     /**

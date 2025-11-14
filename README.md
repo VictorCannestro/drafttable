@@ -47,7 +47,7 @@ FlexibleDraftTable.create().fromCsv().at(inputFilepath)
                  .top(50)
                  .select("preferredName", "lastName", "emailAddress")
                  .write()
-                 .toCSV(outputFile);
+                 .toCsv(outputFile);
 ```
 
 ### Example 2: Pretty printing a rich tabular display after combining and sorting by multiple columns
