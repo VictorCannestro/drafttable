@@ -649,7 +649,7 @@ FlexibleDraftTable.create().fromCsv().at(inputFilepath)
                  .where("Region", is("Middle Atlantic"))
                  .orderBy(ASCENDING)
                  .write()
-                 .toCSV(outputFile);
+                 .toCsv(outputFile);
 ```
 
 
