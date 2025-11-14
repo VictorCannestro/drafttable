@@ -90,12 +90,12 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public CsvLoader fromCSV() {
+    public CsvLoader fromCsv() {
         return new DefaultCsvLoader();
     }
 
     @Override
-    public JsonLoader fromJson() {
+    public JsonLoader fromJsonArray() {
         return new DefaultJsonLoader();
     }
 

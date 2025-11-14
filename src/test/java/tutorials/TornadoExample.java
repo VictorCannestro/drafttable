@@ -26,7 +26,7 @@ public class TornadoExample {
 
     public static void main(String[] args) {
         DraftTable tornadoes = FlexibleDraftTable.create()
-                .fromCSV().at(Path.of("csv/tornadoes_1950-2014.csv"))
+                .fromCsv().at(Path.of("csv/tornadoes_1950-2014.csv"))
                 .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                 .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
                 .transform("Start Lat", (String lat) -> Double.parseDouble(lat))

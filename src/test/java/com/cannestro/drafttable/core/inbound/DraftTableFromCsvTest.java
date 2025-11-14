@@ -23,12 +23,12 @@ public class DraftTableFromCsvTest {
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void unsupportedFileFormatsRaiseException() {
-        FlexibleDraftTable.create().fromCSV().at(Path.of("something.json"));
+        FlexibleDraftTable.create().fromCsv().at(Path.of("something.json"));
     }
 
     @Test
     public void canCreateFromCsvWhenOnlyHeadersPresent() {
-        DraftTable df = FlexibleDraftTable.create().fromCSV().at(Path.of(TEST_CSV_DIRECTORY.concat("no_tornadoes.csv")));
+        DraftTable df = FlexibleDraftTable.create().fromCsv().at(Path.of(TEST_CSV_DIRECTORY.concat("no_tornadoes.csv")));
         Assert.assertEquals(df.rowCount(), 0);
         Assert.assertEquals(df.columnCount(), 11);
     }
@@ -51,7 +51,7 @@ public class DraftTableFromCsvTest {
         );
 
         DraftTable df = FlexibleDraftTable.create()
-                .fromCSV(DefaultCsvLoader.class)
+                .fromCsv(DefaultCsvLoader.class)
                 .load(Path.of(TEST_CSV_DIRECTORY.concat("temp_3.csv")), PayDetails.class)
                 .where("type", is("Salary"));
         Assert.assertEquals(df.rowCount(), 1);
@@ -69,7 +69,7 @@ public class DraftTableFromCsvTest {
         FlexibleDraftTable.create().fromRowValues(headers, lines)
                 .write()
                 .toCSV(new File(TEST_CSV_DIRECTORY.concat("temp_4.csv")), CustomizableWritingOptions.allDefaults());
-        DraftTable df = FlexibleDraftTable.create().fromCSV().at(Path.of(TEST_CSV_DIRECTORY.concat("temp_4.csv")));
+        DraftTable df = FlexibleDraftTable.create().fromCsv().at(Path.of(TEST_CSV_DIRECTORY.concat("temp_4.csv")));
         Assert.assertEqualsNoOrder(
                 df.columnNames(),
                 List.of("type", "rate", "period", "workHours")

@@ -30,7 +30,7 @@ need to parse any columns we're interested in operating on to a more fitting dat
 
 ```java
 Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
-DraftTable tornadoes = FlexibleDraftTable.create().fromCSV().at(filePath)
+DraftTable tornadoes = FlexibleDraftTable.create().fromCsv().at(filePath)
         .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
         .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))
         .transform("Start Lat", (String lat) -> Double.parseDouble(lat))
@@ -52,11 +52,11 @@ following:
 ```java
 Path filePath = Path.of("csv/tornadoes_1950-2014.csv");
 CsvParsingOptions csvOptions = CustomizableParsingOptions.builder().type(TornadoDataBean.class).build();
-FlexibleDraftTable.create().fromCSV().at(filePath, csvOptions);
+FlexibleDraftTable.create().fromCsv().at(filePath, csvOptions);
 ``` 
 or 
 ```java
-FlexibleDraftTable.create().fromCSV(DefaultCsvLoader.class).load(filePath, TornadoDataBean.class);
+FlexibleDraftTable.create().fromCsv(DefaultCsvLoader.class).load(filePath, TornadoDataBean.class);
 ``` 
 where `TornadoDataBean.class` defines the bindings of column names to field names and data types, specifies required
 columns vs optional columns, etc. When using this approach, *the key names specified in `asMap()` will become the column
@@ -110,7 +110,7 @@ that's required is to define a class that `implements CsvLoader`. Suppose we def
 `public class MyCustomCsvLoader implements CsvLoader`. To access the methods of this custom loader in the pipeline we
 just need to write:
 ```java
-FlexibleDraftTable.create().fromCSV(MyCustomCsvLoader.class)
+FlexibleDraftTable.create().fromCsv(MyCustomCsvLoader.class)
 ```
 
 
@@ -625,7 +625,7 @@ Note that this only works here because the filter conditions are *mutually exclu
 ```java
 Path inputFilepath = Path.of("csv/tornadoes_1950-2014.csv");
 File outputFile = new File("./data/mid-atlantic_tornadoes_summer_1950-2014.csv");
-FlexibleDraftTable.create().fromCSV().at(inputFilepath)
+FlexibleDraftTable.create().fromCsv().at(inputFilepath)
                  .dropAllExcept("Date", "Time", "State", "Injuries", "Fatalities")
                  .transform("Injuries", (String injuries) -> (int) Double.parseDouble(injuries))
                  .transform("Fatalities", (String fatalities) -> (int) Double.parseDouble(fatalities))

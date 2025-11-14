@@ -36,7 +36,7 @@ directory, in general, for access to the latest tutorials.
 ```java
 Path inputFilepath = Path.of("./some/path/csv/employee_data.csv");
 File outputFile = new File("output/longest_serving_employees.csv");
-FlexibleDraftTable.create().fromCSV().at(inputFilepath)
+FlexibleDraftTable.create().fromCsv().at(inputFilepath)
                  .drop("payRate", "benefitsEligible")
                  .where("State", is(oneOf("NJ", "PA", "NY")))
                  .where("jobName", endsWith("manager"))
@@ -54,7 +54,7 @@ FlexibleDraftTable.create().fromCSV().at(inputFilepath)
 ```java
 record Dimension(Double length, Double width) {}
 URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/master/src/test/resources/csv/tornadoes_1950-2014.csv");
-FlexibleDraftTable.create().fromCSV().at(url)
+FlexibleDraftTable.create().fromCsv().at(url)
                  .nameTable("tornadoes_by_highest_injuries")
                  .melt("Date", "Time", into("DateTime"), (String date, String time) -> LocalDate.parse(date).atTime(LocalTime.parse(time)))
                  .transform("Length", (String length) -> Double.parseDouble(length))
