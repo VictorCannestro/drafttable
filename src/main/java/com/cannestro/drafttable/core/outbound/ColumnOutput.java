@@ -1,84 +1,23 @@
 package com.cannestro.drafttable.core.outbound;
 
-import com.cannestro.drafttable.core.columns.Column;
-import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
-import com.cannestro.drafttable.core.rows.HashMapRow;
-import com.cannestro.drafttable.core.options.StatisticName;
-import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
-
-import static java.util.Objects.isNull;
+import java.util.Iterator;
 
 
-/**
- * @author Victor Cannestro
- */
-public record ColumnOutput(Column column) {
+public interface ColumnOutput {
 
-    public static final String EMPTY_LABEL = "";
-    public static final String INDEX_LABEL = "index";
-    public static final String DESCRIBE_LABEL_FORMATTER = "Column: \"%s\"";
+    String toJsonString();
 
-
-    public ColumnOutput {
-        if (isNull(column)) {
-            throw new IllegalStateException("Cannot output a null object");
-        }
-    }
-
-    /**
-     * <p> Produces a JSON String representation of the {@code Column} using the underlying values as the elements of a
-     * JSON array. If the {@code Column} is empty, then an empty JSON array will be returned. For example: <pre>{@code
-     *     [
-     *         "2005-03-21",
-     *         "1976-06-28",
-     *         "1964-05-10",
-     *         "1984-06-17",
-     *         "2007-03-01",
-     *         "1973-06-26",
-     *         "1998-11-10"
-     *     ]
-     * }</pre>
-     * </p>
-     *
-     * @return A valid JSON string
-     */
-    public String toJsonString() {
-        try {
-            return ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(column().values());
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
-        }
-    }
-
-    public void toJson(@NonNull File outputFile) {
-        try {
-            ObjectMapperManager.getInstance().defaultMapper().writeValue(outputFile, column().values());
-        } catch (JsonProcessingException e) {
-            throw new IllegalStateException(e);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
+    void toJson(@NonNull File outputFile);
 
     /**
      * <p> Prints a highly readable table representation of the {@code Column} to the console alongside an index value.
      * <b> Row order is preserved </b> when pretty printing. Non-primitive objects will be represented by their
      * {@code toString()} output. </p>
      */
-    public void prettyPrint() {
-        FlexibleDraftTable.create().fromColumns(EMPTY_LABEL, List.of(column()))
-                         .introspect(df -> df.add(INDEX_LABEL, IntStream.range(0, df.rowCount()).boxed().toList(), null))
-                         .write()
-                         .prettyPrint();
-    }
+    Iterator<String> prettyPrint();
 
     /**
      * <p> Prints a highly readable table representation of the descriptive statistics of the {@code Column} to the
@@ -92,22 +31,6 @@ public record ColumnOutput(Column column) {
      *     <li> 25th, 50th, and 75th percentile estimates </li>
      * </ul> </p>
      */
-    public void describe() {
-        if (column().descriptiveStats().isEmpty()) {
-            System.out.printf("Cannot describe non-numeric Column: '%s'%n", column().label());
-        } else {
-            List<Map.Entry<StatisticName, Number>> entries = column().descriptiveStats().entrySet().stream()
-                    .sorted(Map.Entry.comparingByKey())
-                    .toList();
-
-            FlexibleDraftTable.create().fromRows(
-                    String.format(DESCRIBE_LABEL_FORMATTER, column().label()),
-                    entries.stream()
-                            .map(entry -> HashMapRow.from(new StatisticalDescription(entry.getKey().shortHand, entry.getValue().doubleValue())))
-                            .toList())
-                    .write()
-                    .prettyPrint();
-        }
-    }
+    Iterator<String> describe();
 
 }

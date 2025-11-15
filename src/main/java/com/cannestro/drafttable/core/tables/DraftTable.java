@@ -2,16 +2,17 @@ package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.columns.ColumnSplitter;
+import com.cannestro.drafttable.core.outbound.DraftTableOutput;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.options.Item;
 import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 
-import com.cannestro.drafttable.core.outbound.DraftTableOutput;
 import org.hamcrest.Matcher;
 import org.jspecify.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.*;
 
@@ -470,8 +471,9 @@ public interface DraftTable {
     ColumnSplitter split(@NonNull String columnName);
 
     /**
-     * Terminates the pipeline from further processing by switching control to an {@code Output}. From here, users may
-     * export the contents of the {@code DraftTable} to a supported format: CSV, JSON, etc.
+     * Removes the pipeline from further processing by switching control to a {@code DraftTableOutput}. From here,
+     * users may export the contents of the {@code DraftTable} to a supported format (CSV, JSON, etc.), pretty print,
+     * view the structure, etc.
      *
      * @return A {@code DraftTableOutput}
      */
@@ -585,6 +587,16 @@ public interface DraftTable {
         return deriveFrom(
                 firstColumnName, secondColumnName, newColumnName, operationToApply
         ).drop(firstColumnName, secondColumnName);
+    }
+
+    default <T extends DraftTableOutput> T write(@NonNull Class<T> outputClass) {
+        try {
+            return outputClass.getDeclaredConstructor(DraftTable.class).newInstance(this);
+        } catch (InstantiationException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new IllegalArgumentException("An accessible 1-arg constructor taking a DraftTable input was not found.", e);
+        }
     }
 
 }

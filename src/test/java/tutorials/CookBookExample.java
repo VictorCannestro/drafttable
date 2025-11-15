@@ -1,5 +1,6 @@
 package tutorials;
 
+import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.helper.Recipe;
@@ -15,7 +16,7 @@ import static org.hamcrest.Matchers.*;
 public class CookBookExample {
 
     public static void main(String[] args) {
-        URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/develop/src/test/resources/json/sample.json");
+        URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/develop/src/test/resources/json/multiple_recipes.json");
         DraftTable kitchenTable = FlexibleDraftTable.create().fromJsonArray().at(url, Recipe.class);
 
         kitchenTable.write().structure();
@@ -26,7 +27,7 @@ public class CookBookExample {
 
         kitchenTable.where("cuisine", is("Italian"))
                 .orderBy(these("difficulty", "caloriesPerServing"), ASCENDING)
-                .write()
+                .write(DefaultDraftTableOutput.class)
                 .prettyPrint();
     }
 

@@ -4,13 +4,14 @@ import com.cannestro.drafttable.core.columns.ColumnSplitter;
 import com.cannestro.drafttable.core.columns.EmbeddedColumnSplitter;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
 import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.outbound.DraftTableOutput;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.options.Item;
 import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 
-import com.cannestro.drafttable.core.outbound.DraftTableOutput;
+import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
 import com.cannestro.drafttable.supporting.utils.ListUtils;
 import com.cannestro.drafttable.supporting.utils.MapUtils;
 import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
@@ -57,7 +58,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public DraftTableOutput write() {
-        return new DraftTableOutput(this);
+        return new DefaultDraftTableOutput(this);
     }
 
     @Override

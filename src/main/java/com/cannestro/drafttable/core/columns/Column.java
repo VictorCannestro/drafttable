@@ -9,6 +9,7 @@ import org.jspecify.annotations.NonNull;
 import org.hamcrest.Matcher;
 import org.jspecify.annotations.Nullable;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Comparator;
 import java.util.List;
@@ -300,4 +301,14 @@ public interface Column {
 
     ColumnOutput write();
 
+
+    default <T extends ColumnOutput> T write(@NonNull Class<T> outputClass) {
+        try {
+            return outputClass.getDeclaredConstructor(Column.class).newInstance(this);
+        } catch (InstantiationException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new IllegalArgumentException("An accessible 1-arg constructor taking a Column input was not found.", e);
+        }
+    }
 }

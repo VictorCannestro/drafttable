@@ -1,11 +1,12 @@
 package com.cannestro.drafttable.core.columns;
 
 import com.cannestro.drafttable.core.options.SortingOrderType;
+import com.cannestro.drafttable.core.outbound.ColumnOutput;
 import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
 import com.fasterxml.jackson.databind.JavaType;
 
 import com.cannestro.drafttable.core.options.StatisticName;
-import com.cannestro.drafttable.core.outbound.ColumnOutput;
+import com.cannestro.drafttable.core.outbound.DefaultColumnOutput;
 import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
 import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
 import lombok.*;
@@ -353,7 +354,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public ColumnOutput write() {
-        return new ColumnOutput(this);
+        return new DefaultColumnOutput(this);
     }
 
     @Override
