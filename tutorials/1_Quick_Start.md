@@ -149,7 +149,7 @@ per-column basis we can invoke:
 tornadoes.write().structure();
 ```
 ```
-             tornadoes_1950-2014              
+           tornadoes_1950-2014.csv            
 ==============================================
 | ColumnName |       Type        | NullCount |
 ==============================================
@@ -173,7 +173,7 @@ The `top(n)` method returns a new `DraftTable` containing the first `n` rows, up
 tornadoes.top(2).write().prettyPrint();
 ```
 ```
-                                                 tornadoes_1950-2014                                                 
+                                               tornadoes_1950-2014.csv                                               
 =====================================================================================================================
 | Start Lon | Length | State | Fatalities |   Time   | Scale | State No | Width |    Date    | Injuries | Start Lat |
 =====================================================================================================================
@@ -186,7 +186,7 @@ Analogously, the `bottom(n)` method returns a new `DraftTable` containing the la
 tornadoes.bottom(2).write().prettyPrint();
 ```
 ```
-                                                 tornadoes_1950-2014                                                 
+                                               tornadoes_1950-2014.csv                                               
 =====================================================================================================================
 | Start Lon | Length | State | Fatalities |   Time   | Scale | State No | Width |    Date    | Injuries | Start Lat |
 =====================================================================================================================
@@ -199,7 +199,7 @@ To get a random uniform sample up to size `n`, up to the total row count, from t
 tornadoes.randomDraw(3).write().prettyPrint();
 ```
 ```
-                                                 tornadoes_1950-2014                                                 
+                                               tornadoes_1950-2014.csv                                               
 =====================================================================================================================
 | Start Lon | Length | State | Fatalities |   Time   | Scale | State No | Width |    Date    | Injuries | Start Lat |
 =====================================================================================================================
@@ -421,8 +421,8 @@ We can also order by multiple columns, up to the total column count. For example
 tornadoes.orderBy(these("Fatalities", "DateTime"), DESCENDING).top(4).write().prettyPrint();
 ```
 ```
-                                                         tornadoes_1950-2014                                                          
-=====================================================================================================================================
+                                                       tornadoes_1950-2014.csv                                                        
+======================================================================================================================================
 | Start Lon | Length | State | Fatalities |       Region       | Scale | State No | Width  | Injuries | Start Lat |     DateTime     |
 ======================================================================================================================================
 |  -94.5932 |  21.62 |    MO |        158 | West North Central |   5.0 |     38.0 | 1600.0 |     1150 |   37.0524 | 2011-05-22T16:34 |
@@ -439,7 +439,7 @@ tornadoes.orderBy(Comparator.comparing((Row row) -> ((LocalDateTime) row.valueOf
          .prettyPrint();
 ```
 ```
-                                                         tornadoes_1950-2014                                                          
+                                                       tornadoes_1950-2014.csv                                                       
 =====================================================================================================================================
 | Start Lon | Length | State | Fatalities |       Region       | Scale | State No | Width | Injuries | Start Lat |     DateTime     |
 =====================================================================================================================================
@@ -582,6 +582,11 @@ System.out.println(
 Similarly, to produce a JSON output file we could write something like:
 ```java
 tornadoes.write().toJson(new File(outputFilePath));
+```
+or to break up larger JSON into chunks, we could specify:
+```java
+ChunkingOptions chunkingOptions = ChunkingOptions.builder().limitPerChunk(500).filenameWithoutExtension("example").parentDirectory(new File(outputFilePath)).build();
+tornadoes.write().toJson(chunkingOptions);
 ```
 
 ### Into a user-defined object
