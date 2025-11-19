@@ -13,6 +13,8 @@ public interface DraftTableOutput {
 
     void toCsv(@NonNull File file, @NonNull CsvWritingOptions options);
 
+    void toCsv(@NonNull ChunkingOptions chunkingOptions, @NonNull CsvWritingOptions options);
+
     String toJsonString();
 
     void toJson(@NonNull File outputFile);
@@ -51,6 +53,10 @@ public interface DraftTableOutput {
      */
     default void toCsv(@NonNull File file) {
         toCsv(file, CustomizableWritingOptions.allDefaults());
+    }
+
+    default void toCsv(@NonNull ChunkingOptions chunkingOptions) {
+        toCsv(chunkingOptions, CustomizableWritingOptions.allDefaults());
     }
 
 }

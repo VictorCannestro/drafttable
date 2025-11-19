@@ -6,6 +6,8 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
+import com.cannestro.drafttable.supporting.csv.assumptions.CsvAssumptions;
+import com.cannestro.drafttable.supporting.json.assumptions.JsonAssumptions;
 import com.cannestro.drafttable.supporting.options.ChunkingOptions;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
@@ -68,6 +70,17 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
         );
     }
 
+    @Override
+    public void toCsv(@NonNull ChunkingOptions chunkingOptions, @NonNull CsvWritingOptions options) {
+        CsvAssumptions.assumeExtensionIsCsvCompatible(chunkingOptions.extension());
+        List<List<Integer>> partitionedIndices = partitionIndicesAccordingTo(chunkingOptions);
+        for (int i = 1; i <= partitionedIndices.size(); i++) {
+            draftTable().where(partitionedIndices.get(i))
+                    .write()
+                    .toCsv(new File(chunkingOptions.constructFilenameForChunk(i)), options);
+        }
+    }
+
     /**
      * <p> Produces a JSON String representation of the {@code DraftTable} using the rows as elements of a JSON array.
      * If the {@code DraftTable} is empty, then an empty JSON array will be returned. Non-empty example: <pre>{@code
@@ -111,6 +124,7 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
 
     @Override
     public void toJson(@NonNull File outputFile) {
+        JsonAssumptions.assumeFilenameIsJsonCompatible(outputFile.getAbsolutePath());
         try {
             ObjectMapperManager.getInstance()
                     .defaultMapper()
@@ -122,21 +136,12 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
 
     @Override
     public void toJson(@NonNull ChunkingOptions chunkingOptions) {
-        int partitionSize = isNull(chunkingOptions.limitPerChunk())
-                ? Math.max(1, draftTable().rowCount() / chunkingOptions.targetMinimumChunks())
-                : chunkingOptions.limitPerChunk();
-        List<List<Integer>> partitions = ListUtils.partition(range(0, draftTable().rowCount()).boxed().toList(), partitionSize);
-        for (int i = 0; i < partitions.size(); i++) {
-            draftTable().where(partitions.get(i))
+        JsonAssumptions.assumeExtensionIsJsonCompatible(chunkingOptions.extension());
+        List<List<Integer>> partitionedIndices = partitionIndicesAccordingTo(chunkingOptions);
+        for (int i = 0; i < partitionedIndices.size(); i++) {
+            draftTable().where(partitionedIndices.get(i))
                     .write()
-                    .toJson(new File(
-                            String.format("%s%s%s_%d.json",
-                                    chunkingOptions.parentDirectory().getAbsolutePath(),
-                                    File.separator,
-                                    chunkingOptions.filenameWithoutExtension(),
-                                    i
-                            )
-                    ));
+                    .toJson(new File(chunkingOptions.constructFilenameForChunk(i)));
         }
     }
 
@@ -275,6 +280,14 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
                 StringUtils.center(draftTable().tableName(), length),
                 StringUtils.repeat(DIVIDER, length)
         );
+    }
+
+
+    List<List<Integer>> partitionIndicesAccordingTo(@NonNull ChunkingOptions chunkingOptions) {
+        int partitionSize = isNull(chunkingOptions.limitPerChunk())
+                ? Math.max(1, draftTable().rowCount() / chunkingOptions.targetMinimumChunks())
+                : chunkingOptions.limitPerChunk();
+        return ListUtils.partition(range(0, draftTable().rowCount()).boxed().toList(), partitionSize);
     }
 
 }

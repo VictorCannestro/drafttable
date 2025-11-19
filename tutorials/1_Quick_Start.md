@@ -583,11 +583,7 @@ Similarly, to produce a JSON output file we could write something like:
 ```java
 tornadoes.write().toJson(new File(outputFilePath));
 ```
-or to break up larger JSON into chunks, we could specify:
-```java
-ChunkingOptions chunkingOptions = ChunkingOptions.builder().limitPerChunk(500).filenameWithoutExtension("example").parentDirectory(new File(outputFilePath)).build();
-tornadoes.write().toJson(chunkingOptions);
-```
+
 
 ### Into a user-defined object
 Alternatively, we can gather the entire `DraftTable` or a defined subset of columns into a collection of user defined

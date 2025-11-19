@@ -4,6 +4,7 @@ import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.supporting.csv.assumptions.CsvAssumptions;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
@@ -25,7 +26,6 @@ import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.nCopies;
 import static java.util.Objects.isNull;
-import static org.apache.commons.io.FilenameUtils.getExtension;
 
 
 /**
@@ -33,20 +33,17 @@ import static org.apache.commons.io.FilenameUtils.getExtension;
  */
 public class DefaultCsvLoader implements CsvLoader {
 
-    public static final List<String> SUPPORTED_EXTENSIONS = List.of("csv", "txt", "tsv");
-
-
     @Override
     public DraftTable at(@NonNull Path path) {
         File file = path.toFile();
-        assumeInputIsCsvCompatible(file.getName());
+        CsvAssumptions.assumeFilenameIsCsvCompatible(file.getName());
         return createWithoutSchema(file.getPath(), null);
     }
 
     @Override
     public DraftTable at(@NonNull Path path, @NonNull CsvParsingOptions loadingOptions) {
         File file = path.toFile();
-        assumeInputIsCsvCompatible(file.getName());
+        CsvAssumptions.assumeFilenameIsCsvCompatible(file.getName());
         if (isNull(loadingOptions.type())) {
             return createWithoutSchema(file.getPath(), loadingOptions);
         } else {
@@ -59,7 +56,7 @@ public class DefaultCsvLoader implements CsvLoader {
 
     @Override
     public DraftTable at(@NonNull URL url) {
-        assumeInputIsCsvCompatible(url.toString());
+        CsvAssumptions.assumeFilenameIsCsvCompatible(url.toString());
         File file = copyToTempDirectory(url);
         DraftTable draftTable = createWithoutSchema(file.getPath(), null);
         FileUtils.cleanUpTemporaryFiles(file);
@@ -68,7 +65,7 @@ public class DefaultCsvLoader implements CsvLoader {
 
     @Override
     public DraftTable at(@NonNull URL url, @NonNull CsvParsingOptions loadingOptions) {
-        assumeInputIsCsvCompatible(url.toString());
+        CsvAssumptions.assumeFilenameIsCsvCompatible(url.toString());
         File file = copyToTempDirectory(url);
         DraftTable draftTable = isNull(loadingOptions.type())
                 ? createWithoutSchema(file.getPath(), loadingOptions)
@@ -82,17 +79,11 @@ public class DefaultCsvLoader implements CsvLoader {
 
 
     public <T extends CsvBean & Mappable> DraftTable load(@NonNull File file, @NonNull Class<T> csvSchema) {
-        assumeInputIsCsvCompatible(file.getName());
+        CsvAssumptions.assumeFilenameIsCsvCompatible(file.getName());
         return FlexibleDraftTable.create().fromObjects(
                 FilenameUtils.getName(file.getName()),
                 buildBeansFrom(file.getPath(), csvSchema)
         );
-    }
-
-    void assumeInputIsCsvCompatible(@NonNull String input) {
-        if (!SUPPORTED_EXTENSIONS.contains(getExtension(input))) {
-            throw new IllegalArgumentException(String.format("Assumption broken - The input did not end with a supported CSV extension - %s not in %s", getExtension(input), SUPPORTED_EXTENSIONS));
-        }
     }
 
     DraftTable createWithoutSchema(@NonNull String pathToFile, @Nullable CsvParsingOptions loadingOptions) {

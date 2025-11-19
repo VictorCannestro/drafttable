@@ -12,10 +12,12 @@ import static java.util.Objects.isNull;
 @Builder
 public record ChunkingOptions(Integer limitPerChunk,
                               Integer targetMinimumChunks,
-                              String filenameWithoutExtension,
-                              @NonNull File parentDirectory) {
+                              @NonNull File parentDirectory,
+                              String chunkRootName,
+                              @NonNull SupportedExtension extension) {
 
     public static final String DEFAULT_NAME = "chunk";
+    public static final String CHUNK_FORMAT = "%s%s%s_%d.%s";
 
 
     public ChunkingOptions {
@@ -27,11 +29,22 @@ public record ChunkingOptions(Integer limitPerChunk,
         } else if (targetMinimumChunks < 1) {
             throw new IllegalArgumentException("The minimum chunk size must be a positive integer.");
         }
-        if (StringUtils.isBlank(filenameWithoutExtension)) {
-            filenameWithoutExtension = DEFAULT_NAME;
+        if (StringUtils.isBlank(chunkRootName)) {
+            chunkRootName = DEFAULT_NAME;
         }
     }
 
-
+    public String constructFilenameForChunk(int chunkId) {
+        if (chunkId < 0) {
+            throw new IllegalArgumentException("The chunk ID must be a non-negative integer: " + chunkId);
+        }
+        return String.format(CHUNK_FORMAT,
+                parentDirectory().getAbsolutePath(),
+                File.separator,
+                chunkRootName(),
+                chunkId,
+                extension()
+        );
+    }
 
 }

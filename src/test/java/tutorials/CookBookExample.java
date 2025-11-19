@@ -5,12 +5,14 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.helper.Recipe;
 import com.cannestro.drafttable.supporting.options.ChunkingOptions;
+import com.cannestro.drafttable.supporting.options.SupportedExtension;
 
 import java.io.File;
 import java.net.URL;
 
 import static com.cannestro.drafttable.core.options.Items.*;
 import static com.cannestro.drafttable.core.options.SortingOrderType.ASCENDING;
+import static com.cannestro.drafttable.supporting.options.SupportedExtension.JSON;
 import static com.cannestro.drafttable.supporting.utils.NetUtils.url;
 import static org.hamcrest.Matchers.*;
 
@@ -34,10 +36,10 @@ public class CookBookExample {
 
         ChunkingOptions chunkingOptions = ChunkingOptions.builder()
                 .limitPerChunk(5)
-                .filenameWithoutExtension("sample")
                 .parentDirectory(new File("./src/test/resources/json"))
+                .chunkRootName("sample")
+                .extension(JSON)
                 .build();
-
         kitchenTable.write().toJson(chunkingOptions);
     }
 
