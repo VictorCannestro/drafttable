@@ -1,13 +1,13 @@
 package com.cannestro.drafttable.core.rows;
 
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import org.jspecify.annotations.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.type.TypeReference;
 
 import java.util.*;
 
@@ -77,7 +77,7 @@ public record HashMapRow(Map<String, ?> map) implements Row {
                             new TypeReference<>() {}
                     )
             );
-        } catch (JsonProcessingException | UnsupportedOperationException e) {
+        } catch (JacksonException | UnsupportedOperationException e) {
             throw new IllegalArgumentException(String.format("Cannot create a copy the row%nCause: %s", e));
         }
     }
@@ -89,7 +89,7 @@ public record HashMapRow(Map<String, ?> map) implements Row {
                     ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(map()),
                     target
             );
-        } catch (JsonProcessingException | UnsupportedOperationException e) {
+        } catch (JacksonException | UnsupportedOperationException e) {
             log.debug("Cannot convert the row to a {}", target);
             throw new IllegalArgumentException(String.format("Cannot convert the row to a%s%nCause: %s", target, e));
         }

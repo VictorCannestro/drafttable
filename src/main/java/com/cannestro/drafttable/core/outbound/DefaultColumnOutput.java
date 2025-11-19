@@ -5,11 +5,10 @@ import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jspecify.annotations.NonNull;
+import tools.jackson.core.JacksonException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public record DefaultColumnOutput(Column column) implements ColumnOutput {
     public String toJsonString() {
         try {
             return ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(column().values());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -64,10 +63,8 @@ public record DefaultColumnOutput(Column column) implements ColumnOutput {
     public void toJson(@NonNull File outputFile) {
         try {
             ObjectMapperManager.getInstance().defaultMapper().writeValue(outputFile, column().values());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException(e);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
         }
     }
 

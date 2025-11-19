@@ -3,7 +3,6 @@ package com.cannestro.drafttable.core.columns;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
-import com.fasterxml.jackson.databind.JavaType;
 
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.DefaultColumnOutput;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.hamcrest.Matcher;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.JavaType;
 
 import java.lang.reflect.Type;
 import java.util.*;

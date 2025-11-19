@@ -1,9 +1,10 @@
 package com.cannestro.drafttable.supporting.json;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.core.json.JsonReadFeature;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+
 
 
 public class ObjectMapperManager {
@@ -14,13 +15,14 @@ public class ObjectMapperManager {
         private static final ObjectMapper MAPPER;
 
         static {
-            MAPPER = new ObjectMapper();
-            MAPPER.registerModule(new JavaTimeModule());
-            MAPPER.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-            MAPPER.disable(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
-            MAPPER.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
-            MAPPER.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-            MAPPER.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
+            MAPPER = JsonMapper.builder()
+                    .configure(JsonReadFeature.ALLOW_LEADING_DECIMAL_POINT_FOR_NUMBERS, true)
+                    .configure(JsonReadFeature.ALLOW_LEADING_PLUS_SIGN_FOR_NUMBERS, true)
+                    .configure(JsonReadFeature.ALLOW_NON_NUMERIC_NUMBERS, true)
+                    .configure(JsonReadFeature.ALLOW_MISSING_VALUES, true)
+                    .configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true)
+                    .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+                    .build();
         }
     }
 

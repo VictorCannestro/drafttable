@@ -1,8 +1,8 @@
 package com.cannestro.drafttable.supporting.utils;
 
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jspecify.annotations.NonNull;
+import tools.jackson.core.JacksonException;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class JsonUtils {
             return ObjectMapperManager.getInstance().defaultMapper()
                     .writerWithDefaultPrettyPrinter()
                     .writeValueAsString(ObjectMapperManager.getInstance().defaultMapper().readTree(uglyJsonString));
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException(String.format("Could not parse input: %s", uglyJsonString), e);
         }
     }
@@ -36,7 +36,7 @@ public class JsonUtils {
                 .map((T object) -> {
                     try {
                         return ObjectMapperManager.getInstance().defaultMapper().writeValueAsString(object);
-                    } catch (JsonProcessingException e) {
+                    } catch (JacksonException e) {
                         throw new IllegalArgumentException(e);
                     }
                 })

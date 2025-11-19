@@ -5,6 +5,8 @@
 The DraftTable library depends on functionality provided by the following projects:
 - [Java Hamcrest](http://hamcrest.org/JavaHamcrest/)
   - BSD-3-Clause license
+- [Jackson-Databind](https://github.com/FasterXML/jackson-databind)
+  - Apache License 2.0
 - [OpenCSV](https://opencsv.sourceforge.net/)
   - Apache License 2.0
 - Apache Commons technologies (Apache License 2.0)

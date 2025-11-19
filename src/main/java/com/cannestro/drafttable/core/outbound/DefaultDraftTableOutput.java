@@ -8,7 +8,6 @@ import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.supporting.options.ChunkingOptions;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,9 +15,9 @@ import org.apache.commons.collections4.ListUtils;
 import org.jspecify.annotations.NonNull;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
+import tools.jackson.core.JacksonException;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
@@ -105,7 +104,7 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
             return ObjectMapperManager.getInstance()
                     .defaultMapper()
                     .writeValueAsString(draftTable().rows().stream().map(Row::valueMap).toList());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -116,10 +115,8 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
             ObjectMapperManager.getInstance()
                     .defaultMapper()
                     .writeValue(outputFile, draftTable().rows().stream().map(Row::valueMap).toList());
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             throw new IllegalStateException(e);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
         }
     }
 
