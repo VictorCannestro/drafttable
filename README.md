@@ -89,6 +89,7 @@ FlexibleDraftTable.create().fromCsv().at(url)
 |        `.csv`        |   ✅    |   ✅    |
 |        `.tsv`        |   ✅    |   ✅    |
 |       `.json`        |   ✅    |   ✅    |
+|      `.geojson`      |   ✅    |   ✅    |
 |        Excel         |   *    |        |
 |    Apache Parquet    |   *    |        |
 | User defined objects |   ✅    |   ✅    |
