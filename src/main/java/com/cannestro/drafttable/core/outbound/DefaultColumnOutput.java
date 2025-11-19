@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
 import com.cannestro.drafttable.core.options.StatisticName;
-import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jspecify.annotations.NonNull;
 

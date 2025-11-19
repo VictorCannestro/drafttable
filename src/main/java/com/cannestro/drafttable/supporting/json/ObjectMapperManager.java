@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.supporting.utils;
+package com.cannestro.drafttable.supporting.json;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

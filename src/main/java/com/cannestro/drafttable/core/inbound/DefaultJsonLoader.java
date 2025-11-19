@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
-import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jspecify.annotations.NonNull;

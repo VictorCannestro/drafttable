@@ -2,7 +2,7 @@ package com.cannestro.drafttable.helper;
 
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
-import com.cannestro.drafttable.supporting.utils.MapBuilder;
+import com.cannestro.drafttable.supporting.map.MapBuilder;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.opencsv.bean.CsvBindByName;
 import lombok.*;

@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.core.rows;
 
-import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 

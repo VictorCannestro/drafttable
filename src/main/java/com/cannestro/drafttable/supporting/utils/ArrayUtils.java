@@ -1,5 +1,7 @@
 package com.cannestro.drafttable.supporting.utils;
 
+import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
+
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.stream.IntStream;

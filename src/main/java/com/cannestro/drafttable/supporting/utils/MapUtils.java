@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.supporting.utils;
 
+import com.cannestro.drafttable.supporting.map.Entry;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.paumard.streams.StreamsUtils;

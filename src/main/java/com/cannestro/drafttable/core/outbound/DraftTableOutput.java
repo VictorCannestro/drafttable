@@ -2,6 +2,7 @@ package com.cannestro.drafttable.core.outbound;
 
 import com.cannestro.drafttable.supporting.csv.CsvWritingOptions;
 import com.cannestro.drafttable.supporting.csv.options.CustomizableWritingOptions;
+import com.cannestro.drafttable.supporting.options.ChunkingOptions;
 import org.jspecify.annotations.NonNull;
 
 import java.io.File;
@@ -15,6 +16,8 @@ public interface DraftTableOutput {
     String toJsonString();
 
     void toJson(@NonNull File outputFile);
+
+    void toJson(@NonNull ChunkingOptions chunkingOptions);
 
     Iterator<String> structure();
 

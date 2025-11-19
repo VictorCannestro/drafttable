@@ -4,7 +4,9 @@ import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.helper.Recipe;
+import com.cannestro.drafttable.supporting.options.ChunkingOptions;
 
+import java.io.File;
 import java.net.URL;
 
 import static com.cannestro.drafttable.core.options.Items.*;
@@ -29,6 +31,14 @@ public class CookBookExample {
                 .orderBy(these("difficulty", "caloriesPerServing"), ASCENDING)
                 .write(DefaultDraftTableOutput.class)
                 .prettyPrint();
+
+        ChunkingOptions chunkingOptions = ChunkingOptions.builder()
+                .limitPerChunk(5)
+                .filenameWithoutExtension("sample")
+                .parentDirectory(new File("./src/test/resources/json"))
+                .build();
+
+        kitchenTable.write().toJson(chunkingOptions);
     }
 
 }

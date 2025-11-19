@@ -2,7 +2,7 @@ package com.cannestro.drafttable.core.columns;
 
 import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.outbound.ColumnOutput;
-import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.fasterxml.jackson.databind.JavaType;
 
 import com.cannestro.drafttable.core.options.StatisticName;

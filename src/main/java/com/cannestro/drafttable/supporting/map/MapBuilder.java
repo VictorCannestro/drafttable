@@ -1,6 +1,7 @@
-package com.cannestro.drafttable.supporting.utils;
+package com.cannestro.drafttable.supporting.map;
 
 import com.cannestro.drafttable.core.rows.Mappable;
+import com.cannestro.drafttable.supporting.utils.MapUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 

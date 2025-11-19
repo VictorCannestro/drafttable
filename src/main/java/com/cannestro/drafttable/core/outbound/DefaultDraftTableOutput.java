@@ -6,11 +6,13 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.core.rows.HashMapRow;
-import com.cannestro.drafttable.supporting.utils.ObjectMapperManager;
+import com.cannestro.drafttable.supporting.options.ChunkingOptions;
+import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.apache.commons.collections4.ListUtils;
 import org.jspecify.annotations.NonNull;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +27,7 @@ import static java.lang.String.format;
 import static java.lang.String.join;
 import static java.util.Collections.nCopies;
 import static java.util.Objects.isNull;
+import static java.util.stream.IntStream.range;
 import static org.hamcrest.Matchers.nullValue;
 
 
@@ -117,6 +120,26 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
             throw new IllegalStateException(e);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
+        }
+    }
+
+    @Override
+    public void toJson(@NonNull ChunkingOptions chunkingOptions) {
+        int partitionSize = isNull(chunkingOptions.limitPerChunk())
+                ? Math.max(1, draftTable().rowCount() / chunkingOptions.targetMinimumChunks())
+                : chunkingOptions.limitPerChunk();
+        List<List<Integer>> partitions = ListUtils.partition(range(0, draftTable().rowCount()).boxed().toList(), partitionSize);
+        for (int i = 0; i < partitions.size(); i++) {
+            draftTable().where(partitions.get(i))
+                    .write()
+                    .toJson(new File(
+                            String.format("%s%s%s_%d.json",
+                                    chunkingOptions.parentDirectory().getAbsolutePath(),
+                                    File.separator,
+                                    chunkingOptions.filenameWithoutExtension(),
+                                    i
+                            )
+                    ));
         }
     }
 

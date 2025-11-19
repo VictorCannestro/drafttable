@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.supporting.utils;
 
+import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jspecify.annotations.NonNull;
 
