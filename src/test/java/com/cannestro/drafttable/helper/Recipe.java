@@ -2,6 +2,8 @@ package com.cannestro.drafttable.helper;
 
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.supporting.map.MapBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;
@@ -46,4 +48,10 @@ public record Recipe(int id,
                 .entry("mealType", mealType)
                 .asMap();
     }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
+
 }
