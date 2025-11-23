@@ -12,8 +12,8 @@ public interface HttpLoader {
 
     <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema, @NonNull HttpRequestWrapper options);
 
-    <A, M extends Mappable> DraftTable getFromJson(@NonNull Class<A> schema,
-                                                   @NonNull Function<A, List<M>> selector,
-                                                   @NonNull HttpRequestWrapper options);
+    <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
+                                             @NonNull Function<A, List<M>> selector,
+                                             @NonNull HttpRequestWrapper options);
 
 }
