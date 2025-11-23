@@ -2,17 +2,15 @@ package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
 import com.cannestro.drafttable.core.columns.FlexibleColumn;
-import com.cannestro.drafttable.core.inbound.DefaultJsonLoader;
-import com.cannestro.drafttable.core.inbound.JsonLoader;
+import com.cannestro.drafttable.core.inbound.*;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.rows.HashMapRow;
-import com.cannestro.drafttable.core.inbound.CsvLoader;
-import com.cannestro.drafttable.core.inbound.DefaultCsvLoader;
 import com.cannestro.drafttable.supporting.utils.MapUtils;
 import org.jspecify.annotations.NonNull;
 import org.paumard.streams.StreamsUtils;
 
+import java.net.http.HttpClient;
 import java.util.List;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeColumnsHaveUniformSize;
@@ -60,7 +58,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public <T extends Mappable> DraftTable fromObjects(@NonNull String tableName, @NonNull List<T> objects) {
+    public <M extends Mappable> DraftTable fromObjects(@NonNull String tableName, @NonNull List<M> objects) {
         return fromRows(tableName, objects.stream().map(HashMapRow::from).toList());
     }
 
@@ -92,6 +90,11 @@ public class FlexibleDraftTableCreator implements TableCreator {
     @Override
     public CsvLoader fromCsv() {
         return new DefaultCsvLoader();
+    }
+
+    @Override
+    public HttpLoader fromHttp(@NonNull HttpClient client) {
+        return new DefaultHttpLoader(client);
     }
 
     @Override

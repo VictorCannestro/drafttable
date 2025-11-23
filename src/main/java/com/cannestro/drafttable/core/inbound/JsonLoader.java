@@ -10,8 +10,8 @@ import java.nio.file.Path;
 
 public interface JsonLoader {
 
-    <T extends Mappable> DraftTable at(@NonNull Path path, @NonNull Class<T> schema);
+    <M extends Mappable> DraftTable at(@NonNull Path path, @NonNull Class<M> schema);
 
-    <T extends Mappable> DraftTable at(@NonNull URL url, @NonNull Class<T> schema);
+    <M extends Mappable> DraftTable at(@NonNull URL url, @NonNull Class<M> schema);
 
 }

@@ -22,20 +22,20 @@ import java.util.List;
 public class DefaultJsonLoader implements JsonLoader {
 
     @Override
-    public <T extends Mappable> DraftTable at(@NonNull Path path, @NonNull Class<T> schema) {
+    public <M extends Mappable> DraftTable at(@NonNull Path path, @NonNull Class<M> schema) {
         return load(path.toFile(), schema, ObjectMapperManager.getInstance().defaultMapper());
     }
 
     @Override
-    public <T extends Mappable> DraftTable at(@NonNull URL url, @NonNull Class<T> schema) {
+    public <M extends Mappable> DraftTable at(@NonNull URL url, @NonNull Class<M> schema) {
         File file = FileUtils.copyToTempDirectory(url);
         DraftTable draftTable = load(file, schema, ObjectMapperManager.getInstance().defaultMapper());
         FileUtils.cleanUpTemporaryFiles(file);
         return draftTable;
     }
 
-    public <T extends Mappable> DraftTable load(@NonNull File file,
-                                                @NonNull Class<T> schema,
+    public <M extends Mappable> DraftTable load(@NonNull File file,
+                                                @NonNull Class<M> schema,
                                                 @NonNull ObjectMapper mapper) {
         try {
             return FlexibleDraftTable.create().fromObjects(

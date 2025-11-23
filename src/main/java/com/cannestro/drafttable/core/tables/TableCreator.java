@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.core.tables;
 
 import com.cannestro.drafttable.core.columns.Column;
+import com.cannestro.drafttable.core.inbound.HttpLoader;
 import com.cannestro.drafttable.core.inbound.JsonLoader;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
@@ -8,6 +9,7 @@ import com.cannestro.drafttable.core.inbound.CsvLoader;
 import org.jspecify.annotations.NonNull;
 
 import java.lang.reflect.InvocationTargetException;
+import java.net.http.HttpClient;
 import java.util.List;
 
 import static com.cannestro.drafttable.core.tables.DraftTable.DEFAULT_TABLE_NAME;
@@ -47,9 +49,9 @@ public interface TableCreator {
      * @param tableName Any String
      * @param objects A homogeneous list of objects
      * @return A new {@code DraftTable}
-     * @param <T> Any arbitrary, non-primitive object that is {@code Mappable}
+     * @param <M> Any arbitrary, non-primitive object that is {@code Mappable}
      */
-    <T extends Mappable> DraftTable fromObjects(@NonNull String tableName, @NonNull List<T> objects);
+    <M extends Mappable> DraftTable fromObjects(@NonNull String tableName, @NonNull List<M> objects);
 
     /**
      * <p><b>Requires</b>: The inner collection represents a particular <u>row's</u> values. Value order, with respect to
@@ -75,6 +77,8 @@ public interface TableCreator {
     DraftTable fromColumnValues(@NonNull List<String> columnNames, @NonNull List<List<?>> table);
 
     CsvLoader fromCsv();
+
+    HttpLoader fromHttp(HttpClient client);
 
     JsonLoader fromJsonArray();
 
@@ -106,7 +110,7 @@ public interface TableCreator {
         return fromRows(DEFAULT_TABLE_NAME, listOfRows);
     }
 
-    default <T extends Mappable> DraftTable fromObjects(@NonNull List<T> objects) {
+    default <M extends Mappable> DraftTable fromObjects(@NonNull List<M> objects) {
         return fromObjects(DEFAULT_TABLE_NAME, objects);
     }
 
