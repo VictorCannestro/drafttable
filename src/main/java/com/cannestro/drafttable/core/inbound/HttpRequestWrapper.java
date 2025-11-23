@@ -44,7 +44,7 @@ public record HttpRequestWrapper(@NonNull String baseUrl,
             headers = Collections.emptyMap();
         }
         if (isNull(queryParams)) {
-            headers = Collections.emptyMap();
+            queryParams = Collections.emptyMap();
         }
         if (isNull(encodingCharset)) {
             encodingCharset = StandardCharsets.UTF_8;
