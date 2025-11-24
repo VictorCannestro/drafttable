@@ -3,6 +3,8 @@ package com.cannestro.drafttable.core.inbound;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
+import com.cannestro.drafttable.supporting.http.HttpRequestSender;
+import com.cannestro.drafttable.supporting.http.HttpRequestWrapper;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,7 +28,7 @@ public class DefaultHttpLoader implements HttpLoader {
 
     @Override
     public <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema, @NonNull HttpRequestWrapper options) {
-        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(getClient(), options.getRequest());
+        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(getClient(), options.constructGetRequest());
         return FlexibleDraftTable.create().fromObjects(
                 ObjectMapperManager.getInstance()
                         .defaultMapper()
@@ -39,7 +41,7 @@ public class DefaultHttpLoader implements HttpLoader {
     public <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
                                                     @NonNull Function<A, List<M>> selector,
                                                     @NonNull HttpRequestWrapper options) {
-        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(getClient(), options.getRequest());
+        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(getClient(), options.constructGetRequest());
         A object = ObjectMapperManager.getInstance().defaultMapper().readValue(response.body(), schema);
         return FlexibleDraftTable.create().fromObjects(
                 selector.apply(object)

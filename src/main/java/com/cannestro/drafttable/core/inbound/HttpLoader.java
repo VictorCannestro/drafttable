@@ -2,6 +2,7 @@ package com.cannestro.drafttable.core.inbound;
 
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
+import com.cannestro.drafttable.supporting.http.HttpRequestWrapper;
 import org.jspecify.annotations.NonNull;
 
 import java.util.List;

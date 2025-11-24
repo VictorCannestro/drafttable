@@ -1,4 +1,4 @@
-package com.cannestro.drafttable.core.inbound;
+package com.cannestro.drafttable.supporting.http;
 
 import lombok.AllArgsConstructor;
 

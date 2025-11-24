@@ -1,4 +1,6 @@
-package com.cannestro.drafttable.core.inbound;
+package com.cannestro.drafttable.supporting.http;
+
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -7,6 +9,7 @@ import java.net.http.HttpResponse;
 import java.util.function.BiFunction;
 
 
+@Slf4j
 public class HttpRequestSender {
 
     private HttpRequestSender() {}
@@ -14,6 +17,7 @@ public class HttpRequestSender {
     public static BiFunction<HttpClient, HttpRequest, HttpResponse<String>> sendSynchronously() {
         return (httpClient, httpRequest) -> {
             try {
+                log.info(httpRequest.toString());
                 return httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             } catch (IOException e) {
                 throw new IllegalStateException("An I/ O error occurred while sending.", e);
