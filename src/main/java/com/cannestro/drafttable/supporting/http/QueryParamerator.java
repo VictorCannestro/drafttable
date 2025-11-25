@@ -44,7 +44,7 @@ public class QueryParamerator {
     QueryParamerator(@NonNull Map<String, String> params, boolean needsEncoding) {
         if (needsEncoding) {
             Map<String, String> processedParams = new HashMap<>();
-            MapIterator<String, String> paramerator = asParamerator();
+            MapIterator<String, String> paramerator = MapUtils.iterableMap(params).mapIterator();
             while (paramerator.hasNext()) {
                 processedParams.putIfAbsent(
                         URLEncoder.encode(paramerator.next(), StandardCharsets.UTF_8),
@@ -71,6 +71,10 @@ public class QueryParamerator {
         return this;
     }
 
+    public boolean hasBaseUrl() {
+        return !isNull(this.baseUrl);
+    }
+
     public URI constructUri() {
         return URI.create(addTo(this.baseUrl));
     }
@@ -82,7 +86,7 @@ public class QueryParamerator {
     String addTo(@NonNull String baseUrl) {
         StringBuilder uriBuilder = new StringBuilder().append(baseUrl);
         if (!this.encodedParams.isEmpty()) {
-            MapIterator<String, String> paramerator = asParamerator();
+            MapIterator<String, String> paramerator = MapUtils.iterableMap(this.encodedParams).mapIterator();
             if (!baseUrl.contains(QUERY_JOINER)) {
                 uriBuilder.append(QUERY_JOINER);
             } else {
@@ -96,14 +100,6 @@ public class QueryParamerator {
             }
         }
         return uriBuilder.toString();
-    }
-
-    MapIterator<String, String> asParamerator() {
-        return MapUtils.iterableMap(this.encodedParams).mapIterator();
-    }
-
-    public boolean hasBaseUrl() {
-        return !isNull(this.baseUrl);
     }
 
 }

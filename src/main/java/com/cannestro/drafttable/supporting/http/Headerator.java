@@ -17,14 +17,6 @@ public class Headerator {
     @Getter private final Map<String, String> headers;
 
 
-    Headerator() {
-        this.headers = new HashMap<>();
-    }
-
-    Headerator(@NonNull Map<String, String> headers) {
-        this.headers = new HashMap<>(headers);
-    }
-
     public static Headerator create() {
         return new Headerator();
     }
@@ -38,12 +30,16 @@ public class Headerator {
         return this;
     }
 
-    MapIterator<String, String> asHeaderator() {
-        return MapUtils.iterableMap(this.headers).mapIterator();
+    Headerator() {
+        this.headers = new HashMap<>();
+    }
+
+    Headerator(@NonNull Map<String, String> headers) {
+        this.headers = new HashMap<>(headers);
     }
 
     public HttpRequest.Builder addHeadersTo(HttpRequest.@NonNull Builder builder) {
-        MapIterator<String, String> headerator = asHeaderator();
+        MapIterator<String, String> headerator = MapUtils.iterableMap(this.headers).mapIterator();
         while (headerator.hasNext()) {
             builder = builder.header(headerator.next(), headerator.getValue());
         }
