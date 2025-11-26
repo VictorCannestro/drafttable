@@ -10,6 +10,7 @@ import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,15 +18,19 @@ import static com.cannestro.drafttable.supporting.utils.MapUtils.*;
 import static java.util.Objects.isNull;
 
 
+@Getter
 @Accessors(fluent = true)
 public class QueryParamerator {
 
     public static final String QUERY_JOINER = "?";
     public static final String AND = "&";
-    public static final String QUERY_PARAM_PAIR_FORMAT = "%s=%s";
+    public static final String EQUAL = "=";
+    public static final String FRAGMENT = "#";
+    public static final String QUERY_PARAM_PAIR_FORMAT = "%s" + EQUAL + "%s";
 
-    @Getter private final Map<String, String> encodedParams;
+    private final Map<String, String> encodedParams;
     private String baseUrl;
+    private String optionalFragment;
 
 
     public static QueryParamerator create() {
@@ -34,6 +39,10 @@ public class QueryParamerator {
 
     public static QueryParamerator forThis(@NonNull String baseUrl) {
         return new QueryParamerator(baseUrl);
+    }
+
+    public static QueryParamerator fromThis(@NonNull URI uri) {
+        return new QueryParamerator(uri);
     }
 
     public static QueryParamerator of(@NonNull Map<String, String> params, boolean needsEncoding) {
@@ -45,8 +54,28 @@ public class QueryParamerator {
     }
 
     QueryParamerator(@NonNull String baseUrl) {
+        this(URI.create(baseUrl));
+    }
+
+    QueryParamerator(@NonNull URI uri) {
         this();
-        this.baseUrl = baseUrl;
+        String uriString = uri.toString();
+        if (!isNull(uri.getRawQuery())) {
+            Arrays.stream(uri.getRawQuery().split(AND)).forEach(kvPair ->
+                    this.encodedParams.putIfAbsent(
+                            kvPair.substring(0, kvPair.indexOf(EQUAL)),
+                            kvPair.substring(kvPair.indexOf(EQUAL) + 1)
+                    )
+            );
+            this.baseUrl = uriString.substring(0, uriString.indexOf(QUERY_JOINER));
+        } else {
+            if (!isNull(uri.getFragment())) {
+                this.optionalFragment = uri.getFragment();
+                this.baseUrl = uriString.substring(0, uriString.indexOf(FRAGMENT));
+            } else {
+                this.baseUrl = uriString;
+            }
+        }
     }
 
     QueryParamerator(@NonNull Map<String, String> params, boolean needsEncoding) {
@@ -72,8 +101,17 @@ public class QueryParamerator {
         return this;
     }
 
+    public QueryParamerator optionalFragment(@NonNull String optionalFragment) {
+        this.optionalFragment = optionalFragment;
+        return this;
+    }
+
     public boolean hasBaseUrl() {
         return !isNull(this.baseUrl);
+    }
+
+    public boolean hasOptionalFragment() {
+        return !isNull(this.optionalFragment);
     }
 
     public URI constructUri() {
@@ -84,17 +122,16 @@ public class QueryParamerator {
         StringBuilder uriBuilder = new StringBuilder().append(baseUrl);
         if (!this.encodedParams.isEmpty()) {
             MapIterator<String, String> paramerator = MapUtils.iterableMap(this.encodedParams).mapIterator();
-            if (!baseUrl.contains(QUERY_JOINER)) {
-                uriBuilder.append(QUERY_JOINER);
-            } else {
-                uriBuilder.append(AND);
-            }
+            uriBuilder.append(QUERY_JOINER);
             while (paramerator.hasNext()) {
                 uriBuilder.append(String.format(QUERY_PARAM_PAIR_FORMAT, paramerator.next(), paramerator.getValue()));
                 if (paramerator.hasNext()) {
                     uriBuilder.append(AND);
                 }
             }
+        }
+        if (!isNull(this.optionalFragment)) {
+            uriBuilder.append(FRAGMENT).append(this.optionalFragment);
         }
         return uriBuilder.toString();
     }
