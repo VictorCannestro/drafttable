@@ -25,7 +25,7 @@ import java.util.function.Function;
 public class DefaultHttpLoader implements HttpLoader {
 
     private final HttpClient client;
-    private final HttpResponseLogFormatter logFormatter = HttpResponseLogFormatter.format();
+    private final HttpResponseLogFormatter logFormatter = HttpResponseLogFormatter.create();
 
 
     @Override

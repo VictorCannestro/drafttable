@@ -3,53 +3,29 @@ package com.cannestro.drafttable.supporting.http;
 import org.jspecify.annotations.NonNull;
 
 import java.net.http.HttpResponse;
-import java.util.*;
 
 
-public class HttpResponseLogFormatter {
+public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<String>> {
 
-    private static final Set<String> BLACKLISTED_HEADERS = Collections.synchronizedSet(
-            new HashSet<>(List.of("Authorization", "Proxy-Authorization", "Cookie", "content-length"))
-    );
-    public static final List<String> REDACTED_HEADER_STUB = List.of("REDACTED VALUE");
-
-
-    public static HttpResponseLogFormatter format() {
+    public static HttpResponseLogFormatter create() {
         return new HttpResponseLogFormatter();
     }
 
-    public String format(HttpResponse<String> response) {
+    @Override
+    public String format(@NonNull HttpResponse<String> response) {
         return String.format("""
                 
-                Request method:  %s
-                Request URI:     %s
-                Path params:     %s
-                Query params:    %s
-                Fragment:        %s
-                Headers:         %s
-                Body:            %s""",
+                Request method:   %s
+                Request URI:      %s
+                Response headers: %s
+                Response status:  %d
+                Response body:    %s""",
                 response.request().method(),
                 response.uri(),
-                response.uri().getPath(),
-                response.uri().getQuery(),
-                response.uri().getFragment(),
                 redactBlacklistedHeaders(response.headers().map()),
+                response.statusCode(),
                 response.body()
         );
-    }
-
-    Map<String, List<String>> redactBlacklistedHeaders(Map<String, List<String>> headers) {
-        Map<String, List<String>> processedHeaders = new HashMap<>(headers);
-        BLACKLISTED_HEADERS.forEach(sensitiveHeader -> processedHeaders.replace(sensitiveHeader, REDACTED_HEADER_STUB));
-        return processedHeaders;
-    }
-
-    public synchronized void addToBlacklist(@NonNull String headerName) {
-        BLACKLISTED_HEADERS.add(headerName);
-    }
-
-    public synchronized void addAllToBlacklist(@NonNull Collection<String> headerNames) {
-        BLACKLISTED_HEADERS.addAll(headerNames);
     }
 
 }

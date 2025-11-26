@@ -2,6 +2,7 @@ package com.cannestro.drafttable.supporting.http;
 
 import lombok.Builder;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -16,9 +17,10 @@ import static java.util.Objects.isNull;
  */
 @Builder
 public record HttpRequestWrapper(URI uri,
-                                 Headerator headerator,
                                  QueryParamerator queryParamerator,
-                                 Duration timeout) {
+                                 @Nullable Headerator headerator,
+                                 @Nullable Duration timeout,
+                                 @Nullable HttpRequestLogFormatter logFormatter) {
 
     public static Duration DEFAULT_TIMEOUT = Duration.of(2, ChronoUnit.MINUTES);
 
@@ -40,14 +42,17 @@ public record HttpRequestWrapper(URI uri,
     }
 
     public HttpRequestWrapper {
+        if (isNull(uri) && (isNull(queryParamerator()) || !queryParamerator().hasBaseUrl())) {
+            throw new IllegalArgumentException("Cannot construct a GET request without a URI/URL.");
+        }
         if (isNull(timeout)) {
             timeout = DEFAULT_TIMEOUT;
         }
         if (isNull(headerator)) {
             headerator = Headerator.create();
         }
-        if (isNull(uri) && (isNull(queryParamerator()) || !queryParamerator().hasBaseUrl())) {
-            throw new IllegalArgumentException("Cannot construct a GET request without a URI/URL.");
+        if (isNull(logFormatter)) {
+            logFormatter = HttpRequestLogFormatter.allDefaults();
         }
     }
 
