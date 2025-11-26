@@ -14,51 +14,63 @@ import static java.util.Objects.isNull;
 @Builder
 public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
 
-    private final Boolean logUri;
-    private final Boolean logPath;
-    private final Boolean logQueryParams;
-    private final Boolean logFragment;
-    private final Boolean logHeaders;
-    private final Boolean logTimeout;
+    @Builder.Default private Boolean logUri = true;
+    @Builder.Default private Boolean logPath = true;
+    @Builder.Default private Boolean logQueryParams = true;
+    @Builder.Default private Boolean logFragment = true;
+    @Builder.Default private Boolean logHeaders = true;
 
 
     public static HttpRequestLogFormatter allDefaults() {
         return HttpRequestLogFormatter.builder().build();
     }
 
-    private HttpRequestLogFormatter(@Nullable Boolean logUri,
-                                    @Nullable Boolean logPath,
-                                    @Nullable Boolean logQueryParams,
-                                    @Nullable Boolean logFragment,
-                                    @Nullable Boolean logHeaders,
-                                    @Nullable Boolean logTimeout) {
-        this.logUri = isNull(logUri) ? true : logUri;
-        this.logPath = isNull(logPath) ? true : logPath;
-        this.logQueryParams = isNull(logQueryParams) ? true : logQueryParams;
-        this.logFragment = isNull(logFragment) ? true : logFragment;
-        this.logHeaders = isNull(logHeaders) ? true : logHeaders;
-        this.logTimeout = isNull(logTimeout) ? false : logTimeout;
+    public static HttpRequestLogFormatter skipLogging() {
+        return HttpRequestLogFormatter.builder()
+                .logUri(false)
+                .logPath(false)
+                .logQueryParams(false)
+                .logFragment(false)
+                .logHeaders(false)
+                .build();
+    }
+
+    protected HttpRequestLogFormatter(@Nullable Boolean logUri,
+                                      @Nullable Boolean logPath,
+                                      @Nullable Boolean logQueryParams,
+                                      @Nullable Boolean logFragment,
+                                      @Nullable Boolean logHeaders) {
+        if (!isNull(logUri))
+            this.logUri =  logUri;
+        if (!isNull(logPath))
+            this.logPath = logPath;
+        if (!isNull(logQueryParams))
+            this.logQueryParams = logQueryParams;
+        if (!isNull(logFragment))
+            this.logFragment = logFragment;
+        if (!isNull(logHeaders))
+            this.logHeaders = logHeaders;
     }
 
     @Override
     public String format(@NonNull HttpRequest request) {
-        return String.format("""
-                
-                Request method: %s
-                Request URI:    %s
-                Path params:    %s
-                Query params:   %s
-                Fragment:       %s
-                Headers:        %s
-                Timeout:        %s""",
-                request.method(),
-                request.uri(),
-                request.uri().getPath(),
-                request.uri().getQuery(),
-                request.uri().getFragment(),
-                redactBlacklistedHeaders(request.headers().map()),
-                request.timeout()
-        );
+        StringBuilder stringBuilder = new StringBuilder("Request sent.\n").append(String.format("Request method: %s%n", request.method()));
+        if (this.logUri)
+            stringBuilder.append(String.format("Request URI:    %s%n", request.uri()));
+        if (this.logPath)
+            stringBuilder.append(String.format("Path params:    %s%n", request.uri().getPath()));
+        if (this.logQueryParams)
+            stringBuilder.append(String.format("Query params:   %s%n", request.uri().getQuery()));
+        if (this.logFragment)
+            stringBuilder.append(String.format("Fragment:       %s%n", request.uri().getFragment()));
+        if (this.logHeaders)
+            stringBuilder.append(String.format("Headers:        %s", redactBlacklistedHeaders(request.headers().map())));
+        return stringBuilder.toString();
+    }
+
+    @Override
+    public boolean loggingEnabled() {
+        return this.logUri || this.logPath || this.logQueryParams || this.logFragment || this.logHeaders;
     }
 
 }

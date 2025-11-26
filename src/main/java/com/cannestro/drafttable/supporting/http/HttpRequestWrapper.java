@@ -1,8 +1,8 @@
 package com.cannestro.drafttable.supporting.http;
 
 import lombok.Builder;
+import lombok.With;
 import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -15,12 +15,13 @@ import static java.util.Objects.isNull;
 /**
  * @author Victor Cannestro
  */
+@With
 @Builder
 public record HttpRequestWrapper(URI uri,
                                  QueryParamerator queryParamerator,
-                                 @Nullable Headerator headerator,
-                                 @Nullable Duration timeout,
-                                 @Nullable HttpRequestLogFormatter logFormatter) {
+                                 Headerator headerator,
+                                 Duration timeout,
+                                 HttpRequestLogFormatter logFormatter) {
 
     public static Duration DEFAULT_TIMEOUT = Duration.of(2, ChronoUnit.MINUTES);
 

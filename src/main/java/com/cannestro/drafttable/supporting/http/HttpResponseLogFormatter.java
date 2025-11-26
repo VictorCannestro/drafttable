@@ -7,14 +7,14 @@ import java.net.http.HttpResponse;
 
 public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<String>> {
 
-    public static HttpResponseLogFormatter create() {
+    public static HttpResponseLogFormatter allDefaults() {
         return new HttpResponseLogFormatter();
     }
 
     @Override
     public String format(@NonNull HttpResponse<String> response) {
         return String.format("""
-                
+                Response received.
                 Request method:   %s
                 Request URI:      %s
                 Response headers: %s
@@ -26,6 +26,11 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
                 response.statusCode(),
                 response.body()
         );
+    }
+
+    @Override
+    public boolean loggingEnabled() {
+        return true;
     }
 
 }

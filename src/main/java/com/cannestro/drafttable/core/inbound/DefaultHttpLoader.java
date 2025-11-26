@@ -25,13 +25,13 @@ import java.util.function.Function;
 public class DefaultHttpLoader implements HttpLoader {
 
     private final HttpClient client;
-    private final HttpResponseLogFormatter logFormatter = HttpResponseLogFormatter.create();
+    private final HttpResponseLogFormatter responseLogFormatter = HttpResponseLogFormatter.allDefaults();
 
 
     @Override
     public <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema, @NonNull HttpRequestWrapper options) {
-        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
-        log.info(this.logFormatter.format(response));
+        HttpRequestSender requestSender = new HttpRequestSender(options.logFormatter(), this.responseLogFormatter);
+        HttpResponse<String> response = requestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
         return FlexibleDraftTable.create().fromObjects(
                 ObjectMapperManager.getInstance()
                         .defaultMapper()
@@ -44,8 +44,8 @@ public class DefaultHttpLoader implements HttpLoader {
     public <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
                                                     @NonNull Function<A, List<M>> selector,
                                                     @NonNull HttpRequestWrapper options) {
-        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
-        log.info(this.logFormatter.format(response));
+        HttpRequestSender requestSender = new HttpRequestSender(options.logFormatter(), this.responseLogFormatter);
+        HttpResponse<String> response = requestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
         return FlexibleDraftTable.create().fromObjects(
                 selector.apply(ObjectMapperManager.getInstance().defaultMapper().readValue(response.body(), schema))
         );

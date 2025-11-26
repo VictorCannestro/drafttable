@@ -17,6 +17,8 @@ public abstract class HttpLogFormatter<R> {
 
     public abstract String format(@NonNull R type);
 
+    public abstract boolean loggingEnabled();
+
     public synchronized void addToBlacklist(@NonNull String headerName) {
         BLACKLISTED_HEADERS.add(headerName);
     }
