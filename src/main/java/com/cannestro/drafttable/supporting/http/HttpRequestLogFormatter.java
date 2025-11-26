@@ -2,6 +2,8 @@ package com.cannestro.drafttable.supporting.http;
 
 import lombok.Builder;
 import lombok.With;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -71,6 +73,11 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
     @Override
     public boolean loggingEnabled() {
         return this.logUri || this.logPath || this.logQueryParams || this.logFragment || this.logHeaders;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
     }
 
 }
