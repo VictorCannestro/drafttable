@@ -1,22 +1,30 @@
 package com.cannestro.drafttable.supporting.http;
 
+import lombok.Getter;
+import lombok.experimental.Accessors;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.MapUtils;
 import org.jspecify.annotations.NonNull;
 
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.cannestro.drafttable.supporting.utils.NetUtils.*;
+import static com.cannestro.drafttable.supporting.utils.MapUtils.*;
 import static java.util.Objects.isNull;
 
 
+@Accessors(fluent = true)
 public class QueryParamerator {
 
-    private final Map<String, String> encodedParams;
+    public static final String QUERY_JOINER = "?";
+    public static final String AND = "&";
+    public static final String QUERY_PARAM_PAIR_FORMAT = "%s=%s";
+
+    @Getter private final Map<String, String> encodedParams;
     private String baseUrl;
 
 
@@ -42,21 +50,14 @@ public class QueryParamerator {
     }
 
     QueryParamerator(@NonNull Map<String, String> params, boolean needsEncoding) {
-        if (needsEncoding) {
-            Map<String, String> processedParams = new HashMap<>();
-            MapIterator<String, String> paramerator = MapUtils.iterableMap(params).mapIterator();
-            while (paramerator.hasNext()) {
-                processedParams.putIfAbsent(
-                        URLEncoder.encode(paramerator.next(), StandardCharsets.UTF_8),
-                        URLEncoder.encode(paramerator.getValue(), StandardCharsets.UTF_8)
-                );
-            }
-            this.encodedParams = processedParams;
-        } else {
-            this.encodedParams = new HashMap<>(params);
-        }
+        this.encodedParams = needsEncoding
+                ? applyToKeysAndValuesOf(params, string -> URLEncoder.encode(string, StandardCharsets.UTF_8))
+                : new HashMap<>(params);
     }
 
+    public Map<String, String> decodedParams() {
+        return applyToKeysAndValuesOf(this.encodedParams, string -> URLDecoder.decode(string, StandardCharsets.UTF_8));
+    }
 
     public QueryParamerator param(@NonNull String name, @NonNull String value) {
         this.encodedParams.putIfAbsent(
@@ -76,14 +77,10 @@ public class QueryParamerator {
     }
 
     public URI constructUri() {
-        return URI.create(addTo(this.baseUrl));
+        return URI.create(addParamsTo(this.baseUrl));
     }
 
-    public String constructUriString() {
-        return constructUri().toString();
-    }
-
-    String addTo(@NonNull String baseUrl) {
+    String addParamsTo(@NonNull String baseUrl) {
         StringBuilder uriBuilder = new StringBuilder().append(baseUrl);
         if (!this.encodedParams.isEmpty()) {
             MapIterator<String, String> paramerator = MapUtils.iterableMap(this.encodedParams).mapIterator();
@@ -100,6 +97,11 @@ public class QueryParamerator {
             }
         }
         return uriBuilder.toString();
+    }
+
+    @Override
+    public String toString() {
+        return constructUri().toString();
     }
 
 }

@@ -5,9 +5,10 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.http.HttpRequestSender;
 import com.cannestro.drafttable.supporting.http.HttpRequestWrapper;
+import com.cannestro.drafttable.supporting.http.HttpResponseLogFormatter;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 
 import java.net.http.HttpClient;
@@ -19,16 +20,18 @@ import java.util.function.Function;
 /**
  * @author Victor Cannestro
  */
-@Getter
+@Slf4j
 @AllArgsConstructor
 public class DefaultHttpLoader implements HttpLoader {
 
     private final HttpClient client;
+    private final HttpResponseLogFormatter logFormatter = HttpResponseLogFormatter.format();
 
 
     @Override
     public <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema, @NonNull HttpRequestWrapper options) {
-        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(getClient(), options.constructGetRequest());
+        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
+        log.info(this.logFormatter.format(response));
         return FlexibleDraftTable.create().fromObjects(
                 ObjectMapperManager.getInstance()
                         .defaultMapper()
@@ -41,10 +44,10 @@ public class DefaultHttpLoader implements HttpLoader {
     public <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
                                                     @NonNull Function<A, List<M>> selector,
                                                     @NonNull HttpRequestWrapper options) {
-        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(getClient(), options.constructGetRequest());
-        A object = ObjectMapperManager.getInstance().defaultMapper().readValue(response.body(), schema);
+        HttpResponse<String> response = HttpRequestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
+        log.info(this.logFormatter.format(response));
         return FlexibleDraftTable.create().fromObjects(
-                selector.apply(object)
+                selector.apply(ObjectMapperManager.getInstance().defaultMapper().readValue(response.body(), schema))
         );
     }
 

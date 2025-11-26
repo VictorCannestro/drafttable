@@ -46,20 +46,17 @@ public record HttpRequestWrapper(URI uri,
         if (isNull(headerator)) {
             headerator = Headerator.create();
         }
+        if (isNull(uri) && (isNull(queryParamerator()) || !queryParamerator().hasBaseUrl())) {
+            throw new IllegalArgumentException("Cannot construct a GET request without a URI/URL.");
+        }
     }
 
 
     public HttpRequest constructGetRequest() {
         URI resolvedUri = uri();
         if (isNull(resolvedUri)) {
-            if (!isNull(queryParamerator())) {
-                if (queryParamerator().hasBaseUrl()) {
-                    resolvedUri = queryParamerator().constructUri();
-                } else {
-                    throw new IllegalArgumentException("Cannot construct a GET request without a URI.");
-                }
-            } else {
-                throw new IllegalArgumentException("Cannot construct a GET request without a URI.");
+            if (!isNull(queryParamerator()) && queryParamerator().hasBaseUrl()) {
+                resolvedUri = queryParamerator().constructUri();
             }
         } else {
             if (!isNull(queryParamerator())) {
@@ -70,7 +67,7 @@ public record HttpRequestWrapper(URI uri,
                 }
             }
         }
-        return headerator().addHeadersTo(HttpRequest.newBuilder(resolvedUri).GET().timeout(timeout())).build();
+        return headerator().addHeadersTo(HttpRequest.newBuilder(resolvedUri)).GET().timeout(timeout()).build();
     }
 
 }

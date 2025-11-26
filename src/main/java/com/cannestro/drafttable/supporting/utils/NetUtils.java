@@ -12,10 +12,6 @@ public class NetUtils {
 
     private NetUtils() {}
 
-    public static final String QUERY_JOINER = "?";
-    public static final String AND = "&";
-    public static final String QUERY_PARAM_PAIR_FORMAT = "%s=%s";
-
 
     public static URL url(@NonNull String fileUrl) {
         try {
