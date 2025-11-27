@@ -1,6 +1,7 @@
 package com.cannestro.drafttable.supporting.http;
 
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -20,6 +21,7 @@ import static com.cannestro.drafttable.supporting.utils.MapUtils.*;
 import static java.util.Objects.isNull;
 
 
+@EqualsAndHashCode
 @Accessors(fluent = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 public class URIAssembler {
