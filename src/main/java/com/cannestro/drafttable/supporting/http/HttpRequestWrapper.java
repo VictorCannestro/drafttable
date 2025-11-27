@@ -17,8 +17,7 @@ import static java.util.Objects.isNull;
  */
 @With
 @Builder
-public record HttpRequestWrapper(URI uri,
-                                 QueryParamerator queryParamerator,
+public record HttpRequestWrapper(URIAssembler uriAssembler,
                                  Headerator headerator,
                                  Duration timeout,
                                  HttpRequestLogFormatter logFormatter) {
@@ -27,25 +26,22 @@ public record HttpRequestWrapper(URI uri,
 
 
     public static HttpRequestWrapper with(@NonNull URI uri) {
-        return HttpRequestWrapper.builder().uri(uri).build();
+        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.pass(uri)).build();
     }
 
-    public static HttpRequestWrapper with(@NonNull QueryParamerator paramerator) {
-        return HttpRequestWrapper.builder().queryParamerator(paramerator).build();
+    public static HttpRequestWrapper with(@NonNull URIAssembler uriAssembler) {
+        return HttpRequestWrapper.builder().uriAssembler(uriAssembler).build();
     }
 
     public static HttpRequestWrapper with(@NonNull URI uri, @NonNull Headerator headerator) {
-        return HttpRequestWrapper.builder().uri(uri).headerator(headerator).build();
+        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.pass(uri)).headerator(headerator).build();
     }
 
-    public static HttpRequestWrapper with(@NonNull QueryParamerator paramerator, @NonNull Headerator headerator) {
-        return HttpRequestWrapper.builder().queryParamerator(paramerator).headerator(headerator).build();
+    public static HttpRequestWrapper with(@NonNull URIAssembler uriAssembler, @NonNull Headerator headerator) {
+        return HttpRequestWrapper.builder().uriAssembler(uriAssembler).headerator(headerator).build();
     }
 
     public HttpRequestWrapper {
-        if (isNull(uri) && (isNull(queryParamerator()) || !queryParamerator().hasBaseUrl())) {
-            throw new IllegalArgumentException("Cannot construct a GET request without a URI/URL.");
-        }
         if (isNull(timeout)) {
             timeout = DEFAULT_TIMEOUT;
         }
@@ -59,21 +55,11 @@ public record HttpRequestWrapper(URI uri,
 
 
     public HttpRequest constructGetRequest() {
-        URI resolvedUri = uri();
-        if (isNull(resolvedUri)) {
-            if (!isNull(queryParamerator()) && queryParamerator().hasBaseUrl()) {
-                resolvedUri = queryParamerator().constructUri();
-            }
-        } else {
-            if (!isNull(queryParamerator())) {
-                if (queryParamerator().hasBaseUrl()) {
-                    resolvedUri = queryParamerator().constructUri();
-                } else {
-                    resolvedUri = queryParamerator().discloseBaseUrl(uri().getRawPath()).constructUri();
-                }
-            }
-        }
-        return headerator().addHeadersTo(HttpRequest.newBuilder(resolvedUri)).GET().timeout(timeout()).build();
+        return headerator()
+                .addHeadersTo(HttpRequest.newBuilder(this.uriAssembler.toURI()))
+                .GET()
+                .timeout(timeout())
+                .build();
     }
 
 }
