@@ -17,7 +17,7 @@ import static java.util.Objects.isNull;
  */
 @With
 @Builder
-public record HttpRequestWrapper(URIAssembler uriAssembler,
+public record HttpRequestWrapper(@NonNull URIAssembler uriAssembler,
                                  Headerator headerator,
                                  Duration timeout,
                                  HttpRequestLogFormatter logFormatter) {
@@ -26,7 +26,7 @@ public record HttpRequestWrapper(URIAssembler uriAssembler,
 
 
     public static HttpRequestWrapper with(@NonNull URI uri) {
-        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.pass(uri)).build();
+        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.passAlong(uri)).build();
     }
 
     public static HttpRequestWrapper with(@NonNull URIAssembler uriAssembler) {
@@ -34,7 +34,7 @@ public record HttpRequestWrapper(URIAssembler uriAssembler,
     }
 
     public static HttpRequestWrapper with(@NonNull URI uri, @NonNull Headerator headerator) {
-        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.pass(uri)).headerator(headerator).build();
+        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.passAlong(uri)).headerator(headerator).build();
     }
 
     public static HttpRequestWrapper with(@NonNull URIAssembler uriAssembler, @NonNull Headerator headerator) {

@@ -42,7 +42,7 @@ public class URIAssembler {
         return new URIAssembler();
     }
 
-    public static URIAssembler pass(@NonNull URI uri) {
+    public static URIAssembler passAlong(@NonNull URI uri) {
         return new URIAssembler(uri, true);
     }
     
