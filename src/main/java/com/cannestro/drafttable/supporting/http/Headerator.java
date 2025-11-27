@@ -11,10 +11,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+@Getter
 @Accessors(fluent = true)
 public class Headerator {
 
-    @Getter private final Map<String, String> headers;
+    private final Map<String, String> headers;
 
 
     public static Headerator create() {
