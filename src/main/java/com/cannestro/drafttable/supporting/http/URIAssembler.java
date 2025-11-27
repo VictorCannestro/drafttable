@@ -26,12 +26,13 @@ public class URIAssembler {
 
     public static final String QUERY_JOINER = "?";
     public static final String AND = "&";
+    public static final String SEMI = ";";
     public static final String EQUAL = "=";
     public static final String FRAGMENT_JOINER = "#";
     public static final String QUERY_PARAM_PAIR_FORMAT = "%s" + EQUAL + "%s";
 
-    private URI uri;
-    @Getter private String baseUrl;
+    private URI bypassingUri;
+    @Getter private String baseUrl = "";
     @Getter private String path = "";
     @Getter private Map<String, String> queryParams = new HashMap<>();
     @Getter private String fragment = "";
@@ -51,7 +52,7 @@ public class URIAssembler {
 
     URIAssembler(@NonNull URI uri, boolean bypassed) {
         if (bypassed) {
-            this.uri = uri;
+            this.bypassingUri = uri;
         } else {
             String uriString = uri.toString();
             if (!isNull(uri.getRawQuery())) {
@@ -64,13 +65,31 @@ public class URIAssembler {
                 this.baseUrl = uriString.substring(0, uriString.indexOf(QUERY_JOINER));
             } else {
                 if (!isNull(uri.getFragment())) {
-                    this.fragment = uri.getFragment();
                     this.baseUrl = uriString.substring(0, uriString.indexOf(FRAGMENT_JOINER));
+                    this.fragment = uri.getFragment();
                 } else {
                     this.baseUrl = uriString;
                 }
             }
         }
+    }
+
+    public URIAssembler baseUrl(@NonNull String baseUrl) {
+        this.baseUrl = baseUrl;
+        return this;
+    }
+
+    public URIAssembler path(@NonNull String path) {
+        this.path = path;
+        return this;
+    }
+
+    public URIAssembler queryParam(@NonNull String name, @NonNull String value) {
+        this.queryParams.putIfAbsent(
+                URLEncoder.encode(name, StandardCharsets.UTF_8),
+                URLEncoder.encode(value, StandardCharsets.UTF_8)
+        );
+        return this;
     }
 
     public URIAssembler queryParams(@NonNull Map<String, String> params, boolean needsEncoding) {
@@ -84,33 +103,19 @@ public class URIAssembler {
         return applyToKeysAndValuesOf(this.queryParams, string -> URLDecoder.decode(string, StandardCharsets.UTF_8));
     }
 
-    public URIAssembler withBaseUrl(@NonNull String baseUrl) {
-        this.baseUrl = baseUrl;
-        return this;
-    }
-
-    public URIAssembler withPath(@NonNull String path) {
-        this.path = path;
-        return this;
-    }
-
-    public URIAssembler queryParam(@NonNull String name, @NonNull String value) {
-        this.queryParams.putIfAbsent(
-                URLEncoder.encode(name, StandardCharsets.UTF_8),
-                URLEncoder.encode(value, StandardCharsets.UTF_8)
-        );
-        return this;
-    }
-
-    public URIAssembler withFragment(@NonNull String optionalFragment) {
+    public URIAssembler fragment(@NonNull String optionalFragment) {
         this.fragment = URLEncoder.encode(optionalFragment, StandardCharsets.UTF_8);
         return this;
     }
 
+    public String decodedFragment() {
+        return URLDecoder.decode(this.fragment, StandardCharsets.UTF_8);
+    }
+
     public URI toURI() {
-        return isNull(this.uri)
+        return isNull(this.bypassingUri)
                 ? URI.create(assemble(this.baseUrl, this.path, this.queryParams, this.fragment))
-                : this.uri;
+                : this.bypassingUri;
     }
 
     @Override
@@ -140,7 +145,11 @@ public class URIAssembler {
     }
 
     public boolean hasBaseUrl() {
-        return !isNull(this.baseUrl);
+        return !this.baseUrl.isBlank();
+    }
+
+    public boolean hasPath() {
+        return !this.path.isBlank();
     }
 
     public boolean hasQueryParams() {

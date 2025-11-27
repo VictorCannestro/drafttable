@@ -13,22 +13,22 @@ import java.util.function.Function;
 public interface HttpLoader {
 
     <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema,
-                                                 @NonNull HttpRequestWrapper options,
+                                                 @NonNull HttpRequestWrapper requestWrapper,
                                                  @NonNull HttpResponseLogFormatter responseLogFormatter);
 
     <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
                                              @NonNull Function<A, List<M>> selector,
-                                             @NonNull HttpRequestWrapper options,
+                                             @NonNull HttpRequestWrapper requestWrapper,
                                              @NonNull HttpResponseLogFormatter responseLogFormatter);
 
-    default <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema, @NonNull HttpRequestWrapper options) {
-        return getJsonArray(schema, options, HttpResponseLogFormatter.allDefaults());
+    default <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema, @NonNull HttpRequestWrapper requestWrapper) {
+        return getJsonArray(schema, requestWrapper, HttpResponseLogFormatter.allDefaults());
     }
     
     default <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
                                                      @NonNull Function<A, List<M>> selector,
-                                                     @NonNull HttpRequestWrapper options) {
-        return getAs(schema, selector, options, HttpResponseLogFormatter.allDefaults());
+                                                     @NonNull HttpRequestWrapper requestWrapper) {
+        return getAs(schema, selector, requestWrapper, HttpResponseLogFormatter.allDefaults());
     }
 
 }

@@ -29,10 +29,10 @@ public class DefaultHttpLoader implements HttpLoader {
 
     @Override
     public <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema,
-                                                        @NonNull HttpRequestWrapper options,
+                                                        @NonNull HttpRequestWrapper requestWrapper,
                                                         @NonNull HttpResponseLogFormatter responseLogFormatter) {
-        HttpRequestSender requestSender = new HttpRequestSender(options.logFormatter(), responseLogFormatter);
-        HttpResponse<String> response = requestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
+        HttpRequestSender requestSender = new HttpRequestSender(requestWrapper.logFormatter(), responseLogFormatter);
+        HttpResponse<String> response = requestSender.sendSynchronously().apply(this.client, requestWrapper.constructGetRequest());
         return FlexibleDraftTable.create().fromObjects(
                 ObjectMapperManager.getInstance()
                         .defaultMapper()
@@ -44,10 +44,10 @@ public class DefaultHttpLoader implements HttpLoader {
     @Override
     public <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
                                                     @NonNull Function<A, List<M>> selector,
-                                                    @NonNull HttpRequestWrapper options,
+                                                    @NonNull HttpRequestWrapper requestWrapper,
                                                     @NonNull HttpResponseLogFormatter responseLogFormatter) {
-        HttpRequestSender requestSender = new HttpRequestSender(options.logFormatter(), responseLogFormatter);
-        HttpResponse<String> response = requestSender.sendSynchronously().apply(this.client, options.constructGetRequest());
+        HttpRequestSender requestSender = new HttpRequestSender(requestWrapper.logFormatter(), responseLogFormatter);
+        HttpResponse<String> response = requestSender.sendSynchronously().apply(this.client, requestWrapper.constructGetRequest());
         return FlexibleDraftTable.create().fromObjects(
                 selector.apply(ObjectMapperManager.getInstance().defaultMapper().readValue(response.body(), schema))
         );
