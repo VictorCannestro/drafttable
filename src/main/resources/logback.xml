@@ -11,11 +11,7 @@
         </encoder>
     </appender>
 
-    <logger name="org.springframework" level="info" />
-    <logger name="org.apache" level="info" />
-    <logger name="io.restassured" level="info" />
-
-    <root level="debug">
+    <root>
         <appender-ref ref="STDOUT"/>
     </root>
 </configuration>

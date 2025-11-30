@@ -21,7 +21,6 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:$logbackClassicVersion")
     implementation("org.hamcrest:hamcrest:$hamcrestVersion")
     implementation("org.apache.commons:commons-collections4:$apacheCommonsCollections4Version")
-    implementation("org.apache.commons:commons-lang3:$apacheCommonsLang3Version")
     implementation("commons-io:commons-io:$apacheCommonsIO")
     implementation("org.apache.commons:commons-math3:$apacheCommonsMath")
     implementation("org.paumard:streams-utils:$streamsUtilsVersion")
@@ -31,7 +30,6 @@ dependencies {
 
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
-
     testImplementation(group: 'org.testng', name: 'testng', version: "$testngVersion")
 }
 
