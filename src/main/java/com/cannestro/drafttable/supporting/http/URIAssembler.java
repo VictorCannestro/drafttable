@@ -28,7 +28,6 @@ public class URIAssembler {
 
     public static final String QUERY_JOINER = "?";
     public static final String AND = "&";
-    public static final String SEMI = ";";
     public static final String EQUAL = "=";
     public static final String FRAGMENT_JOINER = "#";
     public static final String QUERY_PARAM_PAIR_FORMAT = "%s" + EQUAL + "%s";
