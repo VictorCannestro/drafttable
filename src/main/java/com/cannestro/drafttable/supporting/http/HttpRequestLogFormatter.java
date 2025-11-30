@@ -1,21 +1,26 @@
 package com.cannestro.drafttable.supporting.http;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.With;
+import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.net.http.HttpRequest;
+import org.slf4j.event.Level;
 
 import static java.util.Objects.isNull;
 
 
 @With
 @Builder
+@Accessors(fluent = true)
 public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
 
+    @Getter @Builder.Default private Level logLevel = Level.INFO;
     @Builder.Default private Boolean logUri = true;
     @Builder.Default private Boolean logPath = true;
     @Builder.Default private Boolean logQueryParams = true;
@@ -37,11 +42,14 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
                 .build();
     }
 
-    protected HttpRequestLogFormatter(@Nullable Boolean logUri,
+    protected HttpRequestLogFormatter(@Nullable Level logLevel,
+                                      @Nullable Boolean logUri,
                                       @Nullable Boolean logPath,
                                       @Nullable Boolean logQueryParams,
                                       @Nullable Boolean logFragment,
                                       @Nullable Boolean logHeaders) {
+        if (!isNull(logLevel))
+            this.logLevel =  logLevel;
         if (!isNull(logUri))
             this.logUri =  logUri;
         if (!isNull(logPath))

@@ -25,11 +25,11 @@ public class HttpRequestSender {
         HttpRequest httpRequest = this.requestWrapper.constructGetRequest();
         try {
             if (this.requestWrapper.logFormatter().loggingEnabled()) {
-                log.info(requestWrapper.logFormatter().format(httpRequest));
+                log.atLevel(this.requestWrapper.logFormatter().logLevel()).log(this.requestWrapper.logFormatter().format(httpRequest));
             }
             HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
             if (this.responseWrapper.logFormatter().loggingEnabled()) {
-                log.info(this.responseWrapper.logFormatter().format(response));
+                log.atLevel(this.responseWrapper.logFormatter().logLevel()).log(this.responseWrapper.logFormatter().format(response));
             }
             return response;
         } catch (IOException e) {
