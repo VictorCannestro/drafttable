@@ -33,7 +33,7 @@ public class URIAssembler {
     public static final String QUERY_PARAM_PAIR_FORMAT = "%s" + EQUAL + "%s";
 
     private URI bypassingUri;
-    @Getter private String baseUrl = "";
+    @Getter private String baseUri = "";
     @Getter private String path = "";
     @Getter private Map<String, String> queryParams = new HashMap<>();
     @Getter private String fragment = "";
@@ -63,20 +63,20 @@ public class URIAssembler {
                                 kvPair.substring(kvPair.indexOf(EQUAL) + 1)
                         )
                 );
-                this.baseUrl = uriString.substring(0, uriString.indexOf(QUERY_JOINER));
+                this.baseUri = uriString.substring(0, uriString.indexOf(QUERY_JOINER));
             } else {
                 if (!isNull(uri.getFragment())) {
-                    this.baseUrl = uriString.substring(0, uriString.indexOf(FRAGMENT_JOINER));
+                    this.baseUri = uriString.substring(0, uriString.indexOf(FRAGMENT_JOINER));
                     this.fragment = uri.getFragment();
                 } else {
-                    this.baseUrl = uriString;
+                    this.baseUri = uriString;
                 }
             }
         }
     }
 
-    public URIAssembler baseUrl(@NonNull String baseUrl) {
-        this.baseUrl = baseUrl;
+    public URIAssembler baseUri(@NonNull String baseUri) {
+        this.baseUri = baseUri;
         return this;
     }
 
@@ -115,7 +115,7 @@ public class URIAssembler {
 
     public URI toURI() {
         return isNull(this.bypassingUri)
-                ? URI.create(assemble(this.baseUrl, this.path, this.queryParams, this.fragment))
+                ? URI.create(assemble(this.baseUri, this.path, this.queryParams, this.fragment))
                 : this.bypassingUri;
     }
 
@@ -124,11 +124,11 @@ public class URIAssembler {
         return toURI().toString();
     }
 
-    String assemble(@NonNull String baseUrl,
+    String assemble(@NonNull String baseUri,
                     String path,
                     Map<String, String> queryParams,
                     String fragment) {
-        StringBuilder uriBuilder = new StringBuilder().append(baseUrl).append(path);
+        StringBuilder uriBuilder = new StringBuilder().append(baseUri).append(path);
         if (hasQueryParams()) {
             MapIterator<String, String> paramerator = MapUtils.iterableMap(queryParams).mapIterator();
             uriBuilder.append(QUERY_JOINER);
@@ -145,8 +145,8 @@ public class URIAssembler {
         return uriBuilder.toString();
     }
 
-    public boolean hasBaseUrl() {
-        return !this.baseUrl.isBlank();
+    public boolean hasBaseUri() {
+        return !this.baseUri.isBlank();
     }
 
     public boolean hasPath() {

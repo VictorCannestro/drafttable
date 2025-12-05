@@ -21,7 +21,7 @@ public class URIAssemblerTests {
         String uriString = "https://raw.cooking.com/books/cookbook.json?page=0&name=eggplant#recipes";
         URIAssembler control = URIAssembler.passAlong(URI.create(uriString));
         URIAssembler assembled = URIAssembler.create()
-                .baseUrl("https://raw.cooking.com")
+                .baseUri("https://raw.cooking.com")
                 .path("/books/cookbook.json")
                 .queryParam("page","0")
                 .queryParam("name", "eggplant")
@@ -33,7 +33,7 @@ public class URIAssemblerTests {
     @Test
     public void modifiedUriEqualsOriginalWhereUnchanged() {
         URI foodUri = URIAssembler.create()
-                .baseUrl("https://raw.cooking.com")
+                .baseUri("https://raw.cooking.com")
                 .path("/books/cookbook.json")
                 .queryParam("page","0")
                 .queryParam("name", "eggplant")
