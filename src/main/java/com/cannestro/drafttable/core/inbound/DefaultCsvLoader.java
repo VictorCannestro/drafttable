@@ -8,12 +8,13 @@ import com.cannestro.drafttable.supporting.csv.assumptions.CsvAssumptions;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
+import com.cannestro.drafttable.supporting.utils.NetUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -55,18 +56,18 @@ public class DefaultCsvLoader implements CsvLoader {
     }
 
     @Override
-    public DraftTable at(@NonNull URL url) {
-        CsvAssumptions.assumeFilenameIsCsvCompatible(url.toString());
-        File file = copyToTempDirectory(url);
+    public DraftTable at(@NonNull URI uri) {
+        CsvAssumptions.assumeFilenameIsCsvCompatible(uri.toString());
+        File file = copyToTempDirectory(NetUtils.url(uri));
         DraftTable draftTable = createWithoutSchema(file.getPath(), null);
         FileUtils.cleanUpTemporaryFiles(file);
         return draftTable;
     }
 
     @Override
-    public DraftTable at(@NonNull URL url, @NonNull CsvParsingOptions loadingOptions) {
-        CsvAssumptions.assumeFilenameIsCsvCompatible(url.toString());
-        File file = copyToTempDirectory(url);
+    public DraftTable at(@NonNull URI uri, @NonNull CsvParsingOptions loadingOptions) {
+        CsvAssumptions.assumeFilenameIsCsvCompatible(uri.toString());
+        File file = copyToTempDirectory(NetUtils.url(uri));
         DraftTable draftTable = isNull(loadingOptions.type())
                 ? createWithoutSchema(file.getPath(), loadingOptions)
                 : FlexibleDraftTable.create().fromObjects(

@@ -13,13 +13,15 @@ public class NetUtils {
     private NetUtils() {}
 
 
-    public static URL url(@NonNull String fileUrl) {
+    public static URL url(@NonNull URI uri) {
         try {
-            return new URI(fileUrl).toURL();
+            return uri.toURL();
         } catch (MalformedURLException e) {
             throw new IllegalArgumentException("Either no legal protocol could be found in a specification string or the string could not be parsed.", e);
-        } catch (URISyntaxException e) {
-            throw new IllegalArgumentException("The String could not be parsed as a URI reference.", e);
         }
+    }
+
+    public static URL url(@NonNull String fileUrl) {
+        return url(URI.create(fileUrl));
     }
 }

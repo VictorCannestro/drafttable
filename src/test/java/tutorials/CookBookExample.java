@@ -5,23 +5,21 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.helper.Recipe;
 import com.cannestro.drafttable.supporting.options.ChunkingOptions;
-import com.cannestro.drafttable.supporting.options.SupportedExtension;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 
 import static com.cannestro.drafttable.core.options.Items.*;
 import static com.cannestro.drafttable.core.options.SortingOrderType.ASCENDING;
 import static com.cannestro.drafttable.supporting.options.SupportedExtension.JSON;
-import static com.cannestro.drafttable.supporting.utils.NetUtils.url;
 import static org.hamcrest.Matchers.*;
 
 
 public class CookBookExample {
 
     public static void main(String[] args) {
-        URL url = url("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/develop/src/test/resources/json/multiple_recipes.json");
-        DraftTable kitchenTable = FlexibleDraftTable.create().fromJsonArray().at(url, Recipe.class);
+        URI uri = URI.create("https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/develop/src/test/resources/json/multiple_recipes.json");
+        DraftTable kitchenTable = FlexibleDraftTable.create().fromJsonArray().at(uri, Recipe.class);
 
         kitchenTable.write().structure();
 

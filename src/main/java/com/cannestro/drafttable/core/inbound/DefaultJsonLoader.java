@@ -5,13 +5,14 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.utils.FileUtils;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
+import com.cannestro.drafttable.supporting.utils.NetUtils;
 import org.jspecify.annotations.NonNull;
 import tools.jackson.core.exc.JacksonIOException;
 import tools.jackson.databind.DatabindException;
 import tools.jackson.databind.ObjectMapper;
 
 import java.io.File;
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -27,8 +28,8 @@ public class DefaultJsonLoader implements JsonLoader {
     }
 
     @Override
-    public <M extends Mappable> DraftTable at(@NonNull URL url, @NonNull Class<M> schema) {
-        File file = FileUtils.copyToTempDirectory(url);
+    public <M extends Mappable> DraftTable at(@NonNull URI uri, @NonNull Class<M> schema) {
+        File file = FileUtils.copyToTempDirectory(NetUtils.url(uri));
         DraftTable draftTable = load(file, schema, ObjectMapperManager.getInstance().defaultMapper());
         FileUtils.cleanUpTemporaryFiles(file);
         return draftTable;

@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
 import org.jspecify.annotations.NonNull;
 
-import java.net.URL;
+import java.net.URI;
 import java.nio.file.Path;
 
 
@@ -23,8 +23,8 @@ public interface CsvLoader {
 
     DraftTable at(@NonNull Path path, @NonNull CsvParsingOptions loadingOptions);
 
-    DraftTable at(@NonNull URL url);
+    DraftTable at(@NonNull URI uri);
 
-    DraftTable at(@NonNull URL url, @NonNull CsvParsingOptions loadingOptions);
+    DraftTable at(@NonNull URI uri, @NonNull CsvParsingOptions loadingOptions);
 
 }
