@@ -27,6 +27,7 @@ dependencies {
     implementation("com.opencsv:opencsv:$opencsvVersion")
     implementation("tools.jackson.core:jackson-databind:$jacksonDatabindVersion")
     implementation("org.jspecify:jspecify:$jspecifyVersion")
+    implementation("dev.failsafe:failsafe:$failsafeVersion")
 
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")

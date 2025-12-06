@@ -1,9 +1,9 @@
 package com.cannestro.drafttable.supporting.http;
 
+import dev.failsafe.Failsafe;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
 
-import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -25,22 +25,22 @@ public class HttpRequestSender {
         HttpRequest httpRequest = this.requestWrapper.constructGetRequest();
         try {
             if (this.requestWrapper.logFormatter().loggingEnabled()) {
-                log.atLevel(this.requestWrapper.logFormatter().logLevel()).log(this.requestWrapper.logFormatter().format(httpRequest));
+                log.atLevel(this.requestWrapper.logFormatter().logLevel())
+                   .log(this.requestWrapper.logFormatter().format(httpRequest));
             }
-            HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = Failsafe
+                    .with(this.responseWrapper.retryPolicy())
+                    .compose(this.responseWrapper.timeoutPolicy())
+                    .compose(this.responseWrapper.circuitBreakerPolicy())
+                    .get(() -> httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()));
             if (this.responseWrapper.logFormatter().loggingEnabled()) {
-                log.atLevel(this.responseWrapper.logFormatter().logLevel()).log(this.responseWrapper.logFormatter().format(response));
+                log.atLevel(this.responseWrapper.logFormatter().logLevel())
+                   .log(this.responseWrapper.logFormatter().format(response));
             }
             return response;
-        } catch (IOException e) {
-            throw new IllegalStateException("An I/ O error occurred while sending.", e);
-        } catch (InterruptedException interruptedException) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException("InterruptedException occurred. The operation was interrupted while sending.");
         } catch (SecurityException securityException) {
-            throw new IllegalArgumentException("""
-                    The request argument is not a request that could have been validly built as specified by HttpRequest.Builder,
-                    "or a security manager has been installed and it has denied access to the URL in the given request (or proxy, if one is configured).""",
+            throw new IllegalArgumentException(
+                    "The request argument is not a request that could have been validly built as specified by HttpRequest.Builder, or a security manager has been installed and it has denied access to the URL in the given request (or proxy, if one is configured).",
                     securityException
             );
         }

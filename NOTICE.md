@@ -7,6 +7,8 @@ The DraftTable library depends on functionality provided by the following projec
   - [Collections](https://commons.apache.org/proper/commons-collections/)
   - [IO](https://commons.apache.org/proper/commons-io/)
   - [Math](https://commons.apache.org/proper/commons-math/)
+- [Failsafe](https://github.com/failsafe-lib/failsafe)
+  - Apache License 2.0
 - [Jackson-Databind](https://github.com/FasterXML/jackson-databind)
   - Apache License 2.0
 - [Java Hamcrest](http://hamcrest.org/JavaHamcrest/)
