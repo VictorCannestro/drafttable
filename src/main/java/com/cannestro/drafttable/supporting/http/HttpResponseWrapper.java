@@ -29,10 +29,6 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
         return HttpResponseWrapper.builder().build();
     }
 
-    public static HttpResponseWrapper with(HttpResponseLogFormatter logFormatter) {
-        return HttpResponseWrapper.builder().logFormatter(logFormatter).build();
-    }
-
     public HttpResponseWrapper {
         if (isNull(retryPolicy)) {
             retryPolicy = RetryPolicy.ofDefaults();

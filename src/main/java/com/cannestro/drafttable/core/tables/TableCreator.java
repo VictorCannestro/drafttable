@@ -78,29 +78,10 @@ public interface TableCreator {
 
     CsvLoader fromCsv();
 
-    HttpLoader fromHttp(HttpClient client);
+    HttpLoader fromHttp(@NonNull HttpClient client);
 
     JsonLoader fromJsonArray();
 
-    default <T extends CsvLoader> T fromCsv(@NonNull Class<T> csvLoaderClass) {
-        try {
-            return csvLoaderClass.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new IllegalArgumentException("An accessible zero args constructor was not found.", e);
-        }
-    }
-
-    default <T extends JsonLoader> T fromJson(@NonNull Class<T> jsonLoaderClass) {
-        try {
-            return jsonLoaderClass.getDeclaredConstructor().newInstance();
-        } catch (InstantiationException | InvocationTargetException e) {
-            throw new IllegalStateException(e);
-        } catch (NoSuchMethodException | IllegalAccessException e) {
-            throw new IllegalArgumentException("An accessible zero args constructor was not found.", e);
-        }
-    }
 
     default DraftTable fromColumns(@NonNull List<Column> columns) {
         return fromColumns(DEFAULT_TABLE_NAME, columns);
@@ -112,6 +93,36 @@ public interface TableCreator {
 
     default <M extends Mappable> DraftTable fromObjects(@NonNull List<M> objects) {
         return fromObjects(DEFAULT_TABLE_NAME, objects);
+    }
+
+    default <T extends CsvLoader> T fromCsv(@NonNull Class<T> csvLoaderClass) {
+        try {
+            return csvLoaderClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new IllegalArgumentException("An accessible zero args constructor was not found.", e);
+        }
+    }
+
+    default <T extends HttpLoader> T fromHttp(@NonNull Class<T> httpLoaderClass, @NonNull HttpClient client) {
+        try {
+            return httpLoaderClass.getDeclaredConstructor(HttpClient.class).newInstance(client);
+        } catch (InstantiationException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new IllegalArgumentException("An accessible 1-arg constructor taking a HttpClient input was not found.", e);
+        }
+    }
+
+    default <T extends JsonLoader> T fromJson(@NonNull Class<T> jsonLoaderClass) {
+        try {
+            return jsonLoaderClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | InvocationTargetException e) {
+            throw new IllegalStateException(e);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new IllegalArgumentException("An accessible zero args constructor was not found.", e);
+        }
     }
 
 }
