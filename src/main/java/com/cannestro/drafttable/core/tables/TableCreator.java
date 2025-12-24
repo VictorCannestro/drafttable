@@ -40,7 +40,7 @@ public interface TableCreator {
      * @param listOfRows Any list of {@code Row} objects
      * @return A new {@code DraftTable}
      */
-    <T extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<T> listOfRows);
+    <R extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<R> listOfRows);
 
     /**
      * Splits a homogenous list of mappable objects into a new {@code DraftTable} in which each field in a given object
@@ -87,7 +87,7 @@ public interface TableCreator {
         return fromColumns(DEFAULT_TABLE_NAME, columns);
     }
 
-    default <T extends Row> DraftTable fromRows(@NonNull List<T> listOfRows) {
+    default <R extends Row> DraftTable fromRows(@NonNull List<R> listOfRows) {
         return fromRows(DEFAULT_TABLE_NAME, listOfRows);
     }
 
@@ -95,7 +95,7 @@ public interface TableCreator {
         return fromObjects(DEFAULT_TABLE_NAME, objects);
     }
 
-    default <T extends CsvLoader> T fromCsv(@NonNull Class<T> csvLoaderClass) {
+    default <C extends CsvLoader> C fromCsv(@NonNull Class<C> csvLoaderClass) {
         try {
             return csvLoaderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException e) {
@@ -105,7 +105,7 @@ public interface TableCreator {
         }
     }
 
-    default <T extends HttpLoader> T fromHttp(@NonNull Class<T> httpLoaderClass, @NonNull HttpClient client) {
+    default <H extends HttpLoader> H fromHttp(@NonNull Class<H> httpLoaderClass, @NonNull HttpClient client) {
         try {
             return httpLoaderClass.getDeclaredConstructor(HttpClient.class).newInstance(client);
         } catch (InstantiationException | InvocationTargetException e) {
@@ -115,7 +115,7 @@ public interface TableCreator {
         }
     }
 
-    default <T extends JsonLoader> T fromJson(@NonNull Class<T> jsonLoaderClass) {
+    default <J extends JsonLoader> J fromJson(@NonNull Class<J> jsonLoaderClass) {
         try {
             return jsonLoaderClass.getDeclaredConstructor().newInstance();
         } catch (InstantiationException | InvocationTargetException e) {

@@ -3,7 +3,7 @@ package com.cannestro.drafttable.core.inbound;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
-import com.cannestro.drafttable.supporting.http.HttpRequestSender;
+import com.cannestro.drafttable.supporting.http.HttpExchanger;
 import com.cannestro.drafttable.supporting.http.HttpRequestWrapper;
 import com.cannestro.drafttable.supporting.http.HttpResponseWrapper;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
@@ -29,7 +29,7 @@ public class DefaultHttpLoader implements HttpLoader {
     public <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema,
                                                         @NonNull HttpRequestWrapper requestWrapper,
                                                         @NonNull HttpResponseWrapper responseWrapper) {
-        HttpRequestSender requestSender = new HttpRequestSender(requestWrapper, responseWrapper);
+        HttpExchanger requestSender = new HttpExchanger(requestWrapper, responseWrapper);
         HttpResponse<String> response = requestSender.sendSynchronouslyUsing(this.client);
         return FlexibleDraftTable.create().fromObjects(
                 ObjectMapperManager.getInstance()
@@ -44,7 +44,7 @@ public class DefaultHttpLoader implements HttpLoader {
                                                     @NonNull Function<A, List<M>> selector,
                                                     @NonNull HttpRequestWrapper requestWrapper,
                                                     @NonNull HttpResponseWrapper responseWrapper) {
-        HttpRequestSender requestSender = new HttpRequestSender(requestWrapper, responseWrapper);
+        HttpExchanger requestSender = new HttpExchanger(requestWrapper, responseWrapper);
         HttpResponse<String> response = requestSender.sendSynchronouslyUsing(this.client);
         return FlexibleDraftTable.create().fromObjects(
                 selector.apply(ObjectMapperManager.getInstance().defaultMapper().readValue(response.body(), schema))

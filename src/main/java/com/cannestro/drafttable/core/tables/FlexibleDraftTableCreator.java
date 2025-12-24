@@ -40,7 +40,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public <T extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<T> listOfRows) {
+    public <R extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<R> listOfRows) {
         if(listOfRows.isEmpty()) {
             return emptyDraftTable();
         }

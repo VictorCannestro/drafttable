@@ -17,7 +17,7 @@ import static java.util.Objects.isNull;
  */
 @With
 @Builder
-public record HttpRequestWrapper(@NonNull URIAssembler uriAssembler,
+public record HttpRequestWrapper(@NonNull URI uri,
                                  Headerator headerator,
                                  Duration timeout,
                                  HttpRequestLogFormatter logFormatter) {
@@ -26,19 +26,11 @@ public record HttpRequestWrapper(@NonNull URIAssembler uriAssembler,
 
 
     public static HttpRequestWrapper with(@NonNull URI uri) {
-        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.passAlong(uri)).build();
-    }
-
-    public static HttpRequestWrapper with(@NonNull URIAssembler uriAssembler) {
-        return HttpRequestWrapper.builder().uriAssembler(uriAssembler).build();
+        return HttpRequestWrapper.builder().uri(uri).build();
     }
 
     public static HttpRequestWrapper with(@NonNull URI uri, @NonNull Headerator headerator) {
-        return HttpRequestWrapper.builder().uriAssembler(URIAssembler.passAlong(uri)).headerator(headerator).build();
-    }
-
-    public static HttpRequestWrapper with(@NonNull URIAssembler uriAssembler, @NonNull Headerator headerator) {
-        return HttpRequestWrapper.builder().uriAssembler(uriAssembler).headerator(headerator).build();
+        return HttpRequestWrapper.builder().uri(uri).headerator(headerator).build();
     }
 
     public HttpRequestWrapper {
@@ -56,7 +48,7 @@ public record HttpRequestWrapper(@NonNull URIAssembler uriAssembler,
 
     public HttpRequest constructGetRequest() {
         return headerator()
-                .addHeadersTo(HttpRequest.newBuilder(this.uriAssembler.toURI()))
+                .addHeadersTo(HttpRequest.newBuilder(this.uri()))
                 .GET()
                 .timeout(timeout())
                 .build();
