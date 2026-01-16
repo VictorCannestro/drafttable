@@ -9,7 +9,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
-import com.cannestro.drafttable.supporting.utils.FileUtils;
+import com.cannestro.drafttable.supporting.utils.FileHelper;
 import com.cannestro.drafttable.supporting.utils.JsonUtils;
 import org.jspecify.annotations.NonNull;
 
@@ -31,7 +31,7 @@ public class CsvDataParser {
      * @return A List of arrays, each corresponding to a row in the CSV file
      */
     public static List<List<String>> readAllLines(@NonNull String resourceFilePath) {
-        try (CSVReader csvReader = new CSVReader(FileUtils.createReaderFromResource(resourceFilePath, CsvEssentials.DEFAULT_CHARSET))) {
+        try (CSVReader csvReader = new CSVReader(FileHelper.createReaderFromResource(resourceFilePath, CsvEssentials.DEFAULT_CHARSET))) {
             return csvReader.readAll().stream().map(line -> Arrays.stream(line).toList()).toList();
         } catch (IOException | CsvException e) {
             throw new IllegalArgumentException(e);
@@ -39,7 +39,7 @@ public class CsvDataParser {
     }
 
     public static List<List<String>> readAllLines(@NonNull String resourceFilePath, @NonNull CsvParsingOptions loadingOptions) {
-        try (CSVReader csvReader = new CSVReaderBuilder(FileUtils.createReaderFromResource(resourceFilePath, loadingOptions.charset()))
+        try (CSVReader csvReader = new CSVReaderBuilder(FileHelper.createReaderFromResource(resourceFilePath, loadingOptions.charset()))
                 .withSkipLines(loadingOptions.skipLines())
                 .withCSVParser(new CSVParserBuilder()
                         .withSeparator(loadingOptions.delimiter())
@@ -57,7 +57,7 @@ public class CsvDataParser {
     }
 
     public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull CsvParsingOptions loadingOptions) {
-        try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath, loadingOptions.charset())) {
+        try (Reader reader = FileHelper.createReaderFromResource(resourceFilePath, loadingOptions.charset())) {
             CsvToBean<T> csvBean = new CsvToBeanBuilder<T>(reader)
                     .withIgnoreEmptyLine(true)
                     .withSeparator(loadingOptions.delimiter())
@@ -83,7 +83,7 @@ public class CsvDataParser {
      * @return A List of extracted {@code CsvBean} types where each bean maps to a row in the CSV
      */
     public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull Class<T> csvBeanClass) {
-        try (Reader reader = FileUtils.createReaderFromResource(resourceFilePath, CsvEssentials.DEFAULT_CHARSET)) {
+        try (Reader reader = FileHelper.createReaderFromResource(resourceFilePath, CsvEssentials.DEFAULT_CHARSET)) {
             return new CsvToBeanBuilder<T>(reader).withType(csvBeanClass).build().parse();
         } catch (IOException e) {
             throw new IllegalArgumentException(e);

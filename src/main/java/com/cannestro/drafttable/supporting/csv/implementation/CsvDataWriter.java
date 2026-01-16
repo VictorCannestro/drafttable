@@ -3,7 +3,7 @@ package com.cannestro.drafttable.supporting.csv.implementation;
 import com.cannestro.drafttable.supporting.csv.CsvWritingOptions;
 import com.cannestro.drafttable.supporting.csv.options.CustomizableWritingOptions;
 import com.opencsv.CSVWriter;
-import com.cannestro.drafttable.supporting.utils.FileUtils;
+import com.cannestro.drafttable.supporting.utils.FileHelper;
 import com.opencsv.CSVWriterBuilder;
 import com.opencsv.ResultSetHelperService;
 import org.jspecify.annotations.NonNull;
@@ -42,7 +42,7 @@ public class CsvDataWriter {
                                              @NonNull List<List<String>> lines,
                                              @NonNull CsvWritingOptions writeOptions) {
         log.debug("Attempting CSV export to: {}", file.getName());
-        FileUtils.touchFile(file);
+        FileHelper.touchFile(file);
         List<List<String>> data = new ArrayList<>(List.of(headers));
         data.addAll(lines);
         ResultSetHelperService resultSetHelper = new ResultSetHelperService();

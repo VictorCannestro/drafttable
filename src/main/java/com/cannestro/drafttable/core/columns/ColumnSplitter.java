@@ -11,7 +11,7 @@ import java.util.function.Function;
  */
 public interface ColumnSplitter {
 
-    <T, R> ColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<T, R> aspect);
+    <T, R> ColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> aspect);
 
     /**
      * Collects the derived columns, if any, into a {@code DraftTable} instance. Where applicable, it may return the

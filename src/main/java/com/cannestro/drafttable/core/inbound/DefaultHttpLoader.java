@@ -41,7 +41,7 @@ public class DefaultHttpLoader implements HttpLoader {
 
     @Override
     public <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
-                                                    @NonNull Function<A, List<M>> selector,
+                                                    @NonNull Function<? super A, List<M>> selector,
                                                     @NonNull HttpRequestWrapper requestWrapper,
                                                     @NonNull HttpResponseWrapper responseWrapper) {
         HttpExchanger requestSender = new HttpExchanger(requestWrapper, responseWrapper);

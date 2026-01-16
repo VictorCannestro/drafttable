@@ -11,7 +11,7 @@ import tools.jackson.core.type.TypeReference;
 
 import java.util.*;
 
-import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
+import static com.cannestro.drafttable.supporting.utils.MapHelper.zip;
 import static java.util.Objects.isNull;
 
 

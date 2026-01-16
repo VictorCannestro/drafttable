@@ -13,7 +13,7 @@ import com.cannestro.drafttable.core.options.SortingOrderType;
 
 import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
 import com.cannestro.drafttable.supporting.utils.ListUtils;
-import com.cannestro.drafttable.supporting.utils.MapUtils;
+import com.cannestro.drafttable.supporting.utils.MapHelper;
 import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -113,7 +113,7 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public List<Row> rows() {
         return IntStream.range(0, rowCount())
-                 .mapToObj(rowIndex -> MapUtils.zip(
+                 .mapToObj(rowIndex -> MapHelper.zip(
                              columns().stream().map(Column::label).toList(),
                              columns().stream().map(column -> column.values().get(rowIndex)).toList()
                  ))

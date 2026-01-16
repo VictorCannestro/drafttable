@@ -7,34 +7,39 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
-import static java.nio.file.Files.createDirectories;
+import static java.util.Objects.isNull;
 import static org.apache.commons.io.FileUtils.copyURLToFile;
-import static org.apache.commons.io.FileUtils.getTempDirectory;
 
 
 /**
  * @author Victor Cannestro
  */
 @Slf4j
-public class FileUtils {
+public class FileHelper {
 
-    private FileUtils() {}
+    private FileHelper() {}
 
 
     public static File copyToTempDirectory(@NonNull URL fileUrl,
                                            int connectionTimeoutInMillis,
                                            int readTimeoutInMillis) {
         try {
-            Path path = Paths.get(getTempDirectory().getAbsolutePath(), UUID.randomUUID().toString());
-            String tempDirectory = createDirectories(path).toFile().getPath();
+            Path path = Paths.get(
+                    new File(System.getProperty("java.io.tmpdir")).getAbsolutePath(),
+                    UUID.randomUUID().toString()
+            );
+            String tempDirectory = Files.createDirectories(path).toFile().getPath();
             String filePath = String.format(
                     "%s%s%s",
                     tempDirectory,
@@ -65,7 +70,15 @@ public class FileUtils {
     public static void touchFile(@NonNull File file) {
         try {
             log.debug("Attempting to create or modify the resource at {}", file.getAbsolutePath());
-            org.apache.commons.io.FileUtils.touch(file);
+            Path path = file.toPath();
+            if (!Files.exists(path)) {
+                if (!isNull(path.getParent())) {
+                    Files.createDirectories(path.getParent());
+                }
+                Files.createFile(path);
+            } else {
+                Files.setLastModifiedTime(path, FileTime.from(Instant.now()));
+            }
         } catch (IOException e) {
             log.error("Could not create or modify the resource at {}", file.getAbsolutePath());
         }
@@ -81,7 +94,7 @@ public class FileUtils {
     public static void deleteFileIfPresent(@NonNull String filePath) {
         try {
             log.debug("Attempting to delete the resource at {}", filePath);
-            if(java.nio.file.Files.deleteIfExists(Paths.get(filePath))) {
+            if (Files.deleteIfExists(Paths.get(filePath))) {
                 log.debug("Successfully deleted the resource at {}", filePath);
             } else {
                 log.debug("Resource not found at {}", filePath);
@@ -112,12 +125,12 @@ public class FileUtils {
         } catch (NullPointerException e) {
             log.debug("Could not load {} using the ContextClassLoader. Attempting to search elsewhere.", resourceFilePath);
         }
-        return java.nio.file.Files.newBufferedReader(walkFileTreeToFind(resourceFilePath), charset);
+        return Files.newBufferedReader(walkFileTreeToFind(resourceFilePath), charset);
     }
 
     public static Path walkFileTreeToFind(@NonNull String filePath) {
-        try(Stream<Path> paths = java.nio.file.Files.walk(Paths.get(filePath))) {
-            return paths.filter(java.nio.file.Files::isRegularFile).findAny().orElseThrow();
+        try (Stream<Path> paths = Files.walk(Paths.get(filePath))) {
+            return paths.filter(Files::isRegularFile).findAny().orElseThrow();
         } catch (IOException e) {
             log.error("Could not locate {}", filePath);
             throw new IllegalArgumentException("Could not locate the Path to the given URI");

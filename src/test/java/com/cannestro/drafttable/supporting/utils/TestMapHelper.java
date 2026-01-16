@@ -1,6 +1,5 @@
 package com.cannestro.drafttable.supporting.utils;
 
-import com.cannestro.drafttable.supporting.utils.MapUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -10,7 +9,7 @@ import java.util.Map;
 
 
 @Test(groups = "unit")
-public class TestMapUtils {
+public class TestMapHelper {
 
     @Test
     public void keyAndValueInputAreMappedOneToOne() {
@@ -18,7 +17,7 @@ public class TestMapUtils {
         List<Integer> values = List.of(1, 2, 3);
 
         Assert.assertEquals(
-                MapUtils.zip(keys, values),
+                MapHelper.zip(keys, values),
                 Map.of("one", 1,
                        "two", 2,
                        "three", 3)
@@ -28,7 +27,7 @@ public class TestMapUtils {
     @Test
     public void zippingEmptyInputProducesEmptyOutput() {
         Assert.assertEquals(
-                MapUtils.zip(Collections.emptyList(), Collections.emptyList()),
+                MapHelper.zip(Collections.emptyList(), Collections.emptyList()),
                 Collections.emptyMap()
         );
     }
@@ -37,14 +36,14 @@ public class TestMapUtils {
     public void zipThrowsExceptionWhenValuesMoreThanKeys() {
         List<String> keys = List.of("one");
         List<Integer> values = List.of(1, 2, 3);
-        MapUtils.zip(keys, values);
+        MapHelper.zip(keys, values);
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void zipThrowsExceptionWhenValuesLessThanKeys() {
         List<String> keys = List.of("one", "two", "three");
         List<Integer> values = List.of(1);
-        MapUtils.zip(keys, values);
+        MapHelper.zip(keys, values);
     }
 
 }

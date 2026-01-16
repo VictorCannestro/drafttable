@@ -13,7 +13,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.cannestro.drafttable.supporting.utils.MapUtils.*;
+import static com.cannestro.drafttable.supporting.utils.MapHelper.*;
+import static com.cannestro.drafttable.supporting.utils.StringHelper.*;
 import static java.util.Objects.isNull;
 
 
@@ -28,7 +29,6 @@ public class URIAssembler {
     public static final String EQUAL = "=";
     public static final String QUERY_PARAM_PAIR_FORMAT = "%s" + EQUAL + "%s";
     public static final String FRAGMENT_JOINER = "#";
-
 
     private String scheme;
     private String authority;
@@ -61,9 +61,9 @@ public class URIAssembler {
             if (hasBaseUri()) {
                 return URI.create(
                         baseUri() +
-                        (hasPath() ? path() : "") +
+                        nullToEmpty(path()) +
                         queryComponent +
-                        (hasFragment() ? FRAGMENT_JOINER + fragment() : "")
+                        passWhen(hasFragment(), safeConcat(FRAGMENT_JOINER, fragment()))
                 );
             }
             return new URI(scheme(), userInfo(), host(), port(), path(), queryComponent, fragment());
@@ -136,6 +136,10 @@ public class URIAssembler {
                     URLEncoder.encode(value, StandardCharsets.UTF_8)
             );
             return this;
+        }
+
+        public URIAssemblerBuilder queryParams(@NonNull Map<String, String> params) {
+            return queryParams(params, true);
         }
 
         /**

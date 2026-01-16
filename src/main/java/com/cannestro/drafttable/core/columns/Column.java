@@ -170,7 +170,7 @@ public interface Column {
      * @param <T> The type of the column
      * @param <R> The output type of the aspect's mapping
      */
-    <T, R>  Column where(@NonNull Function<T, R> aspect, @NonNull Matcher<R> matcher);
+    <T, R>  Column where(@NonNull Function<? super T, ? extends R> aspect, @NonNull Matcher<R> matcher);
 
     /**
      * Orders the column data in ascending or descending order as specified. Null values will appear first, followed by
@@ -281,9 +281,9 @@ public interface Column {
      */
     Column renameAs(@NonNull String newLabel);
 
-    <T, R> Column transform(@NonNull Function<T, R> function);
+    <T, R> Column transform(@NonNull Function<? super T, ? extends R> function);
 
-    <T, R> Column transform(@NonNull String newLabel, @NonNull Function<T, R> function);
+    <T, R> Column transform(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> function);
 
     <T> Optional<T> aggregate(@NonNull BinaryOperator<T> accumulator);
 

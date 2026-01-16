@@ -4,7 +4,7 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser;
 import com.cannestro.drafttable.supporting.csv.options.CustomizableWritingOptions;
-import com.cannestro.drafttable.supporting.utils.FileUtils;
+import com.cannestro.drafttable.supporting.utils.FileHelper;
 import com.cannestro.drafttable.helper.PayDetails;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -78,8 +78,8 @@ public class DraftTableFromCsvTest {
 
     @AfterClass(alwaysRun = true)
     public void cleanUp() {
-        FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_3.csv"));
-        FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_4.csv"));
+        FileHelper.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_3.csv"));
+        FileHelper.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_4.csv"));
     }
 
 }

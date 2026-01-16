@@ -135,7 +135,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T, R>  Column where(@NonNull Function<T, R> aspect, @NonNull Matcher<R> matcher) {
+    public <T, R>  Column where(@NonNull Function<? super T, ? extends R> aspect, @NonNull Matcher<R> matcher) {
         List<Integer> matchingIndices = IntStream.range(0, size())
                 .filter(idx -> matcher.matches(
                         aspect.apply((T) values.get(idx))
@@ -274,12 +274,12 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T, R> Column transform(@NonNull Function<T, R> function) {
+    public <T, R> Column transform(@NonNull Function<? super T, ? extends R> function) {
         return transform(label(), function);
     }
 
     @Override
-    public <T, R> Column transform(@NonNull String newLabel, @NonNull Function<T, R> function) {
+    public <T, R> Column transform(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> function) {
         try {
             return new FlexibleColumn(
                     newLabel,

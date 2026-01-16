@@ -17,7 +17,7 @@ public interface HttpLoader {
                                                  @NonNull HttpResponseWrapper responseWrapper);
 
     <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
-                                             @NonNull Function<A, List<M>> selector,
+                                             @NonNull Function<? super A, List<M>> selector,
                                              @NonNull HttpRequestWrapper requestWrapper,
                                              @NonNull HttpResponseWrapper responseWrapper);
 
@@ -26,7 +26,7 @@ public interface HttpLoader {
     }
     
     default <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
-                                                     @NonNull Function<A, List<M>> selector,
+                                                     @NonNull Function<? super A, List<M>> selector,
                                                      @NonNull HttpRequestWrapper requestWrapper) {
         return getAs(schema, selector, requestWrapper, HttpResponseWrapper.allDefaults());
     }

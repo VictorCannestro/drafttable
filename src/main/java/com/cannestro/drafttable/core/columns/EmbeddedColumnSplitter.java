@@ -27,7 +27,7 @@ public class EmbeddedColumnSplitter implements ColumnSplitter {
     }
 
     @Override
-    public <T, R> EmbeddedColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<T, R> aspect) {
+    public <T, R> EmbeddedColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> aspect) {
         this.columns.add(this.targetColumn.transform(newLabel, aspect));
         return this;
     }

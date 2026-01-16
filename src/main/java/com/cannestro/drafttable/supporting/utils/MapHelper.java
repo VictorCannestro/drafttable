@@ -2,6 +2,7 @@ package com.cannestro.drafttable.supporting.utils;
 
 import com.cannestro.drafttable.supporting.map.Entry;
 import org.apache.commons.collections4.MapIterator;
+import org.apache.commons.collections4.MapUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.paumard.streams.StreamsUtils;
@@ -17,9 +18,9 @@ import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeSi
 /**
  * @author Victor Cannestro
  */
-public class MapUtils {
+public class MapHelper {
 
-    private MapUtils() {}
+    private MapHelper() {}
 
     public static <K, V> Map<K, V> zip(@NonNull List<@NonNull K> keys, @NonNull List<@Nullable V> values)  {
         assumeSizesMatch(keys, values);
@@ -36,7 +37,7 @@ public class MapUtils {
 
     public static Map<String, String> applyToKeysAndValuesOf(Map<String, String> map, UnaryOperator<String> function) {
         Map<String, String> processedParams = new HashMap<>();
-        MapIterator<String, String> mapperator = org.apache.commons.collections4.MapUtils.iterableMap(map).mapIterator();
+        MapIterator<String, String> mapperator = MapUtils.iterableMap(map).mapIterator();
         while (mapperator.hasNext()) {
             processedParams.putIfAbsent(function.apply(mapperator.next()), function.apply(mapperator.getValue()));
         }

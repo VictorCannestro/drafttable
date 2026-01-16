@@ -7,7 +7,7 @@ import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.csv.assumptions.CsvAssumptions;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
-import com.cannestro.drafttable.supporting.utils.FileUtils;
+import com.cannestro.drafttable.supporting.utils.FileHelper;
 import com.cannestro.drafttable.supporting.utils.NetUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
@@ -21,9 +21,9 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.buildBeansFrom;
 import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.readAllLines;
-import static com.cannestro.drafttable.supporting.utils.FileUtils.copyToTempDirectory;
+import static com.cannestro.drafttable.supporting.utils.FileHelper.copyToTempDirectory;
 import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
-import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
+import static com.cannestro.drafttable.supporting.utils.MapHelper.zip;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.nCopies;
 import static java.util.Objects.isNull;
@@ -60,7 +60,7 @@ public class DefaultCsvLoader implements CsvLoader {
         CsvAssumptions.assumeFilenameIsCsvCompatible(uri.toString());
         File file = copyToTempDirectory(NetUtils.url(uri));
         DraftTable draftTable = createWithoutSchema(file.getPath(), null);
-        FileUtils.cleanUpTemporaryFiles(file);
+        FileHelper.cleanUpTemporaryFiles(file);
         return draftTable;
     }
 
@@ -74,7 +74,7 @@ public class DefaultCsvLoader implements CsvLoader {
                         FilenameUtils.getName(file.getName()),
                         buildBeansFrom(file.getPath(), loadingOptions)
                   );
-        FileUtils.cleanUpTemporaryFiles(file);
+        FileHelper.cleanUpTemporaryFiles(file);
         return draftTable;
     }
 

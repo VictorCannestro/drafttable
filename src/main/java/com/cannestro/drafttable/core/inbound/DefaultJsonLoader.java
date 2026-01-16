@@ -3,7 +3,7 @@ package com.cannestro.drafttable.core.inbound;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
-import com.cannestro.drafttable.supporting.utils.FileUtils;
+import com.cannestro.drafttable.supporting.utils.FileHelper;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.cannestro.drafttable.supporting.utils.NetUtils;
 import org.jspecify.annotations.NonNull;
@@ -29,9 +29,9 @@ public class DefaultJsonLoader implements JsonLoader {
 
     @Override
     public <M extends Mappable> DraftTable at(@NonNull URI uri, @NonNull Class<M> schema) {
-        File file = FileUtils.copyToTempDirectory(NetUtils.url(uri));
+        File file = FileHelper.copyToTempDirectory(NetUtils.url(uri));
         DraftTable draftTable = load(file, schema, ObjectMapperManager.getInstance().defaultMapper());
-        FileUtils.cleanUpTemporaryFiles(file);
+        FileHelper.cleanUpTemporaryFiles(file);
         return draftTable;
     }
 

@@ -1,7 +1,7 @@
 package com.cannestro.drafttable.supporting.map;
 
 import com.cannestro.drafttable.core.rows.Mappable;
-import com.cannestro.drafttable.supporting.utils.MapUtils;
+import com.cannestro.drafttable.supporting.utils.MapHelper;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -37,7 +37,7 @@ public class MapBuilder implements Mappable {
 
     @Override
     public Map<String, ?> asMap() {
-        return MapUtils.zip(keys, values);
+        return MapHelper.zip(keys, values);
     }
 
 }
