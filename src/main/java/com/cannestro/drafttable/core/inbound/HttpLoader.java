@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.function.Function;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface HttpLoader {
 
     <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema,
