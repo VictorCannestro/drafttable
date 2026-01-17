@@ -1,4 +1,5 @@
 # DraftTable
+*Java streams, but for tables, where data pipelines are first-class citizens.*
 
 ## Introduction
 **DraftTable** is a pure Java 17+ library loosely inspired by the Python DataFrame API and Java library Tablesaw that 
