@@ -9,6 +9,9 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @Slf4j
 public class HttpExchanger {
 

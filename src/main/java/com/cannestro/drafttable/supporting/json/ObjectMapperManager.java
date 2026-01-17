@@ -18,6 +18,8 @@ import tools.jackson.databind.json.JsonMapper;
  *     <li> {@code DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES} = {@code false} </li>
  *   </ol>
  * </p>
+ *
+ * @author Victor Cannestro
  */
 public class ObjectMapperManager {
 

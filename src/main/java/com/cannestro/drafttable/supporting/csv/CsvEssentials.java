@@ -4,6 +4,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface CsvEssentials {
 
     char DEFAULT_DELIMITER = ',';

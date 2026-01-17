@@ -6,6 +6,9 @@ import java.io.File;
 import java.util.Iterator;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface ColumnOutput {
 
     String toJsonString();

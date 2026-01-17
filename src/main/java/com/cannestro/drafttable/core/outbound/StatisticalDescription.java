@@ -6,6 +6,9 @@ import org.jspecify.annotations.NonNull;
 import java.util.Map;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public record StatisticalDescription(@NonNull String metric, @NonNull Double value) implements Mappable {
 
     @Override

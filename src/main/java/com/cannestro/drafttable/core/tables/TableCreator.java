@@ -15,6 +15,9 @@ import java.util.List;
 import static com.cannestro.drafttable.core.tables.DraftTable.DEFAULT_TABLE_NAME;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface TableCreator {
 
     /**

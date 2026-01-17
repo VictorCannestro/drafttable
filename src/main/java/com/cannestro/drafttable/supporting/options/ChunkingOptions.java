@@ -9,6 +9,9 @@ import java.io.File;
 import static java.util.Objects.isNull;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @Builder
 public record ChunkingOptions(Integer limitPerChunk,
                               Integer targetMinimumChunks,

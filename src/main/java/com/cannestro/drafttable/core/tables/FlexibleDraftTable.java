@@ -12,9 +12,9 @@ import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 
 import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
-import com.cannestro.drafttable.supporting.utils.ListUtils;
+import com.cannestro.drafttable.supporting.utils.ListHelper;
 import com.cannestro.drafttable.supporting.utils.MapHelper;
-import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
+import com.cannestro.drafttable.supporting.utils.DraftTableHelper;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,7 +32,7 @@ import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.*;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.*;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.*;
 import static org.hamcrest.Matchers.*;
 
 
@@ -193,7 +193,7 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable where(@NonNull String columnName, @NonNull Matcher<?> matcher) {
         assumeColumnExists(columnName, this);
         List<?> columnValues = select(columnName).values();
-        List<Integer> matchingIndices = DraftTableUtils.findMatchingIndices(rowCount(), columnValues::get, matcher);
+        List<Integer> matchingIndices = DraftTableHelper.findMatchingIndices(rowCount(), columnValues::get, matcher);
         return create().fromColumns(
                 tableName(),
                 columns().stream().map(column -> column.where(matchingIndices)).toList()
@@ -205,7 +205,7 @@ public class FlexibleDraftTable implements DraftTable {
         assumeColumnExists(columnName, this);
         List<T> columnValues = select(columnName).values();
         return where(
-                DraftTableUtils.findMatchingIndices(rowCount(), idx -> columnAspect.apply(columnValues.get(idx)), matcher)
+                DraftTableHelper.findMatchingIndices(rowCount(), idx -> columnAspect.apply(columnValues.get(idx)), matcher)
         );
     }
 
@@ -213,7 +213,7 @@ public class FlexibleDraftTable implements DraftTable {
     public <R> DraftTable where(@NonNull Function<Row, R> rowAspect, @NonNull Matcher<R> matcher) {
         List<Row> row = rows();
         return where(
-                DraftTableUtils.findMatchingIndices(rowCount(), idx -> rowAspect.apply(row.get(idx)), matcher)
+                DraftTableHelper.findMatchingIndices(rowCount(), idx -> rowAspect.apply(row.get(idx)), matcher)
         );
     }
 
@@ -271,7 +271,7 @@ public class FlexibleDraftTable implements DraftTable {
                 ThreadLocalRandom.current()
                         .ints(0, rowCount())
                         .distinct()
-                        .limit(DraftTableUtils.calculateEndpoint(nRows, rowCount()))
+                        .limit(DraftTableHelper.calculateEndpoint(nRows, rowCount()))
                         .boxed()
                         .toList()
         );
@@ -366,7 +366,7 @@ public class FlexibleDraftTable implements DraftTable {
         List<Column> updatedListOfColumns = new ArrayList<>(listOfColumns());
         updatedListOfColumns.add(new FlexibleColumn(
                 newColumnName,
-                ListUtils.fillToTargetLength(newColumnValues, rowCount(), fillValue)
+                ListHelper.fillToTargetLength(newColumnValues, rowCount(), fillValue)
         ));
         return new FlexibleDraftTable(tableName(), updatedListOfColumns);
     }

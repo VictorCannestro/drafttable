@@ -15,6 +15,9 @@ import org.slf4j.event.Level;
 import static java.util.Objects.isNull;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @With
 @Builder
 @Accessors(fluent = true)

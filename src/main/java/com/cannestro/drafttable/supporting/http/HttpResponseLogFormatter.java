@@ -15,6 +15,9 @@ import java.net.http.HttpResponse;
 import static java.util.Objects.isNull;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @With
 @Builder
 @Accessors(fluent = true)

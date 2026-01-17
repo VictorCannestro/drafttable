@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 
-public class ArrayUtils {
+/**
+ * @author Victor Cannestro
+ */
+public class ArrayHelper {
 
-    private ArrayUtils(){}
+    private ArrayHelper(){}
 
     public static <T> T[] asArray(List<T> list) {
         if (list.isEmpty()) {

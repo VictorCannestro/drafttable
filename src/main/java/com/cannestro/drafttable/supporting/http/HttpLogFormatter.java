@@ -7,6 +7,9 @@ import org.jspecify.annotations.NonNull;
 import java.util.*;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public abstract class HttpLogFormatter<R> {
 
     protected static final Set<String> BLACKLISTED_HEADERS = Collections.synchronizedSet(

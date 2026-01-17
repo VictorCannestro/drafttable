@@ -4,13 +4,15 @@ import org.jspecify.annotations.NonNull;
 
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 
-public class NetUtils {
+/**
+ * @author Victor Cannestro
+ */
+public class NetHelper {
 
-    private NetUtils() {}
+    private NetHelper() {}
 
 
     public static URL url(@NonNull URI uri) {

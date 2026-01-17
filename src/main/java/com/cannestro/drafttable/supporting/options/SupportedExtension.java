@@ -3,6 +3,9 @@ package com.cannestro.drafttable.supporting.options;
 import lombok.AllArgsConstructor;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @AllArgsConstructor
 public enum SupportedExtension {
 

@@ -18,10 +18,13 @@ import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.as
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniformityOf;
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniquenessOf;
 import static com.cannestro.drafttable.core.tables.DraftTable.DEFAULT_TABLE_NAME;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.firstElementOf;
 import static java.util.Collections.emptyList;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public class FlexibleDraftTableCreator implements TableCreator {
 
     @Override

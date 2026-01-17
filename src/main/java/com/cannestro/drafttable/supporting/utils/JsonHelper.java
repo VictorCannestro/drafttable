@@ -6,12 +6,13 @@ import tools.jackson.core.JacksonException;
 
 import java.util.List;
 
+
 /**
  * @author Victor Cannestro
  */
-public class JsonUtils {
+public class JsonHelper {
 
-    private JsonUtils() {}
+    private JsonHelper() {}
 
     public static String makePretty(@NonNull String uglyJsonString) {
         try {
@@ -40,7 +41,7 @@ public class JsonUtils {
                         throw new IllegalArgumentException(e);
                     }
                 })
-                .map(JsonUtils::makePretty)
+                .map(JsonHelper::makePretty)
                 .toList();
     }
 

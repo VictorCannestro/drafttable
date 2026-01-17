@@ -10,7 +10,7 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.exceptions.CsvException;
 import com.cannestro.drafttable.supporting.utils.FileHelper;
-import com.cannestro.drafttable.supporting.utils.JsonUtils;
+import com.cannestro.drafttable.supporting.utils.JsonHelper;
 import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
@@ -91,7 +91,7 @@ public class CsvDataParser {
     }
 
     public static List<String> mapCsvToJsonStrings(@NonNull String resourceFilePath, @NonNull Class<? extends CsvBean> csvBeanClass) {
-        return JsonUtils.jsonStringListFrom(buildBeansFrom(resourceFilePath, csvBeanClass));
+        return JsonHelper.jsonStringListFrom(buildBeansFrom(resourceFilePath, csvBeanClass));
     }
 
 }

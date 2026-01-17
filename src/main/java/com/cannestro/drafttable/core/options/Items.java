@@ -1,6 +1,6 @@
 package com.cannestro.drafttable.core.options;
 
-import com.cannestro.drafttable.supporting.utils.ArrayUtils;
+import com.cannestro.drafttable.supporting.utils.ArrayHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +75,7 @@ public record Items<T>(List<T> params) {
     }
 
     public T[] paramsArray() {
-       return ArrayUtils.asArray(params());
+       return ArrayHelper.asArray(params());
     }
 
     @SafeVarargs

@@ -7,7 +7,7 @@ import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.DefaultColumnOutput;
 import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
-import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
+import com.cannestro.drafttable.supporting.utils.DraftTableHelper;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -25,8 +25,8 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeDataTypesMatch;
 import static com.cannestro.drafttable.core.options.StatisticName.*;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.containsMultipleTypes;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.copyWithoutNulls;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.containsMultipleTypes;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.copyWithoutNulls;
 import static com.cannestro.drafttable.supporting.utils.NullDetector.hasNullIn;
 import static java.util.Objects.isNull;
 
@@ -163,7 +163,7 @@ public class FlexibleColumn implements Column {
     public Column top(int n) {
         return new FlexibleColumn(
                 label(),
-                values().subList(0, DraftTableUtils.calculateEndpoint(n, size()))
+                values().subList(0, DraftTableHelper.calculateEndpoint(n, size()))
         );
     }
 
@@ -171,7 +171,7 @@ public class FlexibleColumn implements Column {
     public Column bottom(int n) {
         return new FlexibleColumn(
                 label(),
-                values().subList(size() - DraftTableUtils.calculateEndpoint(n, size()), size())
+                values().subList(size() - DraftTableHelper.calculateEndpoint(n, size()), size())
         );
     }
 
@@ -181,7 +181,7 @@ public class FlexibleColumn implements Column {
                 ThreadLocalRandom.current()
                         .ints(0, size())
                         .distinct()
-                        .limit(DraftTableUtils.calculateEndpoint(n, size()))
+                        .limit(DraftTableHelper.calculateEndpoint(n, size()))
                         .boxed()
                         .toList()
         );

@@ -6,6 +6,9 @@ import org.jspecify.annotations.NonNull;
 import java.util.Map;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public record Structure(@NonNull String columnName,
                         @NonNull String type,
                         int nullCount) implements Mappable {

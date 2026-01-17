@@ -18,6 +18,9 @@ import static com.cannestro.drafttable.supporting.utils.StringHelper.*;
 import static java.util.Objects.isNull;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @With
 @Builder
 @Getter

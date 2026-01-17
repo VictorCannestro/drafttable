@@ -9,6 +9,9 @@ import java.util.List;
 import static com.cannestro.drafttable.supporting.options.SupportedExtension.*;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public class JsonAssumptions {
 
     public static final List<SupportedExtension> SUPPORTED_EXTENSIONS = List.of(JSON, GEOJSON);
