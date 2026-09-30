@@ -111,14 +111,14 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
-    @SuppressWarnings("all")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<Row> row(int n) {
         if (isCompletelyEmpty() || isEmpty() || n < 0 || n >= rowCount()) {
             return Optional.empty();
         }
         Map map = new HashMap(columnCount());
         for (Column column: listOfColumns()) {
-            map.put(column.label(), column.values().get(n));
+            map.put(column.label(), column.valueAt(n).get());
         }
         return Optional.of(new HashMapRow(map));
     }

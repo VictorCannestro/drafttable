@@ -8,6 +8,8 @@ import lombok.With;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 
+import static com.cannestro.drafttable.supporting.utils.NetHelper.is5xx;
+import static com.cannestro.drafttable.supporting.utils.NetHelper.isRetryable4xx;
 import static java.util.Objects.isNull;
 
 
@@ -40,8 +42,8 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
                     .withMaxRetries(DEFAULT_MAX_RETRIES)
                     .withBackoff(DEFAULT_BACKOFF, DEFAULT_BACKOFF_MAX)
                     .withJitter(DEFAULT_JITTER)
-                    .handleResultIf(NetHelper::is5xx)
-                    .abortIf(NetHelper::is4xx)
+                    .handleResultIf(response -> is5xx(response) || isRetryable4xx(response))
+                    .abortIf(NetHelper::isNonRetryable4xx)
                     .build();
         }
         if (isNull(timeoutPolicy)) {

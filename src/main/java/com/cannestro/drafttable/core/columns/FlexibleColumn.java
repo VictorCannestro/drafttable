@@ -105,6 +105,15 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public <T> Supplier<T> valueAt(int n) {
+        if (this.isEmpty() || n < 0 || n >= size()) {
+            throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size())");
+        }
+        return () -> (T) values.get(n);
+    }
+
+    @Override
     public boolean isEmpty() {
         return values.isEmpty();
     }

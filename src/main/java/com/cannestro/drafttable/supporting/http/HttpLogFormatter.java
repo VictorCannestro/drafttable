@@ -15,7 +15,7 @@ public abstract class HttpLogFormatter<R> {
     protected final Set<String> blacklistedHeaders = Collections.synchronizedSet(
             new TreeSet<>(List.of("Authorization", "Proxy-Authorization", "Cookie"))
     );
-    public final List<String> redactedHeaderStub = List.of("REDACTED VALUE");
+    public static final List<String> redactedHeaderStub = List.of("REDACTED VALUE");
 
 
     public abstract String format(@NonNull R type);

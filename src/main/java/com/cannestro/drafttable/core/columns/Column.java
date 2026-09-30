@@ -64,6 +64,15 @@ public interface Column {
     <T> Supplier<T>  lastValue();
 
     /**
+     * <p><b>Guarantees</b>: The nth value within the underlying values of the column, if it exists. </p>
+     *
+     * @return The nth value of the underlying column data
+     * @param <T> Any type
+     * @throws IndexOutOfBoundsException if n outside range
+     */
+    <T> Supplier<T> valueAt(int n);
+
+    /**
      * <p><b>Guarantees</b>: The cardinality of the column. If the column contains more than Integer.MAX_VALUE values,
      * it will return Integer.MAX_VALUE. </p>
      *

@@ -6,12 +6,16 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 
 /**
  * @author Victor Cannestro
  */
 public class NetHelper {
+
+    public static final List<Integer> RETRYABLE_STATUS_CODES = List.of(408, 429);
+
 
     private NetHelper() {}
 
@@ -34,6 +38,14 @@ public class NetHelper {
 
     public static <T> boolean is4xx(HttpResponse<T> response) {
         return response.statusCode() >= 400 && response.statusCode() < 500;
+    }
+
+    public static <T> boolean isRetryable4xx(HttpResponse<T> response) {
+        return RETRYABLE_STATUS_CODES.contains(response.statusCode());
+    }
+
+    public static <T> boolean isNonRetryable4xx(HttpResponse<T> response) {
+        return is4xx(response) && !RETRYABLE_STATUS_CODES.contains(response.statusCode());
     }
 
 }
