@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class NetHelper {
 
-    public static final List<Integer> RETRYABLE_STATUS_CODES = List.of(408, 429);
+    public static final List<Integer> RETRYABLE_CLIENT_STATUS_CODES = List.of(408, 425, 429);
 
 
     private NetHelper() {}
@@ -41,11 +41,11 @@ public class NetHelper {
     }
 
     public static <T> boolean isRetryable4xx(HttpResponse<T> response) {
-        return RETRYABLE_STATUS_CODES.contains(response.statusCode());
+        return RETRYABLE_CLIENT_STATUS_CODES.contains(response.statusCode());
     }
 
     public static <T> boolean isNonRetryable4xx(HttpResponse<T> response) {
-        return is4xx(response) && !RETRYABLE_STATUS_CODES.contains(response.statusCode());
+        return is4xx(response) && !RETRYABLE_CLIENT_STATUS_CODES.contains(response.statusCode());
     }
 
 }

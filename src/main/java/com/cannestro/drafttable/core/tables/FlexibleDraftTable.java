@@ -14,11 +14,8 @@ import com.cannestro.drafttable.core.options.SortingOrderType;
 import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
 import com.cannestro.drafttable.supporting.utils.ListHelper;
 import com.cannestro.drafttable.supporting.utils.DraftTableHelper;
-import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.jspecify.annotations.NonNull;
-import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hamcrest.Matcher;
@@ -32,19 +29,17 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.*;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.*;
-import static com.cannestro.drafttable.supporting.utils.MapHelper.zip;
 import static org.hamcrest.Matchers.*;
 
 
 /**
  * @author Victor Cannestro
  */
-@Accessors(fluent = true)
 @EqualsAndHashCode
 public class FlexibleDraftTable implements DraftTable {
 
-    @Getter(AccessLevel.PRIVATE) private final List<Column> listOfColumns;
-    @Getter private String tableName;
+    private final List<Column> listOfColumns;
+    private String tableName;
 
 
     FlexibleDraftTable(String tableName, List<Column> listOfColumns) {
@@ -72,6 +67,11 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public int columnCount() {
         return listOfColumns().size();
+    }
+
+    @Override
+    public String tableName() {
+        return tableName;
     }
 
     @Override
@@ -479,6 +479,11 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
+
+
+    private List<Column> listOfColumns() {
+        return listOfColumns;
     }
 
 }

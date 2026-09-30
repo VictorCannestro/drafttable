@@ -88,7 +88,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Supplier<T> firstValue() {
+    public <T> Supplier<@Nullable T> firstValue() {
         if (this.isEmpty()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size()) for size 0");
         }
@@ -97,7 +97,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Supplier<T> lastValue() {
+    public <T> Supplier<@Nullable T> lastValue() {
         if (this.isEmpty()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size()) for size 0");
         }
@@ -106,7 +106,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Supplier<T> valueAt(int n) {
+    public <T> Supplier<@Nullable T> valueAt(int n) {
         if (this.isEmpty() || n < 0 || n >= size()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size())");
         }
@@ -129,8 +129,8 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> boolean has(@NonNull T element) {
-        return values.stream().anyMatch(value -> value.equals(element));
+    public <T> boolean has(@Nullable T element) {
+        return values.stream().anyMatch(value -> Objects.equals(value, element));
     }
 
     @Override

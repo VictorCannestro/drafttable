@@ -97,9 +97,9 @@ public interface Column {
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine if it contains the provided value. </p>
      *
-     * @return True if and only if the column contains the provided non-null value
+     * @return True if and only if the column contains the provided nullable value
      */
-    <T> boolean has(@NonNull T element);
+    <T> boolean has(@Nullable T element);
 
     /**
      * <p> Can be used to inspect and access the current state of the pipeline inline without using intermediate

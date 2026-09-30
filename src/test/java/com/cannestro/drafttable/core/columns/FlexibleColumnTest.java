@@ -124,10 +124,11 @@ public class FlexibleColumnTest {
         list.add(null);
         Column c = new FlexibleColumn("data", list);
         assertTrue(c.hasNulls());
+        assertTrue(c.has(null));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
-    public void hasElementThrowsExceptionWhenCheckingNull() {
+    @Test
+    public void hasElementCanBeUsedToCheckNull() {
         List<Integer> list = new ArrayList<>();
         list.add(null);
         list.add(null);
