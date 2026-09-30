@@ -5,6 +5,7 @@ import org.jspecify.annotations.NonNull;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpResponse;
 
 
 /**
@@ -26,4 +27,13 @@ public class NetHelper {
     public static URL url(@NonNull String fileUrl) {
         return url(URI.create(fileUrl));
     }
+
+    public static <T> boolean is5xx(HttpResponse<T> response) {
+        return response.statusCode() >= 500 && response.statusCode() < 600;
+    }
+
+    public static <T> boolean is4xx(HttpResponse<T> response) {
+        return response.statusCode() >= 400 && response.statusCode() < 500;
+    }
+
 }

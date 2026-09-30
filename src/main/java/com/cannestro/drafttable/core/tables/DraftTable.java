@@ -77,7 +77,18 @@ public interface DraftTable {
     DraftTable copy();
 
     /**
-     * Converts the current state of the {@code DraftTable} into a collection of {@code Row} objects--order is preserved.
+     * Fetches the data in the {@code DraftTable} at the provided index, if any is present. Will not reflect
+     * {@code Column} metadata if isEmpty() is true. Index queries out of range will return an empty object.
+     *
+     * @param n Index value within [0, rowCount())
+     * @return A {@code Row} object that may or may not be present
+     */
+    Optional<Row> row(int n);
+
+    /**
+     * Converts the current state of the {@code DraftTable} into a mutable collection of {@code Row} objects--order is
+     * preserved. If the {@code DraftTable} contains one or more {@code Column} objects and does not contain data, then
+     * an empty list will be returned.
      *
      * @return A list of {@code Row} objects
      */

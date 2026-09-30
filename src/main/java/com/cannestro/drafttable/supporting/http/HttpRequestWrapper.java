@@ -22,7 +22,7 @@ public record HttpRequestWrapper(@NonNull URI uri,
                                  Duration timeout,
                                  HttpRequestLogFormatter logFormatter) {
 
-    public static Duration DEFAULT_TIMEOUT = Duration.of(2, ChronoUnit.MINUTES);
+    public static final Duration DEFAULT_TIMEOUT = Duration.of(2, ChronoUnit.MINUTES);
 
 
     public static HttpRequestWrapper with(@NonNull URI uri) {

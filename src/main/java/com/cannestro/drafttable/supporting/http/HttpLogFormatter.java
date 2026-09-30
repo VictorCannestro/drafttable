@@ -12,10 +12,10 @@ import java.util.*;
  */
 public abstract class HttpLogFormatter<R> {
 
-    protected static final Set<String> BLACKLISTED_HEADERS = Collections.synchronizedSet(
+    protected final Set<String> blacklistedHeaders = Collections.synchronizedSet(
             new TreeSet<>(List.of("Authorization", "Proxy-Authorization", "Cookie"))
     );
-    public static final List<String> REDACTED_HEADER_STUB = List.of("REDACTED VALUE");
+    public final List<String> redactedHeaderStub = List.of("REDACTED VALUE");
 
 
     public abstract String format(@NonNull R type);
@@ -23,11 +23,11 @@ public abstract class HttpLogFormatter<R> {
     public abstract boolean loggingEnabled();
 
     public synchronized void addToBlacklist(@NonNull String headerName) {
-        BLACKLISTED_HEADERS.add(headerName);
+        blacklistedHeaders.add(headerName);
     }
 
     public synchronized void addAllToBlacklist(@NonNull Collection<@NonNull String> headerNames) {
-        BLACKLISTED_HEADERS.addAll(headerNames);
+        blacklistedHeaders.addAll(headerNames);
     }
 
     protected Map<String, List<String>> redactBlacklistedHeaders(@NonNull Map<@NonNull String, @NonNull List<@NonNull String>> headers) {
@@ -36,8 +36,8 @@ public abstract class HttpLogFormatter<R> {
         while (mapperator.hasNext()) {
             String header = mapperator.next();
             List<String> headerValue = mapperator.getValue();
-            if (BLACKLISTED_HEADERS.stream().anyMatch(sensitiveHeader -> sensitiveHeader.equalsIgnoreCase(header))) {
-                headerValue = REDACTED_HEADER_STUB;
+            if (blacklistedHeaders.stream().anyMatch(sensitiveHeader -> sensitiveHeader.equalsIgnoreCase(header))) {
+                headerValue = redactedHeaderStub;
             }
             processedHeaders.putIfAbsent(mapperator.getKey(), headerValue);
         }

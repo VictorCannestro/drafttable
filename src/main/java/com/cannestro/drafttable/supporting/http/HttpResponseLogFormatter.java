@@ -38,7 +38,7 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
         return HttpResponseLogFormatter.builder().build();
     }
 
-    public static HttpResponseLogFormatter skipLogging() {
+    public static HttpResponseLogFormatter logNothing() {
         return HttpResponseLogFormatter.builder()
                 .logUri(false)
                 .logHeaders(false)

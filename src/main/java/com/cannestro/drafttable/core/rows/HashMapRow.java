@@ -51,6 +51,7 @@ public record HashMapRow(Map<String, ?> map) implements Row {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T valueOf(@NonNull String columnName) {
         if (isNull(map.get(columnName))) {
             return null;

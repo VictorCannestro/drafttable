@@ -1,8 +1,7 @@
 package com.cannestro.drafttable.supporting.http;
 
-import dev.failsafe.CircuitBreaker;
-import dev.failsafe.RetryPolicy;
-import dev.failsafe.Timeout;
+import com.cannestro.drafttable.supporting.utils.NetHelper;
+import dev.failsafe.*;
 import lombok.Builder;
 import lombok.With;
 
@@ -22,6 +21,12 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
                                   CircuitBreaker<HttpResponse<String>> circuitBreakerPolicy,
                                   HttpResponseLogFormatter logFormatter) {
 
+    public static final int DEFAULT_MAX_RETRIES = 2;
+
+    public static final Duration DEFAULT_JITTER = Duration.ofMillis(200);
+    public static final Duration DEFAULT_BACKOFF = Duration.ofMillis(500);
+    public static final Duration DEFAULT_BACKOFF_MAX = Duration.ofMillis(10_000);
+
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
 
@@ -31,7 +36,13 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
 
     public HttpResponseWrapper {
         if (isNull(retryPolicy)) {
-            retryPolicy = RetryPolicy.ofDefaults();
+            retryPolicy = RetryPolicy.<HttpResponse<String>>builder()
+                    .withMaxRetries(DEFAULT_MAX_RETRIES)
+                    .withBackoff(DEFAULT_BACKOFF, DEFAULT_BACKOFF_MAX)
+                    .withJitter(DEFAULT_JITTER)
+                    .handleResultIf(NetHelper::is5xx)
+                    .abortIf(NetHelper::is4xx)
+                    .build();
         }
         if (isNull(timeoutPolicy)) {
             timeoutPolicy = Timeout.of(DEFAULT_TIMEOUT);

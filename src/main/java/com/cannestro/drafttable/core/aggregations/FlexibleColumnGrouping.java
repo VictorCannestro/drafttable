@@ -61,6 +61,7 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <B, R, A, D> DraftTable by(@NonNull Function<? super B, ? extends R> mapping, @NonNull Collector<? super B, A, D> aggregation) {
         List<B> nonNullValues = column()
                 .where(notNullValue())

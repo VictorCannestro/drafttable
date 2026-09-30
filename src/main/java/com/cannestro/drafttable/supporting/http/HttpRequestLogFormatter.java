@@ -35,7 +35,7 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
         return HttpRequestLogFormatter.builder().build();
     }
 
-    public static HttpRequestLogFormatter skipLogging() {
+    public static HttpRequestLogFormatter logNothing() {
         return HttpRequestLogFormatter.builder()
                 .logUri(false)
                 .logPath(false)

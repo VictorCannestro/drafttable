@@ -23,12 +23,14 @@ public class MapBuilder implements Mappable {
         return new MapBuilder();
     }
 
+    @SuppressWarnings("unchecked")
     public <K, V> MapBuilder entry(@NonNull K key, @Nullable V value) {
         keys.add(key);
         values.add(value);
         return this;
     }
 
+    @SuppressWarnings("unchecked")
     public MapBuilder entry(@NonNull Entry<@NonNull Object, ?> entry) {
         keys.add(entry.key());
         values.add(entry.value());
@@ -36,6 +38,7 @@ public class MapBuilder implements Mappable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Map<String, ?> asMap() {
         return MapHelper.zip(keys, values);
     }

@@ -13,7 +13,6 @@ import com.cannestro.drafttable.core.options.SortingOrderType;
 
 import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
 import com.cannestro.drafttable.supporting.utils.ListHelper;
-import com.cannestro.drafttable.supporting.utils.MapHelper;
 import com.cannestro.drafttable.supporting.utils.DraftTableHelper;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
@@ -33,6 +32,7 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.*;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.*;
+import static com.cannestro.drafttable.supporting.utils.MapHelper.zip;
 import static org.hamcrest.Matchers.*;
 
 
@@ -89,7 +89,7 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable rename(@NonNull Items<String> targetColumnNames, @NonNull Items<String> newColumnNames) {
         return create().fromColumns(
                 tableName(),
-                columns().stream()
+                listOfColumns().stream()
                         .map(column -> {
                             if (targetColumnNames.params().contains(column.label())) {
                                 return column.renameAs(newColumnNames.params().get(targetColumnNames.params().indexOf(column.label())));
@@ -111,15 +111,26 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
+    @SuppressWarnings("all")
+    public Optional<Row> row(int n) {
+        if (isCompletelyEmpty() || isEmpty() || n < 0 || n >= rowCount()) {
+            return Optional.empty();
+        }
+        Map map = new HashMap(columnCount());
+        for (Column column: listOfColumns()) {
+            map.put(column.label(), column.values().get(n));
+        }
+        return Optional.of(new HashMapRow(map));
+    }
+
+    @Override
     public List<Row> rows() {
-        return IntStream.range(0, rowCount())
-                 .mapToObj(rowIndex -> MapHelper.zip(
-                             columns().stream().map(Column::label).toList(),
-                             columns().stream().map(column -> column.values().get(rowIndex)).toList()
-                 ))
-                .map(HashMapRow::new)
-                .map(Row.class::cast)
-                .toList();
+        int length = rowCount();
+        List<Row> rowList = new ArrayList<>(length);
+        for (int i = 0; i < length; i++) {
+            rowList.add(row(i).orElseThrow());
+        }
+        return rowList;
     }
 
     @Override
@@ -419,6 +430,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T, R> DraftTable deriveFrom(@NonNull String firstColumnName,
                                         @NonNull String secondColumnName,
                                         @NonNull Item<String> newColumnName,
