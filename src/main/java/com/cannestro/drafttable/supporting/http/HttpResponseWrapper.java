@@ -31,7 +31,8 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
     public static final Duration DEFAULT_JITTER = Duration.ofMillis(200);
     public static final Duration DEFAULT_BACKOFF = Duration.ofMillis(500);
     public static final Duration DEFAULT_BACKOFF_MAX = Duration.ofMillis(10_000);
-    public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
+    public static final long DELAY_CAP_IN_SECONDS = 20;
+    public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(3 * DELAY_CAP_IN_SECONDS);
 
 
     public static HttpResponseWrapper allDefaults() {
@@ -68,10 +69,14 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
                             .headers()
                             .firstValueAsLong(RETRY_AFTER_HEADER);
                     if (retryAfter.isPresent()) {
-                        return Duration.ofSeconds(retryAfter.orElseThrow());
+                        return Duration.ofSeconds(
+                                Math.min(DELAY_CAP_IN_SECONDS, retryAfter.orElseThrow())
+                        );
                     }
-                } catch (NumberFormatException | NoSuchElementException e) {
-                    throw new UnsupportedOperationException("Rate Limit Encountered: The 'Retry-After' header was either not provided or was of an unsupported type.");
+                } catch (NumberFormatException e) {
+                    throw new UnsupportedOperationException("Rate Limit Encountered: 'Retry-After' header value was an unsupported type -- one conventionally used for a long wait.");
+                } catch (NoSuchElementException ignored) {
+                    /* The 'Retry-After' header was not provided so swallow and use base case below. */
                 }
             }
             return Duration.ofMillis(-1); // Signal for Failsafe to use configured Backoff

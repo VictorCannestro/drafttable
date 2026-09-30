@@ -528,7 +528,7 @@ public class FlexibleColumnTest {
                 );
 
         Assert.assertEquals(
-                c.firstValue().get(),
+                c.firstValue(),
                 LocalDate.of(2016, 12, 14)
         );
     }

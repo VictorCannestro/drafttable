@@ -209,7 +209,7 @@ public class FlexibleDraftTableTest {
                 .whereWithDefault("newDates", LocalDate::getDayOfMonth, is(2), is(greaterThan(2)));
 
         Assert.assertEquals(
-                dt.select("newDates").firstValue().get(),
+                dt.select("newDates").firstValue(),
                 LocalDate.of(2024, 1, 2)
         );
     }
@@ -221,7 +221,7 @@ public class FlexibleDraftTableTest {
                 .whereWithDefault("newDates", LocalDate::getDayOfMonth, is(lessThan(0)), is(2));
 
         Assert.assertEquals(
-                dt.select("newDates").firstValue().get(),
+                dt.select("newDates").firstValue(),
                 LocalDate.of(2024, 1, 2)
         );
     }
@@ -635,11 +635,11 @@ public class FlexibleDraftTableTest {
                 .orderBy("contractType", ASCENDING);
 
         Assert.assertEquals(
-                sortedFrame.top(1).select("contractType").firstValue().get(),
+                sortedFrame.top(1).select("contractType").firstValue(),
                 "full-time"
         );
         Assert.assertEquals(
-                sortedFrame.bottom(1).select("contractType").firstValue().get(),
+                sortedFrame.bottom(1).select("contractType").firstValue(),
                 "part-time"
         );
     }
@@ -650,11 +650,11 @@ public class FlexibleDraftTableTest {
                 .orderBy("contractType", DESCENDING);
 
         Assert.assertEquals(
-                sortedFrame.top(1).select("contractType").firstValue().get(),
+                sortedFrame.top(1).select("contractType").firstValue(),
                 "part-time"
         );
         Assert.assertEquals(
-                sortedFrame.bottom(1).select("contractType").firstValue().get(),
+                sortedFrame.bottom(1).select("contractType").firstValue(),
                 "full-time"
         );
     }
@@ -665,11 +665,11 @@ public class FlexibleDraftTableTest {
                 .orderBy(using("contractType", "exempt"), ASCENDING);
 
         Assert.assertEquals(
-                sortedFrame.top(1).select("contractType").firstValue().get(),
+                sortedFrame.top(1).select("contractType").firstValue(),
                 "full-time"
         );
         Assert.assertEquals(
-                sortedFrame.top(1).select("exempt").firstValue().get(),
+                sortedFrame.top(1).select("exempt").firstValue(),
                 false
         );
 
@@ -683,11 +683,11 @@ public class FlexibleDraftTableTest {
         );
 
         Assert.assertEquals(
-                sortedFrame.bottom(1).select("contractType").firstValue().get(),
+                sortedFrame.bottom(1).select("contractType").firstValue(),
                 "part-time"
         );
         Assert.assertEquals(
-                sortedFrame.bottom(1).select("exempt").firstValue().get(),
+                sortedFrame.bottom(1).select("exempt").firstValue(),
                 false
         );
     }
@@ -701,11 +701,11 @@ public class FlexibleDraftTableTest {
                 .orderBy(Comparator.comparing((Row row) -> row.valueOf("modifiedDates")));
 
         Assert.assertEquals(
-                sortedFrame.top(1).select("modifiedDates").firstValue().get(),
+                sortedFrame.top(1).select("modifiedDates").firstValue(),
                 LocalDate.of(2024, 1, 2)
         );
         Assert.assertEquals(
-                sortedFrame.bottom(1).select("modifiedDates").firstValue().get(),
+                sortedFrame.bottom(1).select("modifiedDates").firstValue(),
                 LocalDate.of(2024, 1, 4)
         );
     }
@@ -717,7 +717,7 @@ public class FlexibleDraftTableTest {
 
         Assert.assertEquals(dt.rowCount(), 1);
         Assert.assertEquals(
-                dt.select("EmploymentContracts").firstValue().get(),
+                dt.select("EmploymentContracts").firstValue(),
                 new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
     }
@@ -729,7 +729,7 @@ public class FlexibleDraftTableTest {
 
         Assert.assertEquals(dt.rowCount(), 1);
         Assert.assertEquals(
-                dt.select("EmploymentContracts").firstValue().get(),
+                dt.select("EmploymentContracts").firstValue(),
                 new EmploymentContract("full-time", "Y", new PayDetails("Salary", "50000.00", "Bi-Weekly", "80"), LocalDate.of(2024, 1, 1))
         );
     }
@@ -775,7 +775,7 @@ public class FlexibleDraftTableTest {
                 .gatherInto(EmploymentContract.class, as(""));
 
         Assert.assertEquals(
-                c.bottom(1).firstValue().get(),
+                c.bottom(1).firstValue(),
                 new EmploymentContract(null, null, null, null)
         );
     }

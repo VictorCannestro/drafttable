@@ -43,24 +43,21 @@ public class FlexibleColumnGroupingTest {
         )).append((PayDetails) null);
 
         Assert.assertEquals(
-                column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80")))
+                (long) column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80")))
                         .select(ColumnGrouping.COUNT)
-                        .firstValue()
-                        .get(),
+                        .firstValue(),
                 1L
         );
         Assert.assertEquals(
-                column.group().byValueCounts().where(ColumnGrouping.VALUE, nullValue())
+                (long) column.group().byValueCounts().where(ColumnGrouping.VALUE, nullValue())
                         .select(ColumnGrouping.COUNT)
-                        .firstValue()
-                        .get(),
+                        .firstValue(),
                 1L
         );
         Assert.assertEquals(
-                column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new PayDetails(null, null, null, null)))
+                (long) column.group().byValueCounts().where(ColumnGrouping.VALUE, is(new PayDetails(null, null, null, null)))
                         .select(ColumnGrouping.COUNT)
-                        .firstValue()
-                        .get(),
+                        .firstValue(),
                 3L
         );
     }
@@ -77,11 +74,10 @@ public class FlexibleColumnGroupingTest {
                 .append((BareBonesPojo) null);
 
         Assert.assertEquals(
-                column.group().byValueCounts()
+                (long) column.group().byValueCounts()
                         .where(ColumnGrouping.VALUE, is(nullValue()))
                         .select(ColumnGrouping.COUNT)
-                        .firstValue()
-                        .get(), // i.e., Getting the COUNT
+                        .firstValue(), // i.e., Getting the COUNT
                 2L // i.e., Works as expected
         );
         Assert.assertEquals(
@@ -117,7 +113,6 @@ public class FlexibleColumnGroupingTest {
                 grouping.where(ColumnGrouping.VALUE, is(nullValue()))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
                         .firstValue()
-                        .get()
         );
     }
 
@@ -146,15 +141,13 @@ public class FlexibleColumnGroupingTest {
         Assert.assertEquals(
                 grouping.where(ColumnGrouping.VALUE, is(new PayDetails(null, null, null, null)))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
-                        .firstValue()
-                        .get(),
+                        .firstValue(),
                 Collections.nCopies(3, new PayDetails(null, null, null, null))
         );
         Assert.assertEquals(
                 grouping.where(ColumnGrouping.VALUE, is(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80")))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
-                        .firstValue()
-                        .get(),
+                        .firstValue(),
                 List.of(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"))
         );
     }
@@ -165,10 +158,10 @@ public class FlexibleColumnGroupingTest {
                 .group()
                 .byValuesUsing(Collectors.summingInt(value -> value.toString().length()));
 
-        Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("Hourly")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue().get(), 6);
-        Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("Weekly")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue().get(), 6);
-        Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("20.11")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue().get(), 5);
-        Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("40")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue().get(), 2);
+        Assert.assertEquals((int) grouping.where(ColumnGrouping.VALUE, is("Hourly")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue(), 6);
+        Assert.assertEquals((int) grouping.where(ColumnGrouping.VALUE, is("Weekly")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue(), 6);
+        Assert.assertEquals((int) grouping.where(ColumnGrouping.VALUE, is("20.11")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue(), 5);
+        Assert.assertEquals((int) grouping.where(ColumnGrouping.VALUE, is("40")).select(ColumnGrouping.VALUE_AGGREGATION).firstValue(), 2);
     }
 
     @Test
@@ -183,9 +176,9 @@ public class FlexibleColumnGroupingTest {
 
         DraftTable grouping = column.group().byCountsOf(PayDetails::getType);
 
-        Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("Hourly")).select(ColumnGrouping.COUNT).firstValue().get(), 3L);
-        Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, is("Salary")).select(ColumnGrouping.COUNT).firstValue().get(), 1L);
-        Assert.assertEquals(grouping.where(ColumnGrouping.VALUE, nullValue()).select(ColumnGrouping.COUNT).firstValue().get(), 2L);
+        Assert.assertEquals((long) grouping.where(ColumnGrouping.VALUE, is("Hourly")).select(ColumnGrouping.COUNT).firstValue(), 3L);
+        Assert.assertEquals((long) grouping.where(ColumnGrouping.VALUE, is("Salary")).select(ColumnGrouping.COUNT).firstValue(), 1L);
+        Assert.assertEquals((long) grouping.where(ColumnGrouping.VALUE, nullValue()).select(ColumnGrouping.COUNT).firstValue(), 2L);
     }
 
     @Test
@@ -204,15 +197,13 @@ public class FlexibleColumnGroupingTest {
         Assert.assertEquals(
                 grouping.where(ColumnGrouping.VALUE, is("Salary"))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
-                        .firstValue()
-                        .get(),
+                        .firstValue(),
                 List.of(new PayDetails("Salary", null, null, null))
         );
         Assert.assertEquals(
                 grouping.where(ColumnGrouping.VALUE, is("Hourly"))
                         .select(ColumnGrouping.VALUE_AGGREGATION)
-                        .firstValue()
-                        .get(),
+                        .firstValue(),
                 List.of(new PayDetails("Hourly", "20.11", "Bi-Weekly", "80"),
                         new PayDetails("Hourly", null, null, null),
                         new PayDetails("Hourly", null, null, null)

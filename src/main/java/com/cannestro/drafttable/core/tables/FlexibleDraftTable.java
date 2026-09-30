@@ -113,12 +113,12 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public Optional<Row> row(int n) {
-        if (isCompletelyEmpty() || isEmpty() || n < 0 || n >= rowCount()) {
+        if (isEmpty() || n < 0 || n >= rowCount()) {
             return Optional.empty();
         }
-        Map map = new HashMap(columnCount());
+        Map map = new HashMap();
         for (Column column: listOfColumns()) {
-            map.put(column.label(), column.valueAt(n).get());
+            map.put(column.label(), column.valueAt(n));
         }
         return Optional.of(new HashMapRow(map));
     }
@@ -135,9 +135,9 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public DraftTable copy() {
-        return create().fromRows(
+        return new FlexibleDraftTable(
                 tableName(),
-                rows().stream().map(Row::deepCopy).toList()
+                listOfColumns().stream().map(Column::deepCopy).toList()
         );
     }
 
@@ -467,7 +467,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public <T> DraftTable gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
-        return add(select(selectColumnNames.paramsArray()).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames.paramsArray());
+        return add(select(selectColumnNames.paramsArray(String[]::new)).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames.paramsArray(String[]::new));
     }
 
     @Override

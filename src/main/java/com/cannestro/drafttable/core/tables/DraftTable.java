@@ -519,11 +519,11 @@ public interface DraftTable {
     }
 
     default DraftTable select(@NonNull Items<String> columns) {
-        return select(columns.paramsArray());
+        return select(columns.paramsArray(String[]::new));
     }
 
     default DraftTable drop(@NonNull Items<String> columnsToDrop) {
-        return drop(columnsToDrop.paramsArray());
+        return drop(columnsToDrop.paramsArray(String[]::new));
     }
 
     /**
@@ -545,7 +545,7 @@ public interface DraftTable {
      * @return A new {@code DraftTable} subset
      */
     default DraftTable dropAllExcept(@NonNull Items<String> columnsToKeep) {
-        return select(columnsToKeep.paramsArray());
+        return select(columnsToKeep.paramsArray(String[]::new));
     }
 
     /**

@@ -48,29 +48,37 @@ public interface Column {
     /**
      * <p><b>Guarantees</b>: The first value within the underlying values of the column, if it exists. </p>
      *
-     * @return The first value of the underlying column data
      * @param <T> Any type
+     * @return The first value of the underlying column data
      * @throws IndexOutOfBoundsException if empty
      */
-    <T> Supplier<T> firstValue();
+    <T> T firstValue();
 
     /**
      * <p><b>Guarantees</b>: The last value within the underlying values of the column, if it exists. </p>
      *
-     * @return The last value of the underlying column data
      * @param <T> Any type
+     * @return The last value of the underlying column data
      * @throws IndexOutOfBoundsException if empty
      */
-    <T> Supplier<T>  lastValue();
+    <T> T lastValue();
 
     /**
      * <p><b>Guarantees</b>: The nth value within the underlying values of the column, if it exists. </p>
      *
-     * @return The nth value of the underlying column data
      * @param <T> Any type
+     * @return The nth value of the underlying column data
      * @throws IndexOutOfBoundsException if n outside range
      */
-    <T> Supplier<T> valueAt(int n);
+    <T> T valueAt(int n);
+
+    /**
+     * <p> <b>Guarantees</b>: A "deep" copy of the column. Copy depth is not guaranteed beyond 1 layer. For example, a
+     * column of immutable types will be a true deep copy, however, a column of non-immutable types may still be mutable. </p>
+     *
+     * @return A new column
+     */
+    Column deepCopy();
 
     /**
      * <p><b>Guarantees</b>: The cardinality of the column. If the column contains more than Integer.MAX_VALUE values,

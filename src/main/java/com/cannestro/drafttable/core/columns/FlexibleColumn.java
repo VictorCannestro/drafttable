@@ -27,6 +27,7 @@ import static com.cannestro.drafttable.core.options.StatisticName.*;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.containsMultipleTypes;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.copyWithoutNulls;
 import static com.cannestro.drafttable.supporting.utils.NullDetector.hasNullIn;
+import static com.cannestro.drafttable.supporting.utils.TypeHelper.isKnownImmutable;
 import static java.util.Objects.isNull;
 
 
@@ -88,29 +89,42 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Supplier<@Nullable T> firstValue() {
+    public <T> T firstValue() {
         if (this.isEmpty()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size()) for size 0");
         }
-        return () -> (T) values.get(0);
+        return (T) values.get(0);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Supplier<@Nullable T> lastValue() {
+    public <T> T lastValue() {
         if (this.isEmpty()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size()) for size 0");
         }
-        return () -> (T) values.get(size() - 1);
+        return (T) values.get(size() - 1);
+    }
+
+    @Override
+    public Column deepCopy() {
+        if (isKnownImmutable(type.getRawClass())) {
+            return new FlexibleColumn(label, values);
+        }
+        return new FlexibleColumn(
+                label,
+                values.stream()
+                        .map(value -> isNull(value) ? null : ObjectMapperManager.getInstance().defaultMapper().convertValue(value, type))
+                        .toList()
+        );
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Supplier<@Nullable T> valueAt(int n) {
+    public <T> T valueAt(int n) {
         if (this.isEmpty() || n < 0 || n >= size()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size())");
         }
-        return () -> (T) values.get(n);
+        return (T) values.get(n);
     }
 
     @Override
@@ -179,7 +193,7 @@ public class FlexibleColumn implements Column {
     public Column top(int n) {
         return new FlexibleColumn(
                 label(),
-                values().subList(0, DraftTableHelper.calculateEndpoint(n, size()))
+                values.subList(0, DraftTableHelper.calculateEndpoint(n, size()))
         );
     }
 
@@ -187,7 +201,7 @@ public class FlexibleColumn implements Column {
     public Column bottom(int n) {
         return new FlexibleColumn(
                 label(),
-                values().subList(size() - DraftTableHelper.calculateEndpoint(n, size()), size())
+                values.subList(size() - DraftTableHelper.calculateEndpoint(n, size()), size())
         );
     }
 
@@ -360,7 +374,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Map<StatisticName, Number> descriptiveStats() {
-        if (!type.getRawClass().getGenericSuperclass().equals(Number.class)) {
+        if (!Number.class.isAssignableFrom(type.getRawClass())) {
             return Collections.emptyMap();
         }
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
