@@ -2,6 +2,7 @@ package com.cannestro.drafttable.supporting.utils;
 
 import lombok.NonNull;
 
+import java.lang.reflect.RecordComponent;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -29,7 +30,6 @@ public class TypeHelper {
             MonthDay.class,
             OffsetDateTime.class,
             OffsetTime.class,
-            Optional.class,
             Period.class,
             Short.class,
             String.class,
@@ -41,17 +41,39 @@ public class TypeHelper {
             ZonedDateTime.class
     );
 
+    private final Set<Class<?>> memo = new HashSet<>();
 
     private TypeHelper() {}
 
-    public static boolean isKnownImmutable(@NonNull Class<?> type) {
+
+    public static TypeHelper instance() {
+        return new TypeHelper();
+    }
+
+    public boolean isKnownImmutable(@NonNull Class<?> type) {
+        if (!type.isRecord()) {
+            return isBasicImmutable(type);
+        } else if (memo.contains(type)) {
+            return false;
+        } else {
+            memo.add(type);
+        }
+        return Arrays.stream(type.getRecordComponents())
+                .allMatch(component -> isNotSelfReferential(component, type) && isKnownImmutable(component.getType()));
+    }
+
+    static boolean isBasicImmutable(@NonNull Class<?> type) {
         if (type.isInterface()) {
             return false;
         }
-        if (type.isRecord()) {
-            return Arrays.stream(type.getRecordComponents()).allMatch(component -> isKnownImmutable(component.getType()));
+        if (type.isAnonymousClass() && type.getSuperclass().isEnum()) {
+            return true;
         }
         return type.isPrimitive() || type.isEnum() || KNOWN_IMMUTABLE_TYPES.contains(type);
+    }
+
+    static boolean isNotSelfReferential(@NonNull RecordComponent component, @NonNull Class<?> parentType) {
+        return !Objects.equals(parentType, component.getType());
     }
 
 }

@@ -8,6 +8,7 @@ import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.DefaultColumnOutput;
 import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
 import com.cannestro.drafttable.supporting.utils.DraftTableHelper;
+import com.cannestro.drafttable.supporting.utils.TypeHelper;
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -27,7 +28,6 @@ import static com.cannestro.drafttable.core.options.StatisticName.*;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.containsMultipleTypes;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.copyWithoutNulls;
 import static com.cannestro.drafttable.supporting.utils.NullDetector.hasNullIn;
-import static com.cannestro.drafttable.supporting.utils.TypeHelper.isKnownImmutable;
 import static java.util.Objects.isNull;
 
 
@@ -107,15 +107,19 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Column deepCopy() {
-        if (isKnownImmutable(type.getRawClass())) {
+        if (TypeHelper.instance().isKnownImmutable(type.getRawClass())) {
             return new FlexibleColumn(label, values);
         }
-        return new FlexibleColumn(
-                label,
-                values.stream()
-                        .map(value -> isNull(value) ? null : ObjectMapperManager.getInstance().defaultMapper().convertValue(value, type))
-                        .toList()
-        );
+        try {
+            return new FlexibleColumn(
+                    label,
+                    values.stream()
+                            .map(value -> isNull(value) ? null : ObjectMapperManager.getInstance().defaultMapper().convertValue(value, type))
+                            .toList()
+            );
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(String.format("Internal Object Mapper could not map column of type %s", type), e);
+        }
     }
 
     @Override
