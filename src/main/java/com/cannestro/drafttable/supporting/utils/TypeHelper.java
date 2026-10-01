@@ -2,7 +2,6 @@ package com.cannestro.drafttable.supporting.utils;
 
 import lombok.NonNull;
 
-import java.lang.reflect.RecordComponent;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URI;
@@ -41,25 +40,33 @@ public class TypeHelper {
             ZonedDateTime.class
     );
 
-    private final Set<Class<?>> memo = new HashSet<>();
-
     private TypeHelper() {}
 
 
-    public static TypeHelper instance() {
-        return new TypeHelper();
+    public static boolean isKnownImmutable(@NonNull Class<?> type) {
+        return isKnownImmutable(type, new HashSet<>());
     }
 
-    public boolean isKnownImmutable(@NonNull Class<?> type) {
+    /**
+     * Depth first traversal of a type graph: white node = not yet visited, grey = currently on the recursion stack (is
+     * an ancestor), black = fully explored.
+     *
+     * @param type Class type
+     * @param inProgress grey set for DFS
+     * @return Whether type is a known immutable
+     */
+    static boolean isKnownImmutable(@NonNull Class<?> type, Set<Class<?>> inProgress) {
         if (!type.isRecord()) {
             return isBasicImmutable(type);
-        } else if (memo.contains(type)) {
-            return false;
-        } else {
-            memo.add(type);
         }
-        return Arrays.stream(type.getRecordComponents())
-                .allMatch(component -> isNotSelfReferential(component, type) && isKnownImmutable(component.getType()));
+        if (!inProgress.add(type)) {
+            return false; // Was already grey -> Back edge = Cycle found
+        }
+        try {
+            return Arrays.stream(type.getRecordComponents()).allMatch(component -> isKnownImmutable(component.getType(), inProgress));
+        } finally {
+            inProgress.remove(type); // Repaints a node black
+        }
     }
 
     static boolean isBasicImmutable(@NonNull Class<?> type) {
@@ -70,10 +77,6 @@ public class TypeHelper {
             return true;
         }
         return type.isPrimitive() || type.isEnum() || KNOWN_IMMUTABLE_TYPES.contains(type);
-    }
-
-    static boolean isNotSelfReferential(@NonNull RecordComponent component, @NonNull Class<?> parentType) {
-        return !Objects.equals(parentType, component.getType());
     }
 
 }

@@ -107,7 +107,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Column deepCopy() {
-        if (TypeHelper.instance().isKnownImmutable(type.getRawClass())) {
+        if (TypeHelper.isKnownImmutable(type.getRawClass())) {
             return new FlexibleColumn(label, values);
         }
         try {

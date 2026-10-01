@@ -14,6 +14,7 @@ import java.util.ArrayList;
 public class TestTypeHelper {
 
     record Point(int x, int y) {}
+    record Line(Point p1, Point p2) {}
     record Data(int x, ArrayList<Integer> list) {}
     record Dangerous(Dangerous d) {}
     record Cycle1(Cycle2 two) {}
@@ -33,27 +34,27 @@ public class TestTypeHelper {
 
     @Test(dataProvider = "immutableTypeTestData")
     public void immutableJavaTypesAreTreatedAsImmutable(Class<?> type) {
-        Assert.assertTrue(TypeHelper.instance().isKnownImmutable(type));
+        Assert.assertTrue(TypeHelper.isKnownImmutable(type));
     }
 
     @Test(dataProvider = "mutableTypeTestData")
     public void mutableJavaTypesAreNotTreatedAsImmutable(Class<?> type) {
-        Assert.assertFalse(TypeHelper.instance().isKnownImmutable(type));
+        Assert.assertFalse(TypeHelper.isKnownImmutable(type));
     }
 
     @Test
     public void selfReferringTypeIsTreatedAsMutable() {
-        Assert.assertFalse(TypeHelper.instance().isKnownImmutable(Dangerous.class));
+        Assert.assertFalse(TypeHelper.isKnownImmutable(Dangerous.class));
     }
 
     @Test
     public void cyclingTypesAreTreatedAsMutable() {
-        Assert.assertFalse(TypeHelper.instance().isKnownImmutable(Cycle1.class));
-        Assert.assertFalse(TypeHelper.instance().isKnownImmutable(Cycle2.class));
+        Assert.assertFalse(TypeHelper.isKnownImmutable(Cycle1.class));
+        Assert.assertFalse(TypeHelper.isKnownImmutable(Cycle2.class));
 
-        Assert.assertFalse(TypeHelper.instance().isKnownImmutable(La.class));
-        Assert.assertFalse(TypeHelper.instance().isKnownImmutable(Di.class));
-        Assert.assertFalse(TypeHelper.instance().isKnownImmutable(Da.class));
+        Assert.assertFalse(TypeHelper.isKnownImmutable(La.class));
+        Assert.assertFalse(TypeHelper.isKnownImmutable(Di.class));
+        Assert.assertFalse(TypeHelper.isKnownImmutable(Da.class));
     }
 
 
@@ -66,7 +67,8 @@ public class TestTypeHelper {
                 {Integer.class},
                 {SupportedExtension.CSV.getClass()},
                 {DayOfWeek.FRIDAY.getClass()},
-                {Values.A.getClass()}
+                {Values.A.getClass()},
+                {Line.class}
         };
     }
 

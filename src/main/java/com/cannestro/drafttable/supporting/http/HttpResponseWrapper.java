@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.OptionalLong;
@@ -78,13 +79,17 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
                 } catch (NumberFormatException e) {
                     /* The 'Retry-After' header was provided, but is not parseable to a Long. */
                     String headerValue = context.getLastResult().headers().firstValue(RETRY_AFTER_HEADER).orElseThrow();
-                    Instant retryInstant = ZonedDateTime.parse(headerValue, DateTimeFormatter.RFC_1123_DATE_TIME.withLocale(Locale.US)).toInstant();
-                    return Duration.ofSeconds(
-                            Math.min(
-                                    DELAY_CAP_IN_SECONDS,
-                                    Math.max(0, Duration.between(Instant.now(), retryInstant).toSeconds())
-                            )
-                    );
+                    try {
+                        Instant retryInstant = ZonedDateTime.parse(headerValue, DateTimeFormatter.RFC_1123_DATE_TIME.withLocale(Locale.US)).toInstant();
+                        return Duration.ofSeconds(
+                                Math.min(
+                                        DELAY_CAP_IN_SECONDS,
+                                        Math.max(0, Duration.between(Instant.now(), retryInstant).toSeconds())
+                                )
+                        );
+                    } catch (DateTimeParseException ignored) {
+                        /* Non-standard date format encountered */
+                    }
                 } catch (NoSuchElementException ignored) {
                     /* The 'Retry-After' header was not provided so swallow and use base case below. */
                 }
