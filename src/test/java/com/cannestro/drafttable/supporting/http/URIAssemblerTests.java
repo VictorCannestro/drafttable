@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.supporting.http;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -27,20 +28,27 @@ public class URIAssemblerTests {
     }
 
     @Test
+    public void modifyExistingPreservesExplicitPorts() {
+        URI original = URI.create("http://localhost:8080/api?x=1");
+
+        Assert.assertEquals(URIAssembler.modifyExisting(original).build().toURI(), original);
+    }
+
+    @Test
     public void modifiedUriEqualsOriginalWhereUnchanged() {
         URI foodUri = URIAssembler.builder()
                 .baseUri("https://raw.cooking.com")
+                .port(8080)
                 .path("/books/cookbook.json")
                 .queryParam("page","0")
                 .queryParam("name", "eggplant")
                 .fragment("recipes")
                 .build().toURI();
-        System.out.println("food uri: " + foodUri);
         URI modifiedFoodUri = URIAssembler.modifyExisting(foodUri)
                 .queryParam("foo", "bah ruh")
                 .fragment("slug")
                 .build().toURI();
-        System.out.println(modifiedFoodUri);
+
         Assert.assertEquals(foodUri.getScheme(), modifiedFoodUri.getScheme());
         Assert.assertEquals(foodUri.getRawAuthority(), modifiedFoodUri.getRawAuthority());
         Assert.assertEquals(foodUri.getRawPath(), modifiedFoodUri.getRawPath());

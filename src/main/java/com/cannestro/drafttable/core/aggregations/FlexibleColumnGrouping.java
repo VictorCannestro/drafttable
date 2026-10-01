@@ -7,6 +7,8 @@ import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import org.jspecify.annotations.NonNull;
 import org.hamcrest.Matcher;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -14,6 +16,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
 import static org.hamcrest.Matchers.*;
 
 
@@ -26,22 +29,18 @@ public record FlexibleColumnGrouping(Column column) implements ColumnGrouping {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public <B, R> DraftTable byCountsOf(@NonNull Function<? super B, ? extends R> mapping) {
-        DraftTable grouping = by(mapping, Collectors.counting());
-        Column valueColumn = grouping.select(VALUE).conditionalAction(
-                col -> column().hasNulls(),
-                col -> col.append((Object) null),
-                UnaryOperator.identity()
-        );
-        long nullCountByClassifier = Function.identity().equals(mapping)
-                ? column().where(nullValue()).size()
-                : (long) column().where(nullValue()).size() + column().where(notNullValue()).transform(mapping).where(nullValue()).size();
-        Column aggregationColumn = grouping.select(VALUE_AGGREGATION).conditionalAction(
-                col -> column().hasNulls(),
-                col -> col.append(nullCountByClassifier),
-                UnaryOperator.identity()
-        ).renameAs(COUNT);
-        return FlexibleDraftTable.create().fromColumns(outputTableName(), List.of(valueColumn, aggregationColumn));
+        Map<R, Long> counts = new HashMap<>();
+        for (B value: (List<B>) this.column().values()) {
+            R key = isNull(value) ? null : mapping.apply(value);
+            counts.merge(key, 1L, Long::sum);
+        }
+        List<R> keys = new ArrayList<>(counts.keySet());
+        return FlexibleDraftTable.create().fromColumns(outputTableName(), List.of(
+                FlexibleColumn.from(VALUE, keys),
+                FlexibleColumn.from(COUNT, keys.stream().map(counts::get).toList())
+        ));
     }
 
     @Override

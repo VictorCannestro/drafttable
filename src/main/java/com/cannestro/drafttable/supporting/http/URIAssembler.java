@@ -5,6 +5,7 @@ import lombok.experimental.Accessors;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.MapUtils;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,7 +52,7 @@ public class URIAssembler {
         return new URIAssemblerBuilder()
                 .scheme(uri.getScheme())
                 .userInfo(uri.getUserInfo())
-                .host(uri.getAuthority())
+                .host(uri.getHost())
                 .port(uri.getPort())
                 .path(uri.getPath())
                 .query(uri.getQuery())
@@ -99,7 +100,6 @@ public class URIAssembler {
     String resolveQueryComponents() {
         StringBuilder queryComponent = new StringBuilder();
         if (hasQueryComponent()) {
-            queryComponent.append(QUERY_JOINER);
             MapIterator<String, String> paramerator = MapUtils.iterableMap(this.queryParams).mapIterator();
             if (!isNull(query())) {
                 queryComponent.append(query());
@@ -168,8 +168,10 @@ public class URIAssembler {
          * @param fragmentToEncode any valid fragment (i.e., anchor) will be UFT-8 encoded
          * @return A chainable builder instance
          */
-        public URIAssemblerBuilder fragment(@NonNull String fragmentToEncode) {
-            this.fragment = URLEncoder.encode(fragmentToEncode, StandardCharsets.UTF_8);
+        public URIAssemblerBuilder fragment(@Nullable String fragmentToEncode) {
+            if (!isNull(fragmentToEncode)) {
+                this.fragment = URLEncoder.encode(fragmentToEncode, StandardCharsets.UTF_8);
+            }
             return this;
         }
 

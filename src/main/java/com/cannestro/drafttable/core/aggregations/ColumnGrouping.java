@@ -22,7 +22,9 @@ public interface ColumnGrouping {
      * <p> Creates an aggregation of unique values by frequency of occurrence. The resulting object will be a new
      * {@code DraftTable} with column names {@code "Value"} and {@code "Count"} of the type designated in the
      * user-provided function and of type Long, respectively. The total count over all counts will equal the row count
-     * of the originating {@code DraftTable}. </p>
+     * of the originating {@code DraftTable}. Result order is unspecified and not guaranteed. When grouping values of
+     * custom or complex types, ensure they contain an {@code equals}/{@code hashCode} implementation so the grouping
+     * operations can properly map outwardly equivalent objects. </p>
      * <br>
      * <p> Pre-mapping null values and post-mapping null values are handled, and will appear in the null count, if
      * present. </p>
@@ -37,7 +39,10 @@ public interface ColumnGrouping {
     /**
      * <p> Creates an aggregation of unique values according to a user-defined reduction operation. The resulting object
      * will be a new {@code DraftTable} with column names {@code "Value"} and {@code "ValueAggregation"} of the
-     * originating type and type designated by the user-provided reduction operation, respectively.  </p>
+     * originating type and type designated by the user-provided reduction operation, respectively. Result order is
+     * unspecified and not guaranteed. When grouping values of custom or complex types, ensure they contain an
+     * {@code equals}/{@code hashCode} implementation so the grouping operations can properly map outwardly equivalent
+     * objects. </p>
      * <br>
      * <p> Null values are handled, and will appear in the aggregation as null, if present. </p>
      *
@@ -52,7 +57,9 @@ public interface ColumnGrouping {
     /**
      * <p> Creates an aggregation of unique values according to a user-defined aggregation mapping. The resulting object
      * will be a new {@code DraftTable} with column names {@code "Value"} and {@code "ValueAggregation"} of the type
-     * designated in the user-provided function and reduction operation, respectively. </p>
+     * designated in the user-provided function and reduction operation, respectively. Result order is unspecified and
+     * not guaranteed. When grouping values of custom or complex types, ensure they contain an {@code equals}/
+     * {@code hashCode} implementation so the grouping operations can properly map outwardly equivalent objects. </p>
      * <br>
      * <p> Null values are filtered out, if present. </p>
      *
@@ -70,7 +77,9 @@ public interface ColumnGrouping {
     /**
      * <p> Creates an aggregation of unique values by frequency of occurrence. The resulting object will be a new
      * {@code DraftTable} with column names  {@code "Value"} and {@code "Count"} of the originating type and of type
-     * Long, respectively.</p>
+     * Long, respectively. Result order is unspecified and not guaranteed. When grouping values of custom or complex
+     * types, ensure they contain an {@code equals}/{@code hashCode} implementation so the grouping operations can
+     * properly map outwardly equivalent objects.</p>
      * <br>
      * <p> Null values are handled, and will appear in the null count, if present. </p>
      *
@@ -83,7 +92,9 @@ public interface ColumnGrouping {
     /**
      * <p> Creates an aggregation of unique values by frequency of occurrence, in ascending or descending order as
      * designated by the user. The resulting object will be a new {@code DraftTable} with column names {@code "Value"}
-     * and {@code "Count"} of the originating type and of type Long, respectively. </p>
+     * and {@code "Count"} of the originating type and of type Long, respectively. When grouping values of custom or
+     * complex types, ensure they contain an {@code equals}/{@code hashCode} implementation so the grouping operations
+     * can properly map outwardly equivalent objects.</p>
      * <br>
      * <p> Null values are handled, and will appear in the null count, if present. </p>
      *
