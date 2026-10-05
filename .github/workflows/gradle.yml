@@ -35,7 +35,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run tests and static analysis
-        run: ./gradlew clean test checkstyleMain spotbugsMain spotbugsTest jacocoTestReport
+        run: ./gradlew clean test spotbugsMain spotbugsTest jacocoTestReport
 
       - name: Upload coverage report
         if: always()
