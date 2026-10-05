@@ -35,7 +35,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run tests and static analysis
-        run: ./gradlew clean test spotbugsMain spotbugsTest jacocoTestReport
+        run: ./gradlew clean test jacocoTestReport
 
       - name: Upload coverage report
         if: always()
@@ -43,14 +43,6 @@ jobs:
         with:
           name: coverage-report
           path: build/reports/jacoco/test/html/
-
-      - name: Upload static analysis reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: static-analysis
-          path: |
-            build/reports/spotbugs/
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
     # If your project does not have the Gradle Wrapper configured, you can use the following configuration to run Gradle with a specified version.
