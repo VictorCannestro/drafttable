@@ -1,7 +1,13 @@
+import com.github.spotbugs.snom.Effort
+import com.github.spotbugs.snom.SpotBugsTask
+
 plugins {
-    id('java')
-    id('maven-publish')
-    id('java-library')
+    id 'java'
+    id 'maven-publish'
+    id 'java-library'
+    id 'jacoco'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version "$spotbugsPluginVersion"
 }
 
 group = "$basePackage"
@@ -34,6 +40,38 @@ dependencies {
     testImplementation(group: 'org.testng', name: 'testng', version: "$testngVersion")
 }
 
+jacoco {
+    toolVersion = "$jacocoToolVersion"
+}
+
+checkstyle {
+    toolVersion = "$checkstyleToolVersion"
+    configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+    ignoreFailures = true
+    showViolations = true
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+spotbugs {
+    toolVersion = "$spotbugsToolVersion"
+    ignoreFailures = true
+    effort = Effort.DEFAULT
+    showProgress = true
+}
+
+tasks.withType(SpotBugsTask).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
 test {
     useTestNG() {
         useDefaultListeners = true
@@ -42,6 +80,19 @@ test {
         includeGroups 'component'
         includeGroups 'unit'
     }
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+tasks.named('check') {
+    dependsOn 'checkstyleMain', 'spotbugsMain'
 }
 
 tasks.withType(JavaExec).configureEach {

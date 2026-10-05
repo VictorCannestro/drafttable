@@ -44,7 +44,7 @@ public class FlexibleColumn implements Column {
     private static final String EXCEPTION_FORMAT_STRING = "Input type of the provided expression must match the Column data type: %s";
 
 
-    public FlexibleColumn(@NonNull String label, @NonNull List<?> values) {
+    public FlexibleColumn(final @NonNull String label, final @NonNull List<?> values) {
         List<?> nonNullValues = copyWithoutNulls(values);
         if (!nonNullValues.isEmpty() && containsMultipleTypes(nonNullValues)) {
             throw new IllegalArgumentException("Values cannot be of mixed type");
@@ -71,7 +71,7 @@ public class FlexibleColumn implements Column {
      * @param values A list of an arbitrary, yet homogeneous type
      * @return A new instance of {@code FlexibleColumn}
      */
-    public static Column from(String label, List<?> values) {
+    public static Column from(final String label, final List<?> values) {
         return new FlexibleColumn(label, values);
     }
 
@@ -124,7 +124,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T valueAt(int n) {
+    public <T> T valueAt(final int n) {
         if (this.isEmpty() || n < 0 || n >= size()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size())");
         }
@@ -147,12 +147,12 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> boolean has(@Nullable T element) {
+    public <T> boolean has(final @Nullable T element) {
         return values.stream().anyMatch(value -> Objects.equals(value, element));
     }
 
     @Override
-    public <T> Column where(@NonNull Matcher<T> matcher) {
+    public <T> Column where(final @NonNull Matcher<T> matcher) {
         return new FlexibleColumn(
                 label(),
                 values.stream().filter(matcher::matches).toList()
@@ -160,7 +160,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column where(@NonNull List<Integer> indices) {
+    public Column where(final @NonNull List<Integer> indices) {
         return new FlexibleColumn(
                 label(),
                 indices.stream().map(values::get).toList()
@@ -169,7 +169,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T, R>  Column where(@NonNull Function<? super T, ? extends R> aspect, @NonNull Matcher<R> matcher) {
+    public <T, R>  Column where(final @NonNull Function<? super T, ? extends R> aspect, final @NonNull Matcher<R> matcher) {
         List<Integer> matchingIndices = IntStream.range(0, size())
                 .filter(idx -> matcher.matches(
                         aspect.apply((T) values.get(idx))
@@ -179,14 +179,14 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column introspect(@NonNull UnaryOperator<Column> action) {
+    public Column introspect(final @NonNull UnaryOperator<Column> action) {
         return action.apply(this);
     }
 
     @Override
-    public Column conditionalAction(@NonNull Predicate<Column> conditional,
-                                    @NonNull UnaryOperator<Column> actionIfTrue,
-                                    @NonNull UnaryOperator<Column> actionIfFalse) {
+    public Column conditionalAction(final @NonNull Predicate<Column> conditional,
+                                    final @NonNull UnaryOperator<Column> actionIfTrue,
+                                    final @NonNull UnaryOperator<Column> actionIfFalse) {
         if (conditional.test(this)) {
             return introspect(actionIfTrue);
         }
@@ -194,7 +194,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column top(int n) {
+    public Column top(final int n) {
         return new FlexibleColumn(
                 label(),
                 values.subList(0, DraftTableHelper.calculateEndpoint(n, size()))
@@ -202,7 +202,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column bottom(int n) {
+    public Column bottom(final int n) {
         return new FlexibleColumn(
                 label(),
                 values.subList(size() - DraftTableHelper.calculateEndpoint(n, size()), size())
@@ -210,7 +210,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column randomDraw(int n) {
+    public Column randomDraw(final int n) {
         return where(
                 ThreadLocalRandom.current()
                         .ints(0, size())
@@ -223,7 +223,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Column orderBy(@NonNull SortingOrderType sortingOrderType) {
+    public <T> Column orderBy(final @NonNull SortingOrderType sortingOrderType) {
         List<T> sortedValues = values();
         Comparator<? super T> comparator = (Comparator<? super T>) Comparator.nullsFirst(Comparator.naturalOrder());
         sortedValues.sort(sortingOrderType.equals(SortingOrderType.ASCENDING)
@@ -234,14 +234,14 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Column orderBy(@NonNull Comparator<T> comparator) {
+    public <T> Column orderBy(final @NonNull Comparator<T> comparator) {
         List<T> sortedValues = values();
         sortedValues.sort(comparator);
         return new FlexibleColumn(label(), sortedValues);
     }
 
     @Override
-    public <T> Column append(@Nullable T element) {
+    public <T> Column append(final @Nullable T element) {
         if (!isEmpty() && !hasNulls() && !isNull(element)) {
             assumeDataTypesMatch(dataType(), element.getClass());
         }
@@ -251,7 +251,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Column append(@NonNull List<T> otherCollection) {
+    public <T> Column append(final @NonNull List<T> otherCollection) {
         if (!isEmpty() && !hasNulls()) {
             otherCollection.forEach(element -> assumeDataTypesMatch(dataType(), element.getClass()));
         }
@@ -261,7 +261,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column append(@NonNull Column otherColumn) {
+    public Column append(final @NonNull Column otherColumn) {
         if (!this.hasNulls() && !otherColumn.isEmpty() && !otherColumn.hasNulls()) {
             assumeDataTypesMatch(dataType(), otherColumn.dataType());
         }
@@ -282,7 +282,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public <T> Column fillNullsWith(@NonNull T fillValue) {
+    public <T> Column fillNullsWith(final @NonNull T fillValue) {
         if (!hasNulls()) {
             return this;
         }
@@ -294,7 +294,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Column apply(@NonNull Consumer<T> consumer) {
+    public <T> Column apply(final @NonNull Consumer<T> consumer) {
         try {
             values.forEach(value -> consumer.accept((T) value));
         } catch (ClassCastException e) {
@@ -309,18 +309,18 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column renameAs(@NonNull String newLabel) {
+    public Column renameAs(final @NonNull String newLabel) {
         return new FlexibleColumn(newLabel, values);
     }
 
     @Override
-    public <T, R> Column transform(@NonNull Function<? super T, ? extends R> function) {
+    public <T, R> Column transform(final @NonNull Function<? super T, ? extends R> function) {
         return transform(label(), function);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T, R> Column transform(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> function) {
+    public <T, R> Column transform(final @NonNull String newLabel, final @NonNull Function<? super T, ? extends R> function) {
         try {
             return new FlexibleColumn(
                     newLabel,
@@ -341,7 +341,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> Optional<T> aggregate(@NonNull BinaryOperator<T> accumulator) {
+    public <T> Optional<T> aggregate(final @NonNull BinaryOperator<T> accumulator) {
         try {
             return ((List<T>) values()).stream().reduce(accumulator);
         } catch (ClassCastException e) {
@@ -351,7 +351,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T aggregate(T identity, @NonNull BinaryOperator<T> accumulator) {
+    public <T> T aggregate(final T identity, final @NonNull BinaryOperator<T> accumulator) {
         try {
             return ((List<T>) values).stream().reduce(identity, accumulator);
         } catch (ClassCastException e) {
@@ -361,9 +361,9 @@ public class FlexibleColumn implements Column {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T, R> R aggregate(R identity,
-                              @NonNull BiFunction<R, ? super T, R> accumulator,
-                              @NonNull BinaryOperator<R> combiner) {
+    public <T, R> R aggregate(final R identity,
+                              final @NonNull BiFunction<R, ? super T, R> accumulator,
+                              final @NonNull BinaryOperator<R> combiner) {
         try {
             return ((List<T>) values).stream().reduce(identity, accumulator, combiner);
         } catch (ClassCastException e) {
