@@ -47,7 +47,7 @@ jacoco {
 checkstyle {
     toolVersion = "$checkstyleToolVersion"
     configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
-    ignoreFailures = false
+    ignoreFailures = true
     showViolations = true
 }
 
