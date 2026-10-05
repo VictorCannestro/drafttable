@@ -9,6 +9,9 @@ import java.io.File;
 import java.util.Iterator;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface DraftTableOutput {
 
     void toCsv(@NonNull File file, @NonNull CsvWritingOptions options);

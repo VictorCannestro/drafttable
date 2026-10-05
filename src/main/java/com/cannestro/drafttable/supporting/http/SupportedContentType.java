@@ -3,6 +3,9 @@ package com.cannestro.drafttable.supporting.http;
 import lombok.AllArgsConstructor;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @AllArgsConstructor
 public enum SupportedContentType {
 

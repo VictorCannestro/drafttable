@@ -15,6 +15,9 @@ import org.slf4j.event.Level;
 import static java.util.Objects.isNull;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @With
 @Builder
 @Accessors(fluent = true)
@@ -32,7 +35,7 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
         return HttpRequestLogFormatter.builder().build();
     }
 
-    public static HttpRequestLogFormatter skipLogging() {
+    public static HttpRequestLogFormatter logNothing() {
         return HttpRequestLogFormatter.builder()
                 .logUri(false)
                 .logPath(false)

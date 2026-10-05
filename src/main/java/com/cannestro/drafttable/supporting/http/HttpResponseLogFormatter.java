@@ -15,6 +15,9 @@ import java.net.http.HttpResponse;
 import static java.util.Objects.isNull;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @With
 @Builder
 @Accessors(fluent = true)
@@ -35,7 +38,7 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
         return HttpResponseLogFormatter.builder().build();
     }
 
-    public static HttpResponseLogFormatter skipLogging() {
+    public static HttpResponseLogFormatter logNothing() {
         return HttpResponseLogFormatter.builder()
                 .logUri(false)
                 .logHeaders(false)

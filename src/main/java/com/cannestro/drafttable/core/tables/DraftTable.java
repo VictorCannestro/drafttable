@@ -77,7 +77,18 @@ public interface DraftTable {
     DraftTable copy();
 
     /**
-     * Converts the current state of the {@code DraftTable} into a collection of {@code Row} objects--order is preserved.
+     * Fetches the data in the {@code DraftTable} at the provided index, if any is present. Will not reflect
+     * {@code Column} metadata if isEmpty() is true. Index queries out of range will return an empty object.
+     *
+     * @param n Index value within [0, rowCount())
+     * @return A {@code Row} object that may or may not be present
+     */
+    Optional<Row> row(int n);
+
+    /**
+     * Converts the current state of the {@code DraftTable} into a mutable collection of {@code Row} objects--order is
+     * preserved. If the {@code DraftTable} contains one or more {@code Column} objects and does not contain data, then
+     * an empty list will be returned.
      *
      * @return A list of {@code Row} objects
      */
@@ -508,11 +519,11 @@ public interface DraftTable {
     }
 
     default DraftTable select(@NonNull Items<String> columns) {
-        return select(columns.paramsArray());
+        return select(columns.paramsArray(String[]::new));
     }
 
     default DraftTable drop(@NonNull Items<String> columnsToDrop) {
-        return drop(columnsToDrop.paramsArray());
+        return drop(columnsToDrop.paramsArray(String[]::new));
     }
 
     /**
@@ -534,7 +545,7 @@ public interface DraftTable {
      * @return A new {@code DraftTable} subset
      */
     default DraftTable dropAllExcept(@NonNull Items<String> columnsToKeep) {
-        return select(columnsToKeep.paramsArray());
+        return select(columnsToKeep.paramsArray(String[]::new));
     }
 
     /**

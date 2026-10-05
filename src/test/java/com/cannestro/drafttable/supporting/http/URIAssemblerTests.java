@@ -1,5 +1,6 @@
 package com.cannestro.drafttable.supporting.http;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -9,41 +10,44 @@ import java.net.URI;
 @Test(groups = {"unit", "component"})
 public class URIAssemblerTests {
 
-    @Test
-    public void passedAlongUriStringEqualsOriginalUriString() {
-        String urlString = "https://raw.githubusercontent.com/VictorCannestro/drafttable/refs/heads/develop/src/test/resources/json/multiple_recipes.json";
-
-        Assert.assertEquals(urlString, URIAssembler.passAlong(URI.create(urlString)).toString());
-    }
 
     @Test
     public void createdUriAssemblerCanNeverEqualPassedUriAssembler() {
-        String uriString = "https://raw.cooking.com/books/cookbook.json?page=0&name=eggplant#recipes";
-        URIAssembler control = URIAssembler.passAlong(URI.create(uriString));
-        URIAssembler assembled = URIAssembler.create()
+        String uriString = "https://raw.cooking.com/books/cookbook.json?page=0&name=eggplant+parmesan#recipes";
+        URI control = URI.create(uriString);
+
+        URIAssembler assembled = URIAssembler.builder()
                 .baseUri("https://raw.cooking.com")
                 .path("/books/cookbook.json")
                 .queryParam("page","0")
-                .queryParam("name", "eggplant")
-                .fragment("recipes");
+                .queryParam("name", "eggplant parmesan")
+                .fragment("recipes")
+                .build();
 
-        Assert.assertNotEquals(control, assembled);
+        Assert.assertNotEquals(assembled.toURI(), control);
+    }
+
+    @Test
+    public void modifyExistingPreservesExplicitPorts() {
+        URI original = URI.create("http://localhost:8080/api?x=1");
+
+        Assert.assertEquals(URIAssembler.modifyExisting(original).build().toURI(), original);
     }
 
     @Test
     public void modifiedUriEqualsOriginalWhereUnchanged() {
-        URI foodUri = URIAssembler.create()
+        URI foodUri = URIAssembler.builder()
                 .baseUri("https://raw.cooking.com")
+                .port(8080)
                 .path("/books/cookbook.json")
                 .queryParam("page","0")
                 .queryParam("name", "eggplant")
                 .fragment("recipes")
-                .toURI();
-
+                .build().toURI();
         URI modifiedFoodUri = URIAssembler.modifyExisting(foodUri)
                 .queryParam("foo", "bah ruh")
                 .fragment("slug")
-                .toURI();
+                .build().toURI();
 
         Assert.assertEquals(foodUri.getScheme(), modifiedFoodUri.getScheme());
         Assert.assertEquals(foodUri.getRawAuthority(), modifiedFoodUri.getRawAuthority());

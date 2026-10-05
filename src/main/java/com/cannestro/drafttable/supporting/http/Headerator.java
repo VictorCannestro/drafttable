@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @Getter
 @Accessors(fluent = true)
 public class Headerator {

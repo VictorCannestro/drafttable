@@ -9,14 +9,17 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 
+/**
+ * @author Victor Cannestro
+ */
 @Slf4j
-public class HttpRequestSender {
+public class HttpExchanger {
 
     private final HttpRequestWrapper requestWrapper;
     private final HttpResponseWrapper responseWrapper;
 
 
-    public HttpRequestSender(@NonNull HttpRequestWrapper requestWrapper, @NonNull HttpResponseWrapper responseWrapper) {
+    public HttpExchanger(@NonNull HttpRequestWrapper requestWrapper, @NonNull HttpResponseWrapper responseWrapper) {
         this.requestWrapper = requestWrapper;
         this.responseWrapper = responseWrapper;
     }
@@ -28,8 +31,7 @@ public class HttpRequestSender {
                 log.atLevel(this.requestWrapper.logFormatter().logLevel())
                    .log(this.requestWrapper.logFormatter().format(httpRequest));
             }
-            HttpResponse<String> response = Failsafe
-                    .with(this.responseWrapper.retryPolicy())
+            HttpResponse<String> response = Failsafe.with(this.responseWrapper.retryPolicy())
                     .compose(this.responseWrapper.timeoutPolicy())
                     .compose(this.responseWrapper.circuitBreakerPolicy())
                     .get(() -> httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString()));

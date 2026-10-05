@@ -8,6 +8,9 @@ import java.net.URI;
 import java.nio.file.Path;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface JsonLoader {
 
     <M extends Mappable> DraftTable at(@NonNull Path path, @NonNull Class<M> schema);

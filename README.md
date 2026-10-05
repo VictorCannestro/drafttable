@@ -1,4 +1,5 @@
 # DraftTable
+*Think Java streams, but for tables, where data pipelines are considered first-class citizens.*
 
 ## Introduction
 **DraftTable** is a pure Java 17+ library loosely inspired by the Python DataFrame API and Java library Tablesaw that 
@@ -40,6 +41,7 @@ FlexibleDraftTable.create().fromCsv().at(inputFilepath)
                  .drop("payRate", "benefitsEligible")
                  .where("State", is(oneOf("NJ", "PA", "NY")))
                  .where("jobName", endsWith("manager"))
+                 .transform("exempt", (String exempt) -> Boolean.parseBoolean(exempt))
                  .where("exempt", is(true))
                  .deriveFrom("hireDate", as("yearsOfService"), (String hireDate) -> Period.between(LocalDate.parse(hireDate), now()).years())
                  .where("yearsOfService", is(greaterThan(10)))

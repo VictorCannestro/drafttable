@@ -7,9 +7,9 @@ import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
 import com.cannestro.drafttable.core.options.StatisticName;
 import com.cannestro.drafttable.core.outbound.DefaultColumnOutput;
 import com.cannestro.drafttable.core.aggregations.FlexibleColumnGrouping;
-import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
+import com.cannestro.drafttable.supporting.utils.DraftTableHelper;
+import com.cannestro.drafttable.supporting.utils.TypeHelper;
 import lombok.*;
-import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -25,8 +25,8 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.assumeDataTypesMatch;
 import static com.cannestro.drafttable.core.options.StatisticName.*;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.containsMultipleTypes;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.copyWithoutNulls;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.containsMultipleTypes;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.copyWithoutNulls;
 import static com.cannestro.drafttable.supporting.utils.NullDetector.hasNullIn;
 import static java.util.Objects.isNull;
 
@@ -34,14 +34,12 @@ import static java.util.Objects.isNull;
 /**
  * @author Victor Cannestro
  */
-@Getter
-@Accessors(fluent = true)
 @EqualsAndHashCode
 public class FlexibleColumn implements Column {
 
-    private String label;
+    private final String label;
     private final List<?> values;
-    @Getter(AccessLevel.PRIVATE) private final JavaType type;
+    private final JavaType type;
 
     private static final String EXCEPTION_FORMAT_STRING = "Input type of the provided expression must match the Column data type: %s";
 
@@ -52,7 +50,7 @@ public class FlexibleColumn implements Column {
             throw new IllegalArgumentException("Values cannot be of mixed type");
         }
         this.label = label;
-        this.values = values;
+        this.values = new ArrayList<>(values);
         if (this.values.isEmpty() || nonNullValues.isEmpty()) {
             this.type = ObjectMapperManager.getInstance().defaultMapper()
                     .getTypeFactory()
@@ -77,52 +75,87 @@ public class FlexibleColumn implements Column {
         return new FlexibleColumn(label, values);
     }
 
+
     @Override
     public Type dataType() {
         return type.getRawClass();
     }
 
     @Override
-    public <T> Supplier<T> firstValue() {
-        if (this.isEmpty()) {
-            throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size()) for size 0");
-        }
-        return () -> (T) values().get(0);
+    @SuppressWarnings("unchecked")
+    public <T> List<T> values() {
+        return (List<T>) new ArrayList<>(values);
     }
 
     @Override
-    public <T> Supplier<T> lastValue() {
+    @SuppressWarnings("unchecked")
+    public <T> T firstValue() {
         if (this.isEmpty()) {
             throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size()) for size 0");
         }
-        return () -> (T) values().get(size() - 1);
+        return (T) values.get(0);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T lastValue() {
+        if (this.isEmpty()) {
+            throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size()) for size 0");
+        }
+        return (T) values.get(size() - 1);
+    }
+
+    @Override
+    public Column deepCopy() {
+        if (TypeHelper.isKnownImmutable(type.getRawClass())) {
+            return new FlexibleColumn(label, values);
+        }
+        try {
+            return new FlexibleColumn(
+                    label,
+                    values.stream()
+                            .map(value -> isNull(value) ? null : ObjectMapperManager.getInstance().defaultMapper().convertValue(value, type))
+                            .toList()
+            );
+        } catch (IllegalArgumentException e) {
+            throw new IllegalStateException(String.format("Internal Object Mapper could not map column of type %s", type), e);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T> T valueAt(int n) {
+        if (this.isEmpty() || n < 0 || n >= size()) {
+            throw new IndexOutOfBoundsException("The index is out of range (index < 0 || index >= size())");
+        }
+        return (T) values.get(n);
     }
 
     @Override
     public boolean isEmpty() {
-        return values().isEmpty();
+        return values.isEmpty();
     }
 
     @Override
     public int size() {
-        return values().size();
+        return values.size();
     }
 
     @Override
     public boolean hasNulls() {
-        return hasNullIn(values());
+        return hasNullIn(values);
     }
 
     @Override
-    public <T> boolean has(@NonNull T element) {
-        return values().stream().anyMatch(value -> value.equals(element));
+    public <T> boolean has(@Nullable T element) {
+        return values.stream().anyMatch(value -> Objects.equals(value, element));
     }
 
     @Override
     public <T> Column where(@NonNull Matcher<T> matcher) {
         return new FlexibleColumn(
                 label(),
-                values().stream().filter(matcher::matches).toList()
+                values.stream().filter(matcher::matches).toList()
         );
     }
 
@@ -130,12 +163,13 @@ public class FlexibleColumn implements Column {
     public Column where(@NonNull List<Integer> indices) {
         return new FlexibleColumn(
                 label(),
-                indices.stream().map(idx -> values().get(idx)).toList()
+                indices.stream().map(values::get).toList()
         );
     }
 
     @Override
-    public <T, R>  Column where(@NonNull Function<T, R> aspect, @NonNull Matcher<R> matcher) {
+    @SuppressWarnings("unchecked")
+    public <T, R>  Column where(@NonNull Function<? super T, ? extends R> aspect, @NonNull Matcher<R> matcher) {
         List<Integer> matchingIndices = IntStream.range(0, size())
                 .filter(idx -> matcher.matches(
                         aspect.apply((T) values.get(idx))
@@ -163,7 +197,7 @@ public class FlexibleColumn implements Column {
     public Column top(int n) {
         return new FlexibleColumn(
                 label(),
-                values().subList(0, DraftTableUtils.calculateEndpoint(n, size()))
+                values.subList(0, DraftTableHelper.calculateEndpoint(n, size()))
         );
     }
 
@@ -171,7 +205,7 @@ public class FlexibleColumn implements Column {
     public Column bottom(int n) {
         return new FlexibleColumn(
                 label(),
-                values().subList(size() - DraftTableUtils.calculateEndpoint(n, size()), size())
+                values.subList(size() - DraftTableHelper.calculateEndpoint(n, size()), size())
         );
     }
 
@@ -181,15 +215,16 @@ public class FlexibleColumn implements Column {
                 ThreadLocalRandom.current()
                         .ints(0, size())
                         .distinct()
-                        .limit(DraftTableUtils.calculateEndpoint(n, size()))
+                        .limit(DraftTableHelper.calculateEndpoint(n, size()))
                         .boxed()
                         .toList()
         );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> Column orderBy(@NonNull SortingOrderType sortingOrderType) {
-        List<T> sortedValues = new ArrayList<>((List<T>) values());
+        List<T> sortedValues = values();
         Comparator<? super T> comparator = (Comparator<? super T>) Comparator.nullsFirst(Comparator.naturalOrder());
         sortedValues.sort(sortingOrderType.equals(SortingOrderType.ASCENDING)
                 ? comparator
@@ -200,7 +235,7 @@ public class FlexibleColumn implements Column {
 
     @Override
     public <T> Column orderBy(@NonNull Comparator<T> comparator) {
-        List<T> sortedValues = new ArrayList<>((List<T>) values());
+        List<T> sortedValues = values();
         sortedValues.sort(comparator);
         return new FlexibleColumn(label(), sortedValues);
     }
@@ -210,7 +245,7 @@ public class FlexibleColumn implements Column {
         if (!isEmpty() && !hasNulls() && !isNull(element)) {
             assumeDataTypesMatch(dataType(), element.getClass());
         }
-        List<T> newValues = (List<T>) new ArrayList<>(values());
+        List<T> newValues = values();
         newValues.add(element);
         return new FlexibleColumn(label(), newValues);
     }
@@ -220,7 +255,7 @@ public class FlexibleColumn implements Column {
         if (!isEmpty() && !hasNulls()) {
             otherCollection.forEach(element -> assumeDataTypesMatch(dataType(), element.getClass()));
         }
-        List<T> newValues = (List<T>) new ArrayList<>(values());
+        List<T> newValues = values();
         newValues.addAll(otherCollection);
         return new FlexibleColumn(label(), newValues);
     }
@@ -230,7 +265,7 @@ public class FlexibleColumn implements Column {
         if (!this.hasNulls() && !otherColumn.isEmpty() && !otherColumn.hasNulls()) {
             assumeDataTypesMatch(dataType(), otherColumn.dataType());
         }
-        List<?> newValues = new ArrayList<>(values());
+        List<?> newValues = values();
         newValues.addAll(otherColumn.values());
         return new FlexibleColumn(label(), newValues);
     }
@@ -242,7 +277,7 @@ public class FlexibleColumn implements Column {
         }
         return new FlexibleColumn(
                 label(),
-                values().stream().filter(Objects::nonNull).toList()
+                values.stream().filter(Objects::nonNull).toList()
         );
     }
 
@@ -253,14 +288,15 @@ public class FlexibleColumn implements Column {
         }
         return new FlexibleColumn(
                 label(),
-                values().stream().map(value -> isNull(value) ? fillValue : value).toList()
+                values.stream().map(value -> isNull(value) ? fillValue : value).toList()
         );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> Column apply(@NonNull Consumer<T> consumer) {
         try {
-            values().forEach(value -> consumer.accept((T) value));
+            values.forEach(value -> consumer.accept((T) value));
         } catch (ClassCastException e) {
             throw new IllegalArgumentException(String.format(EXCEPTION_FORMAT_STRING, dataType()));
         }
@@ -268,22 +304,27 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
-    public Column renameAs(@NonNull String newLabel) {
-        this.label = newLabel;
-        return this;
+    public String label() {
+        return label;
     }
 
     @Override
-    public <T, R> Column transform(@NonNull Function<T, R> function) {
+    public Column renameAs(@NonNull String newLabel) {
+        return new FlexibleColumn(newLabel, values);
+    }
+
+    @Override
+    public <T, R> Column transform(@NonNull Function<? super T, ? extends R> function) {
         return transform(label(), function);
     }
 
     @Override
-    public <T, R> Column transform(@NonNull String newLabel, @NonNull Function<T, R> function) {
+    @SuppressWarnings("unchecked")
+    public <T, R> Column transform(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> function) {
         try {
             return new FlexibleColumn(
                     newLabel,
-                    ((List<T>) values()).stream().map(function).toList()
+                    ((List<T>) values).stream().map(function).toList()
             );
         } catch (ClassCastException e) {
             throw new IllegalArgumentException(String.format(EXCEPTION_FORMAT_STRING, dataType()));
@@ -299,6 +340,7 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> Optional<T> aggregate(@NonNull BinaryOperator<T> accumulator) {
         try {
             return ((List<T>) values()).stream().reduce(accumulator);
@@ -308,20 +350,22 @@ public class FlexibleColumn implements Column {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T aggregate(T identity, @NonNull BinaryOperator<T> accumulator) {
         try {
-            return ((List<T>) values()).stream().reduce(identity, accumulator);
+            return ((List<T>) values).stream().reduce(identity, accumulator);
         } catch (ClassCastException e) {
             throw new IllegalArgumentException(String.format(EXCEPTION_FORMAT_STRING, dataType()));
         }
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T, R> R aggregate(R identity,
                               @NonNull BiFunction<R, ? super T, R> accumulator,
                               @NonNull BinaryOperator<R> combiner) {
         try {
-            return ((List<T>) values()).stream().reduce(identity, accumulator, combiner);
+            return ((List<T>) values).stream().reduce(identity, accumulator, combiner);
         } catch (ClassCastException e) {
             throw new IllegalArgumentException(String.format(EXCEPTION_FORMAT_STRING, dataType()));
         }
@@ -334,11 +378,11 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Map<StatisticName, Number> descriptiveStats() {
-        if (!type().getRawClass().getGenericSuperclass().equals(Number.class)) {
+        if (!Number.class.isAssignableFrom(type.getRawClass())) {
             return Collections.emptyMap();
         }
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
-        values().forEach(value -> descriptiveStatistics.addValue(Double.parseDouble(value.toString())));
+        values.forEach(value -> descriptiveStatistics.addValue(Double.parseDouble(value.toString())));
         return Map.of(
                 N, descriptiveStatistics.getN(),
                 MIN, descriptiveStatistics.getMin(),

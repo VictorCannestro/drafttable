@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.function.Function;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface HttpLoader {
 
     <M extends Mappable> DraftTable getJsonArray(@NonNull Class<M> schema,
@@ -17,7 +20,7 @@ public interface HttpLoader {
                                                  @NonNull HttpResponseWrapper responseWrapper);
 
     <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
-                                             @NonNull Function<A, List<M>> selector,
+                                             @NonNull Function<? super A, List<M>> selector,
                                              @NonNull HttpRequestWrapper requestWrapper,
                                              @NonNull HttpResponseWrapper responseWrapper);
 
@@ -26,7 +29,7 @@ public interface HttpLoader {
     }
     
     default <A, M extends Mappable> DraftTable getAs(@NonNull Class<A> schema,
-                                                     @NonNull Function<A, List<M>> selector,
+                                                     @NonNull Function<? super A, List<M>> selector,
                                                      @NonNull HttpRequestWrapper requestWrapper) {
         return getAs(schema, selector, requestWrapper, HttpResponseWrapper.allDefaults());
     }

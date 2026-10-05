@@ -3,7 +3,7 @@ package com.cannestro.drafttable.supporting.csv;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser;
 import com.cannestro.drafttable.supporting.csv.implementation.CsvDataWriter;
 import com.cannestro.drafttable.supporting.csv.options.CustomizableWritingOptions;
-import com.cannestro.drafttable.supporting.utils.FileUtils;
+import com.cannestro.drafttable.supporting.utils.FileHelper;
 import com.cannestro.drafttable.helper.PayDetails;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -37,7 +37,7 @@ public class CsvDataWriteTest {
 
     @AfterClass(alwaysRun = true)
     public void cleanUp() {
-        FileUtils.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_1.csv"));
+        FileHelper.deleteFileIfPresent(TEST_CSV_DIRECTORY.concat("temp_1.csv"));
     }
 
 }

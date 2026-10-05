@@ -8,6 +8,9 @@ import java.net.URI;
 import java.nio.file.Path;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public interface CsvLoader {
 
     /**

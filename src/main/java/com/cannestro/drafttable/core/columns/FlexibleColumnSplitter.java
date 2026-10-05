@@ -21,7 +21,7 @@ public class FlexibleColumnSplitter implements ColumnSplitter {
     }
 
     @Override
-    public <T, R> FlexibleColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<T, R> aspect) {
+    public <T, R> FlexibleColumnSplitter intoColumn(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> aspect) {
         outputTable = outputTable.add(column.transform(newLabel, aspect));
         return this;
     }

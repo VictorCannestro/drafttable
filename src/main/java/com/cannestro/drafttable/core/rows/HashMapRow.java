@@ -11,7 +11,7 @@ import tools.jackson.core.type.TypeReference;
 
 import java.util.*;
 
-import static com.cannestro.drafttable.supporting.utils.MapUtils.zip;
+import static com.cannestro.drafttable.supporting.utils.MapHelper.zip;
 import static java.util.Objects.isNull;
 
 
@@ -51,6 +51,7 @@ public record HashMapRow(Map<String, ?> map) implements Row {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> T valueOf(@NonNull String columnName) {
         if (isNull(map.get(columnName))) {
             return null;

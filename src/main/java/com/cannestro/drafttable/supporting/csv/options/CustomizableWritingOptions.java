@@ -11,6 +11,7 @@ import static java.util.Objects.isNull;
 
 
 /**
+ * @author Victor Cannestro
  *
  * @param delimiter defaults to {@code ','}
  * @param escapeCharacter defaults to {@code '\n'}

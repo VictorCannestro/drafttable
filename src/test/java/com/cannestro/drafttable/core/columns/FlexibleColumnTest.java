@@ -64,6 +64,39 @@ public class FlexibleColumnTest {
     }
 
     @Test
+    public void identicalContentsDoesNotImplyIdenticalReferenceButItDoesImplyEquality() {
+        Column c1 = new FlexibleColumn("data", asList(1,2,3,4,5));
+        Column c2 = new FlexibleColumn("data", asList(1,2,3,4,5));
+
+        assertNotSame(c1, c2);
+        assertEquals(c1, c2);
+    }
+
+    @Test
+    public void referenceUpdatesAfterOperations() {
+        Column c1 = new FlexibleColumn("data", asList(1,2,3,4,5));
+
+        assertNotSame(c1, c1.where(IntStream.rangeClosed(0, c1.size()-1).boxed().toList()));
+        assertEquals(c1, c1.where(IntStream.rangeClosed(0, c1.size()-1).boxed().toList()));
+    }
+
+    @Test
+    public void modifyingUnderlyingPrimitiveValuesShouldNotAffectTheColumn() {
+        List<Integer> vals = new ArrayList<>(asList(1,2,3,4,5));
+        Column c1 = new FlexibleColumn("data", vals);
+
+        List<Integer> mutant = c1.values();
+        mutant.remove(0);
+
+        vals.add(6);
+
+        assertNotSame(c1.values(), vals);
+        assertEquals(c1.values(), asList(1,2,3,4,5));
+        assertEquals(vals, asList(1,2,3,4,5,6));
+        assertEquals(mutant, asList(2,3,4,5));
+    }
+
+    @Test
     public void sizeMatchesInputData() {
         List<Integer> list = asList(1,2,3,4,5);
         Column c = new FlexibleColumn("data", list);
@@ -91,10 +124,11 @@ public class FlexibleColumnTest {
         list.add(null);
         Column c = new FlexibleColumn("data", list);
         assertTrue(c.hasNulls());
+        assertTrue(c.has(null));
     }
 
-    @Test(expectedExceptions = NullPointerException.class)
-    public void hasElementThrowsExceptionWhenCheckingNull() {
+    @Test
+    public void hasElementCanBeUsedToCheckNull() {
         List<Integer> list = new ArrayList<>();
         list.add(null);
         list.add(null);
@@ -494,7 +528,7 @@ public class FlexibleColumnTest {
                 );
 
         Assert.assertEquals(
-                c.firstValue().get(),
+                c.firstValue(),
                 LocalDate.of(2016, 12, 14)
         );
     }

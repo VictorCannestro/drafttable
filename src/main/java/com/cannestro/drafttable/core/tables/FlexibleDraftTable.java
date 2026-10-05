@@ -12,14 +12,10 @@ import com.cannestro.drafttable.core.options.Items;
 import com.cannestro.drafttable.core.options.SortingOrderType;
 
 import com.cannestro.drafttable.core.outbound.DefaultDraftTableOutput;
-import com.cannestro.drafttable.supporting.utils.ListUtils;
-import com.cannestro.drafttable.supporting.utils.MapUtils;
-import com.cannestro.drafttable.supporting.utils.DraftTableUtils;
-import lombok.AccessLevel;
+import com.cannestro.drafttable.supporting.utils.ListHelper;
+import com.cannestro.drafttable.supporting.utils.DraftTableHelper;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.jspecify.annotations.NonNull;
-import lombok.experimental.Accessors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hamcrest.Matcher;
@@ -32,19 +28,18 @@ import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.*;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.*;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.*;
 import static org.hamcrest.Matchers.*;
 
 
 /**
  * @author Victor Cannestro
  */
-@Accessors(fluent = true)
 @EqualsAndHashCode
 public class FlexibleDraftTable implements DraftTable {
 
-    @Getter(AccessLevel.PRIVATE) private final List<Column> listOfColumns;
-    @Getter private String tableName;
+    private final List<Column> listOfColumns;
+    private String tableName;
 
 
     FlexibleDraftTable(String tableName, List<Column> listOfColumns) {
@@ -75,6 +70,11 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
+    public String tableName() {
+        return tableName;
+    }
+
+    @Override
     public DraftTable nameTable(@NonNull String newTableName) {
         this.tableName = newTableName;
         return this;
@@ -89,7 +89,7 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable rename(@NonNull Items<String> targetColumnNames, @NonNull Items<String> newColumnNames) {
         return create().fromColumns(
                 tableName(),
-                columns().stream()
+                listOfColumns().stream()
                         .map(column -> {
                             if (targetColumnNames.params().contains(column.label())) {
                                 return column.renameAs(newColumnNames.params().get(targetColumnNames.params().indexOf(column.label())));
@@ -111,22 +111,32 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
+    public Optional<Row> row(int n) {
+        if (isEmpty() || n < 0 || n >= rowCount()) {
+            return Optional.empty();
+        }
+        Map<String, ?> map = new HashMap<>();
+        for (Column column: listOfColumns()) {
+            map.put(column.label(), column.valueAt(n));
+        }
+        return Optional.of(new HashMapRow(map));
+    }
+
+    @Override
     public List<Row> rows() {
-        return IntStream.range(0, rowCount())
-                 .mapToObj(rowIndex -> MapUtils.zip(
-                             columns().stream().map(Column::label).toList(),
-                             columns().stream().map(column -> column.values().get(rowIndex)).toList()
-                 ))
-                .map(HashMapRow::new)
-                .map(Row.class::cast)
-                .toList();
+        int length = rowCount();
+        List<Row> rowList = new ArrayList<>(length);
+        for (int i = 0; i < length; i++) {
+            rowList.add(row(i).orElseThrow());
+        }
+        return rowList;
     }
 
     @Override
     public DraftTable copy() {
-        return create().fromRows(
+        return new FlexibleDraftTable(
                 tableName(),
-                rows().stream().map(Row::deepCopy).toList()
+                listOfColumns().stream().map(Column::deepCopy).toList()
         );
     }
 
@@ -193,7 +203,7 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable where(@NonNull String columnName, @NonNull Matcher<?> matcher) {
         assumeColumnExists(columnName, this);
         List<?> columnValues = select(columnName).values();
-        List<Integer> matchingIndices = DraftTableUtils.findMatchingIndices(rowCount(), columnValues::get, matcher);
+        List<Integer> matchingIndices = DraftTableHelper.findMatchingIndices(rowCount(), columnValues::get, matcher);
         return create().fromColumns(
                 tableName(),
                 columns().stream().map(column -> column.where(matchingIndices)).toList()
@@ -205,7 +215,7 @@ public class FlexibleDraftTable implements DraftTable {
         assumeColumnExists(columnName, this);
         List<T> columnValues = select(columnName).values();
         return where(
-                DraftTableUtils.findMatchingIndices(rowCount(), idx -> columnAspect.apply(columnValues.get(idx)), matcher)
+                DraftTableHelper.findMatchingIndices(rowCount(), idx -> columnAspect.apply(columnValues.get(idx)), matcher)
         );
     }
 
@@ -213,7 +223,7 @@ public class FlexibleDraftTable implements DraftTable {
     public <R> DraftTable where(@NonNull Function<Row, R> rowAspect, @NonNull Matcher<R> matcher) {
         List<Row> row = rows();
         return where(
-                DraftTableUtils.findMatchingIndices(rowCount(), idx -> rowAspect.apply(row.get(idx)), matcher)
+                DraftTableHelper.findMatchingIndices(rowCount(), idx -> rowAspect.apply(row.get(idx)), matcher)
         );
     }
 
@@ -271,7 +281,7 @@ public class FlexibleDraftTable implements DraftTable {
                 ThreadLocalRandom.current()
                         .ints(0, rowCount())
                         .distinct()
-                        .limit(DraftTableUtils.calculateEndpoint(nRows, rowCount()))
+                        .limit(DraftTableHelper.calculateEndpoint(nRows, rowCount()))
                         .boxed()
                         .toList()
         );
@@ -366,7 +376,7 @@ public class FlexibleDraftTable implements DraftTable {
         List<Column> updatedListOfColumns = new ArrayList<>(listOfColumns());
         updatedListOfColumns.add(new FlexibleColumn(
                 newColumnName,
-                ListUtils.fillToTargetLength(newColumnValues, rowCount(), fillValue)
+                ListHelper.fillToTargetLength(newColumnValues, rowCount(), fillValue)
         ));
         return new FlexibleDraftTable(tableName(), updatedListOfColumns);
     }
@@ -419,6 +429,7 @@ public class FlexibleDraftTable implements DraftTable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T, R> DraftTable deriveFrom(@NonNull String firstColumnName,
                                         @NonNull String secondColumnName,
                                         @NonNull Item<String> newColumnName,
@@ -455,7 +466,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public <T> DraftTable gatherInto(@NonNull Class<T> aggregate, @NonNull Item<String> aggregateColumnName, @NonNull Items<String> selectColumnNames) {
-        return add(select(selectColumnNames.paramsArray()).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames.paramsArray());
+        return add(select(selectColumnNames.paramsArray(String[]::new)).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames.paramsArray(String[]::new));
     }
 
     @Override
@@ -467,6 +478,11 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+    }
+
+
+    private List<Column> listOfColumns() {
+        return listOfColumns;
     }
 
 }

@@ -6,7 +6,7 @@ import com.cannestro.drafttable.core.inbound.*;
 import com.cannestro.drafttable.core.rows.Mappable;
 import com.cannestro.drafttable.core.rows.Row;
 import com.cannestro.drafttable.core.rows.HashMapRow;
-import com.cannestro.drafttable.supporting.utils.MapUtils;
+import com.cannestro.drafttable.supporting.utils.MapHelper;
 import org.jspecify.annotations.NonNull;
 import org.paumard.streams.StreamsUtils;
 
@@ -18,10 +18,13 @@ import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.as
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniformityOf;
 import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniquenessOf;
 import static com.cannestro.drafttable.core.tables.DraftTable.DEFAULT_TABLE_NAME;
-import static com.cannestro.drafttable.supporting.utils.ListUtils.firstElementOf;
+import static com.cannestro.drafttable.supporting.utils.ListHelper.firstElementOf;
 import static java.util.Collections.emptyList;
 
 
+/**
+ * @author Victor Cannestro
+ */
 public class FlexibleDraftTableCreator implements TableCreator {
 
     @Override
@@ -40,7 +43,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
     }
 
     @Override
-    public <T extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<T> listOfRows) {
+    public <R extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<R> listOfRows) {
         if(listOfRows.isEmpty()) {
             return emptyDraftTable();
         }
@@ -81,7 +84,7 @@ public class FlexibleDraftTableCreator implements TableCreator {
         return fromRows(
                 DEFAULT_TABLE_NAME,
                 table.stream()
-                        .map(rowValues -> MapUtils.zip(columnNames, rowValues))
+                        .map(rowValues -> MapHelper.zip(columnNames, rowValues))
                         .map(HashMapRow::new)
                         .toList()
         );

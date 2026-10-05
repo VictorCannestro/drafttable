@@ -13,9 +13,9 @@ import static java.util.Objects.isNull;
 /**
  * @author Victor Cannestro
  */
-public class ListUtils {
+public class ListHelper {
 
-    private ListUtils() {}
+    private ListHelper() {}
 
     /**
      * Produces a new list padded with the provided fill value. Will throw an exception if the provided list is longer

@@ -11,9 +11,9 @@ import java.util.stream.IntStream;
 /**
  * @author Victor Cannestro
  */
-public class DraftTableUtils {
+public class DraftTableHelper {
 
-    private DraftTableUtils(){}
+    private DraftTableHelper(){}
 
     /**
      * Calculates the allowable slice size. Will return either the desired number of rows

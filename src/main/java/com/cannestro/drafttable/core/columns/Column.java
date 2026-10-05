@@ -48,20 +48,37 @@ public interface Column {
     /**
      * <p><b>Guarantees</b>: The first value within the underlying values of the column, if it exists. </p>
      *
-     * @return The first value of the underlying column data
      * @param <T> Any type
+     * @return The first value of the underlying column data
      * @throws IndexOutOfBoundsException if empty
      */
-    <T> Supplier<T> firstValue();
+    <T> T firstValue();
 
     /**
      * <p><b>Guarantees</b>: The last value within the underlying values of the column, if it exists. </p>
      *
-     * @return The last value of the underlying column data
      * @param <T> Any type
+     * @return The last value of the underlying column data
      * @throws IndexOutOfBoundsException if empty
      */
-    <T> Supplier<T>  lastValue();
+    <T> T lastValue();
+
+    /**
+     * <p><b>Guarantees</b>: The nth value within the underlying values of the column, if it exists. </p>
+     *
+     * @param <T> Any type
+     * @return The nth value of the underlying column data
+     * @throws IndexOutOfBoundsException if n outside range
+     */
+    <T> T valueAt(int n);
+
+    /**
+     * <p> <b>Guarantees</b>: A "deep" copy of the column. Copy depth is not guaranteed beyond 1 layer. For example, a
+     * column of immutable types will be a true deep copy, however, a column of non-immutable types may still be mutable. </p>
+     *
+     * @return A new column
+     */
+    Column deepCopy();
 
     /**
      * <p><b>Guarantees</b>: The cardinality of the column. If the column contains more than Integer.MAX_VALUE values,
@@ -88,9 +105,9 @@ public interface Column {
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine if it contains the provided value. </p>
      *
-     * @return True if and only if the column contains the provided non-null value
+     * @return True if and only if the column contains the provided nullable value
      */
-    <T> boolean has(@NonNull T element);
+    <T> boolean has(@Nullable T element);
 
     /**
      * <p> Can be used to inspect and access the current state of the pipeline inline without using intermediate
@@ -170,7 +187,7 @@ public interface Column {
      * @param <T> The type of the column
      * @param <R> The output type of the aspect's mapping
      */
-    <T, R>  Column where(@NonNull Function<T, R> aspect, @NonNull Matcher<R> matcher);
+    <T, R>  Column where(@NonNull Function<? super T, ? extends R> aspect, @NonNull Matcher<R> matcher);
 
     /**
      * Orders the column data in ascending or descending order as specified. Null values will appear first, followed by
@@ -281,9 +298,9 @@ public interface Column {
      */
     Column renameAs(@NonNull String newLabel);
 
-    <T, R> Column transform(@NonNull Function<T, R> function);
+    <T, R> Column transform(@NonNull Function<? super T, ? extends R> function);
 
-    <T, R> Column transform(@NonNull String newLabel, @NonNull Function<T, R> function);
+    <T, R> Column transform(@NonNull String newLabel, @NonNull Function<? super T, ? extends R> function);
 
     <T> Optional<T> aggregate(@NonNull BinaryOperator<T> accumulator);
 

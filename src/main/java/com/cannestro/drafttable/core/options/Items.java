@@ -1,9 +1,8 @@
 package com.cannestro.drafttable.core.options;
 
-import com.cannestro.drafttable.supporting.utils.ArrayUtils;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.IntFunction;
 
 
 /**
@@ -74,8 +73,8 @@ public record Items<T>(List<T> params) {
         return createOptionsFrom(params);
     }
 
-    public T[] paramsArray() {
-       return ArrayUtils.asArray(params());
+    public T[] paramsArray(IntFunction<T[]> arrayFactory) {
+       return params().toArray(arrayFactory);
     }
 
     @SafeVarargs
