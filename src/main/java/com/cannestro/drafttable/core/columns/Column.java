@@ -67,6 +67,7 @@ public interface Column {
      * <p><b>Guarantees</b>: The nth value within the underlying values of the column, if it exists. </p>
      *
      * @param <T> Any type
+     * @param n Index value
      * @return The nth value of the underlying column data
      * @throws IndexOutOfBoundsException if n outside range
      */
@@ -105,6 +106,7 @@ public interface Column {
     /**
      * <p><b>Guarantees</b>: Queries the current state of the column to determine if it contains the provided value. </p>
      *
+     * @param element A value to supply to the query
      * @return True if and only if the column contains the provided nullable value
      */
     <T> boolean has(@Nullable T element);
@@ -285,6 +287,7 @@ public interface Column {
      *     products().apply(Product::enableBuyOneGetOnePromotion);  // Assuming Product contains the relevant void method
      * }</pre> </p>
      *
+     * @return An instance of {@code Column}. It may be the same reference.
      * @param consumer An operation that accepts a single input argument and returns no result. It may produce side effects.
      * @param <T> Type of the underlying column data
      */

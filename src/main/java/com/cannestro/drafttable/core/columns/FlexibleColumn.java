@@ -113,8 +113,9 @@ public class FlexibleColumn implements Column {
         try {
             return new FlexibleColumn(
                     label,
-                    values.stream()
-                            .map(value -> isNull(value) ? null : ObjectMapperManager.getInstance().defaultMapper().convertValue(value, type))
+                    values.stream().map(value -> isNull(value)
+                                    ? null
+                                    : ObjectMapperManager.getInstance().defaultMapper().convertValue(value, type))
                             .toList()
             );
         } catch (IllegalArgumentException e) {
@@ -381,6 +382,9 @@ public class FlexibleColumn implements Column {
         if (!Number.class.isAssignableFrom(type.getRawClass())) {
             return Collections.emptyMap();
         }
+        final int TWENTY_FIFTH = 25;
+        final int FIFTIETH = 25;
+        final int SEVENTY_FIFTH = 25;
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
         values.forEach(value -> descriptiveStatistics.addValue(Double.parseDouble(value.toString())));
         return Map.of(
@@ -390,9 +394,9 @@ public class FlexibleColumn implements Column {
                 MEAN, descriptiveStatistics.getMean(),
                 STANDARD_DEVIATION, descriptiveStatistics.getStandardDeviation(),
                 VARIANCE, descriptiveStatistics.getVariance(),
-                PERCENTILE_25, descriptiveStatistics.getPercentile(25),
-                PERCENTILE_50, descriptiveStatistics.getPercentile(50),
-                PERCENTILE_75, descriptiveStatistics.getPercentile(75)
+                PERCENTILE_25, descriptiveStatistics.getPercentile(TWENTY_FIFTH),
+                PERCENTILE_50, descriptiveStatistics.getPercentile(FIFTIETH),
+                PERCENTILE_75, descriptiveStatistics.getPercentile(SEVENTY_FIFTH)
         );
     }
 
