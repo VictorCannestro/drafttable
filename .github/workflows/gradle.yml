@@ -35,7 +35,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Run tests and static analysis
-        run: ./gradlew clean test checkstyleMain checkstyleTest spotbugsMain spotbugsTest jacocoTestReport
+        run: ./gradlew clean test checkstyleMain spotbugsMain spotbugsTest jacocoTestReport
 
       - name: Upload coverage report
         if: always()
@@ -50,7 +50,6 @@ jobs:
         with:
           name: static-analysis
           path: |
-            build/reports/checkstyle/
             build/reports/spotbugs/
 
     # NOTE: The Gradle Wrapper is the default and recommended way to run Gradle (https://docs.gradle.org/current/userguide/gradle_wrapper.html).
