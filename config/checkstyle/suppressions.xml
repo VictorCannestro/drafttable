@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Tests: naming and Javadoc rules do not apply; fixture classes are intentionally
+         minimal and test method names are deliberately long sentences. -->
+    <suppress files="[\\/]src[\\/]test[\\/]" checks="MissingJavadocMethod|JavadocMethod|MagicNumber|MethodName|HideUtilityClassConstructor|FinalClass"/>
+
+    <!-- Generated sources -->
+    <suppress files="[\\/]build[\\/]generated_sources[\\/]" checks=".*"/>
+
+    <!-- Pretty-printing output intentionally uses System.out and long format strings. -->
+    <suppress files="DefaultDraftTableOutput\.java|DefaultColumnOutput\.java" checks="MagicNumber"/>
+</suppressions>

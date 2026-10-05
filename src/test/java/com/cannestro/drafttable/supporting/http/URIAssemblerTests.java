@@ -1,10 +1,13 @@
 package com.cannestro.drafttable.supporting.http;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.hamcrest.MatcherAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.net.URI;
+
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.either;
 
 
 @Test(groups = {"unit", "component"})
@@ -25,7 +28,14 @@ public class URIAssemblerTests {
                 .build();
 
         Assert.assertNotEquals(assembled.toURI(), control);
+        Assert.assertTrue(assembled.toString().contains(URIAssembler.QUERY_JOINER));
+        MatcherAssert.assertThat(
+                assembled.toString(),
+                either(containsString("?page=")).or(containsString("?name="))
+        );
+        Assert.assertTrue(assembled.toString().contains(URIAssembler.FRAGMENT_JOINER));
     }
+
 
     @Test
     public void modifyExistingPreservesExplicitPorts() {

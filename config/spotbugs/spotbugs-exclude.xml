@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+
+    <!-- Lombok-generated members. Requires lombok.addLombokGeneratedAnnotation=true
+         in lombok.config, which this project already sets. SpotBugs 4.2+ honours
+         @lombok.Generated automatically, but this is belt-and-braces for the
+         @Builder/@With generated inner classes. -->
+    <Match>
+        <Class name="~.*\$.*Builder"/>
+    </Match>
+
+    <!-- Records: EI_EXPOSE_REP on record accessors is expected and is handled at the
+         API level (Column.values() copies explicitly). Suppress only on records that
+         are immutable value carriers. -->
+    <Match>
+        <Class name="~.*\.(Items|Item|Entry|HttpRequestWrapper|HttpResponseWrapper|ChunkingOptions|Crosstab)"/>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+    </Match>
+
+    <!-- Test sources: fixtures intentionally expose mutable state. -->
+    <Match>
+        <Source name="~.*[\\/]src[\\/]test[\\/].*"/>
+    </Match>
+
+    <!-- Pretty printing writes to stdout by design. -->
+    <Match>
+        <Class name="~.*\.Default(DraftTable|Column)Output"/>
+        <Bug pattern="DM_DEFAULT_ENCODING"/>
+    </Match>
+
+</FindBugsFilter>

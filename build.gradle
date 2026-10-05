@@ -1,10 +1,12 @@
 import com.github.spotbugs.snom.Effort
 import com.github.spotbugs.snom.SpotBugsTask
+import com.github.spotbugs.snom.Confidence
+
 
 plugins {
     id 'java'
-    id 'maven-publish'
     id 'java-library'
+    id 'maven-publish'
     id 'jacoco'
     id 'checkstyle'
     id 'com.github.spotbugs' version "$spotbugsPluginVersion"
@@ -12,93 +14,88 @@ plugins {
 
 group = "$basePackage"
 version = "$version"
-description = "The DraftTable Library"
+description = 'The DraftTable Library'
 
+
+// =============================================================================
+//  Repositories
+// =============================================================================
 repositories {
-    maven {
-        url "https://plugins.gradle.org/m2/"
-    }
+    mavenCentral()
+    gradlePluginPortal()
 }
 
-dependencies {
-    compileOnly("org.projectlombok:lombok:$lombokVersion")
-    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
 
-    implementation("ch.qos.logback:logback-classic:$logbackClassicVersion")
-    implementation("org.hamcrest:hamcrest:$hamcrestVersion")
+// =============================================================================
+//  Dependencies
+//
+//  api vs implementation matters here: this project applies the `java-library`
+//  plugin, so `implementation` dependencies are NOT on a consumer's compile
+//  classpath. Any type that appears in a public signature must be `api` or
+//  downstream code cannot compile against it.
+// =============================================================================
+dependencies {
+
+    // --- Leaks into the public API: must be `api`
+    api("org.hamcrest:hamcrest:$hamcrestVersion")
+    api("dev.failsafe:failsafe:$failsafeVersion")
+    api("tools.jackson.core:jackson-databind:$jacksonDatabindVersion")
+    api("org.slf4j:slf4j-api:$slf4jVersion")
+    api("org.jspecify:jspecify:$jspecifyVersion")
+
+    // --- Internal only: `implementation`
     implementation("org.apache.commons:commons-collections4:$apacheCommonsCollections4Version")
     implementation("commons-io:commons-io:$apacheCommonsIO")
     implementation("org.apache.commons:commons-math3:$apacheCommonsMath")
     implementation("org.paumard:streams-utils:$streamsUtilsVersion")
     implementation("com.opencsv:opencsv:$opencsvVersion")
-    implementation("tools.jackson.core:jackson-databind:$jacksonDatabindVersion")
-    implementation("org.jspecify:jspecify:$jspecifyVersion")
-    implementation("dev.failsafe:failsafe:$failsafeVersion")
 
+    // Otherwise riding in transitively via OpenCSV
+    implementation("org.apache.commons:commons-lang3:$apacheCommonsLang3Version")
+
+    // --- Lombok
+    compileOnly("org.projectlombok:lombok:$lombokVersion")
+    annotationProcessor("org.projectlombok:lombok:$lombokVersion")
     testCompileOnly("org.projectlombok:lombok:$lombokVersion")
     testAnnotationProcessor("org.projectlombok:lombok:$lombokVersion")
+
+    // --- Test
     testImplementation(group: 'org.testng', name: 'testng', version: "$testngVersion")
+
+    // A library should depend on the slf4j API and let the application choose a binding
+    testRuntimeOnly("ch.qos.logback:logback-classic:$logbackClassicVersion")
 }
 
-jacoco {
-    toolVersion = "$jacocoToolVersion"
+
+// =============================================================================
+//  Java toolchain
+// =============================================================================
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+    // Enable once Javadoc is clean under doclint (see javadoc task below).
+    // withJavadocJar()
 }
 
-checkstyle {
-    toolVersion = "$checkstyleToolVersion"
-    configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
-    ignoreFailures = true
-    showViolations = true
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    // Catches the raw-type and unchecked-cast cases that neither Checkstyle nor
+    // SpotBugs sees. Promote to -Werror once the existing warnings are cleared.
+    options.compilerArgs << '-Xlint:all' << '-Xlint:-processing' << '-Xlint:-serial'
 }
 
-tasks.withType(Checkstyle).configureEach {
-    reports {
-        xml.required = true
-        html.required = true
-    }
+tasks.withType(Javadoc).configureEach {
+    options.encoding = 'UTF-8'
+    // Do not fail the build on Javadoc lint while the public API is still moving.
+    // Tighten to 'all' before the first published release.
+    options.addStringOption('Xdoclint:none', '-quiet')
 }
 
-spotbugs {
-    toolVersion = "$spotbugsToolVersion"
-    ignoreFailures = true
-    effort = Effort.DEFAULT
-    showProgress = true
-}
 
-tasks.withType(SpotBugsTask).configureEach {
-    reports {
-        xml.required = true
-        html.required = true
-    }
-}
-
-test {
-    useTestNG() {
-        useDefaultListeners = true
-        outputDirectory = file("$buildRoot/test-output")
-
-        includeGroups 'component'
-        includeGroups 'unit'
-    }
-    finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-    dependsOn test
-    reports {
-        xml.required = true
-        html.required = true
-    }
-}
-
-tasks.named('check') {
-    dependsOn 'checkstyleMain', 'spotbugsMain'
-}
-
-tasks.withType(JavaExec).configureEach {
-    jvmArgs += '--add-opens=java.base/java.time=ALL-UNNAMED'
-}
-
+// =============================================================================
+//  Source sets
+// =============================================================================
 def generatedSrcRoot = "$buildRoot/generated_sources"
 
 sourceSets {
@@ -109,12 +106,182 @@ sourceSets {
     }
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-    withSourcesJar()
+
+// =============================================================================
+//  Tests
+// =============================================================================
+test {
+    useTestNG() {
+        useDefaultListeners = true
+        outputDirectory = file("$buildRoot/test-output")
+        includeGroups 'component'
+        includeGroups 'unit'
+    }
+    // NOTE: tests carrying neither group are silently skipped. That currently
+    // includes FlexibleDraftTablePerformanceTest. Should either tag it or run it in a
+    // dedicated task.
+    finalizedBy jacocoTestReport
 }
 
+tasks.withType(JavaExec).configureEach {
+    jvmArgs += '--add-opens=java.base/java.time=ALL-UNNAMED'
+}
+
+
+// =============================================================================
+//  Checkstyle
+// =============================================================================
+checkstyle {
+    toolVersion = "$checkstyleToolVersion"
+    configFile = file("$rootDir/config/checkstyle/checkstyle.xml")
+    configDirectory = file("$rootDir/config/checkstyle")
+    showViolations = true
+
+    ignoreFailures = false
+    maxWarnings = 250
+}
+
+// Test-source style never blocks a correctness fix.
+tasks.named('checkstyleTest') {
+    ignoreFailures = true
+}
+
+tasks.withType(Checkstyle).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+
+// =============================================================================
+//  SpotBugs
+// =============================================================================
+spotbugs {
+    toolVersion = "$spotbugsToolVersion"
+    effort = Effort.MAX                 // codebase is small - justifies the cost
+    reportLevel = Confidence.valueOf("HIGH")
+    excludeFilter = file("$rootDir/config/spotbugs/spotbugs-exclude.xml")
+    showProgress = true
+    ignoreFailures = false
+}
+
+tasks.named('spotbugsTest') {
+    ignoreFailures = true
+}
+
+tasks.withType(SpotBugsTask).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+
+// =============================================================================
+//  Coverage
+//
+//  BRANCH is the counter that correlates with the adjacent-case defects this
+//  project has actually hit; LINE coverage reads high and means little here.
+//  Both floors are deliberately set below current levels so they ratchet.
+// =============================================================================
+jacoco {
+    toolVersion = "$jacocoToolVersion"
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    violationRules {
+        rule {
+            limit {
+                counter = 'BRANCH'
+                minimum = 0.50
+            }
+        }
+//        rule {
+//            element = 'CLASS'
+//            excludes = ['*.Crosstab', '*Builder', '*.generated.*']
+//            limit {
+//                counter = 'LINE'
+//                minimum = 0.50
+//            }
+//        }
+    }
+}
+
+
+// =============================================================================
+//  Verification aggregate
+// =============================================================================
+tasks.named('check') {
+    dependsOn 'checkstyleMain', 'spotbugsMain', 'jacocoTestCoverageVerification'
+}
+
+
+// =============================================================================
+//  Packaging
+// =============================================================================
 jar {
     enabled = true
+    manifest {
+        attributes(
+                'Implementation-Title': project.description,
+                'Implementation-Version': project.version,
+                'Automatic-Module-Name': "$basePackage"
+        )
+    }
+}
+
+// Byte-for-byte reproducible archives
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+
+// =============================================================================
+//  Publishing
+//
+//  Intentionally minimal while the public API is still moving. The POM metadata
+//  below is what Maven Central requires; wiring the repository + signing is the
+//  remaining step and is deliberately deferred until the API stabilises.
+// =============================================================================
+publishing {
+    publications {
+        library(MavenPublication) {
+            from components.java
+            pom {
+                name = 'DraftTable'
+                description = project.description
+                url = 'https://github.com/VictorCannestro/drafttable'
+                licenses {
+                    license {
+                        name = 'MIT License'
+                        url = 'https://github.com/VictorCannestro/drafttable/blob/master/LICENSE'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'VictorCannestro'
+                        name = 'Victor Cannestro'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/VictorCannestro/drafttable.git'
+                    developerConnection = 'scm:git:ssh://github.com/VictorCannestro/drafttable.git'
+                    url = 'https://github.com/VictorCannestro/drafttable'
+                }
+            }
+        }
+    }
+    // Local only for now. Add the Central repository + signing when ready to release.
+    // repositories { maven { url = ...; credentials { ... } } }
 }

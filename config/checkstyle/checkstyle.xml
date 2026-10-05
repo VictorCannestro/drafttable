@@ -3,21 +3,141 @@
         "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
         "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
+<!--
+  DraftTable Checkstyle configuration.
+
+  Design goals:
+    1. Every rule here is ENFORCEABLE (ignoreFailures=false). Nothing advisory.
+    2. Rules are chosen to catch defects observed in this codebase, not to impose style.
+    3. Deliberately EXCLUDED: FinalLocalVariable, FinalParameters. They fire on nearly
+       every method in a stream-heavy, lambda-heavy codebase and were the source of the
+       "checkstyle noise" that forced ignoreFailures=true.
+-->
 <module name="Checker">
-    <module name="LineLength">
-        <property name="max" value="120"/>
+
+    <property name="severity" value="error"/>
+    <property name="fileExtensions" value="java"/>
+
+    <!-- Suppressions by path (tests, generated sources) -->
+    <module name="SuppressionFilter">
+        <property name="file" value="${config_loc}/suppressions.xml"/>
+        <property name="optional" value="true"/>
     </module>
 
+    <!-- Honour @SuppressWarnings("checkstyle:RuleName") -->
+    <module name="SuppressWarningsFilter"/>
+
+    <module name="LineLength">
+        <!-- p95 of this codebase is 107; DbC Javadoc blocks run long. 140 avoids
+             reformatting the contract documentation, which is an asset. -->
+        <property name="max" value="140"/>
+        <property name="ignorePattern" value="^(package|import) .*|^\s*\*\s*https?://"/>
+    </module>
+
+    <module name="NewlineAtEndOfFile"/>
+    <module name="FileTabCharacter"/>
+
     <module name="TreeWalker">
-        <module name="NeedBraces"/>
-        <module name="FinalLocalVariable"/>
-        <module name="FinalParameters"/>
-        <module name="MagicNumber">
-            <property name="ignoreNumbers" value="-1, 0, 1"/>
+
+        <module name="SuppressWarningsHolder"/>
+        <!-- Allow targeted opt-outs: // CHECKSTYLE:OFF RuleName reason -->
+        <module name="SuppressionCommentFilter">
+            <property name="offCommentFormat" value="CHECKSTYLE:OFF (\w+) (.*)"/>
+            <property name="onCommentFormat" value="CHECKSTYLE:ON (\w+)"/>
+            <property name="checkFormat" value="$1"/>
         </module>
+
+        <!-- ================================================================
+             CORRECTNESS — these catch real defects, not style
+             ================================================================ -->
+
+        <!-- Grouping/aggregation in this library depends on hash-key eligibility.
+             A value type with equals() but no hashCode() silently produces duplicate
+             groups (see FlexibleColumnGroupingTest "Produces duplicates!"). -->
+        <module name="EqualsHashCode"/>
+        <module name="CovariantEquals"/>
+
+        <module name="StringLiteralEquality"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="FallThrough"/>
+        <module name="MissingSwitchDefault"/>
+        <module name="DefaultComesLast"/>
+        <module name="NoFinalizer"/>
+        <module name="EqualsAvoidNull"/>
+        <module name="OneStatementPerLine"/>
+        <module name="UpperEll"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="ModifierOrder"/>
+
+        <!-- Supports the project's existing exception-mapping discipline
+             (caller-fault vs internal-fault). Blanket catches erase it. -->
+        <module name="IllegalCatch">
+            <property name="illegalClassNames"
+                      value="java.lang.Exception, java.lang.Throwable, java.lang.RuntimeException"/>
+        </module>
+        <module name="IllegalThrows"/>
+        <module name="MutableException"/>
+
+        <!-- The project already does this by hand (TypeHelper, NetHelper, ListHelper,
+             DraftTableAssumptions...). Enforce it so it stays true. -->
+        <module name="HideUtilityClassConstructor"/>
+        <module name="FinalClass"/>
+
+        <!-- Deliberate ignored-exception blocks are fine when named and commented.
+             Matches the existing `catch (NoSuchElementException ignored)` pattern. -->
+        <module name="EmptyCatchBlock">
+            <property name="exceptionVariableName" value="ignored|expected"/>
+            <property name="commentFormat" value=".*"/>
+        </module>
+
+        <!-- ================================================================
+             HYGIENE — cheap, zero false positives
+             ================================================================ -->
+
+        <!-- Would have caught the stray `com.fasterxml.jackson.annotation.JsonTypeInfo`
+             import (Jackson 2) added to URIAssemblerTests in a Jackson 3 project. -->
+        <module name="UnusedImports">
+            <property name="processJavadoc" value="true"/>
+        </module>
+        <module name="RedundantImport"/>
+        <module name="UnusedLocalVariable"/>
+        <module name="NeedBraces"/>
+
+        <module name="MagicNumber">
+            <property name="ignoreNumbers" value="-1, 0, 1, 2"/>
+            <property name="ignoreAnnotation" value="true"/>
+            <property name="ignoreFieldDeclaration" value="true"/>
+        </module>
+
+        <!-- ================================================================
+             NAMING — already consistent in this codebase; locks it in
+             ================================================================ -->
+        <module name="TypeName"/>
         <module name="MethodName"/>
         <module name="ParameterName"/>
         <module name="LocalVariableName"/>
-        <module name="TypeName"/>
+        <module name="MemberName"/>
+        <module name="StaticVariableName"/>
+        <module name="ConstantName"/>
+        <module name="PackageName"/>
+
+        <!-- ================================================================
+             PUBLIC API DOCUMENTATION
+             The Requires:/Guarantees: convention is a genuine asset. This keeps
+             new public surface from skipping it. Overrides are exempt.
+             ================================================================ -->
+        <module name="MissingJavadocMethod">
+            <property name="scope" value="public"/>
+            <property name="allowedAnnotations" value="Override"/>
+            <property name="allowMissingPropertyJavadoc" value="true"/>
+            <property name="tokens" value="METHOD_DEF"/>
+        </module>
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="public"/>
+            <property name="validateThrows" value="false"/>
+        </module>
+        <module name="NonEmptyAtclauseDescription"/>
+
     </module>
 </module>
