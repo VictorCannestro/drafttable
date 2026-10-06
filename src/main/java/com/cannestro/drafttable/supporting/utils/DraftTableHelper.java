@@ -11,7 +11,7 @@ import java.util.stream.IntStream;
 /**
  * @author Victor Cannestro
  */
-public class DraftTableHelper {
+public final class DraftTableHelper {
 
     private DraftTableHelper(){}
 

@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @author Victor Cannestro
  */
-public class NullDetector {
+public final class NullDetector {
 
     private NullDetector() {}
 

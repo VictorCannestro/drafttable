@@ -13,7 +13,7 @@ import static java.util.Objects.isNull;
 /**
  * @author Victor Cannestro
  */
-public class ListHelper {
+public final class ListHelper {
 
     private ListHelper() {}
 

@@ -51,33 +51,44 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
                                       @Nullable Boolean logQueryParams,
                                       @Nullable Boolean logFragment,
                                       @Nullable Boolean logHeaders) {
-        if (!isNull(logLevel))
-            this.logLevel =  logLevel;
-        if (!isNull(logUri))
-            this.logUri =  logUri;
-        if (!isNull(logPath))
+        if (!isNull(logLevel)) {
+            this.logLevel = logLevel;
+        }
+        if (!isNull(logUri)) {
+            this.logUri = logUri;
+        }
+        if (!isNull(logPath)) {
             this.logPath = logPath;
-        if (!isNull(logQueryParams))
+        }
+        if (!isNull(logQueryParams)) {
             this.logQueryParams = logQueryParams;
-        if (!isNull(logFragment))
+        }
+        if (!isNull(logFragment)) {
             this.logFragment = logFragment;
-        if (!isNull(logHeaders))
+        }
+        if (!isNull(logHeaders)) {
             this.logHeaders = logHeaders;
+        }
     }
 
     @Override
     public String format(@NonNull HttpRequest request) {
         StringBuilder stringBuilder = new StringBuilder("Request sent.\n").append(String.format("Request method: %s%n", request.method()));
-        if (this.logUri)
+        if (this.logUri) {
             stringBuilder.append(String.format("Request URI:    %s%n", request.uri()));
-        if (this.logPath)
+        }
+        if (this.logPath) {
             stringBuilder.append(String.format("Path params:    %s%n", request.uri().getPath()));
-        if (this.logQueryParams)
+        }
+        if (this.logQueryParams) {
             stringBuilder.append(String.format("Query params:   %s%n", request.uri().getQuery()));
-        if (this.logFragment)
+        }
+        if (this.logFragment) {
             stringBuilder.append(String.format("Fragment:       %s%n", request.uri().getFragment()));
-        if (this.logHeaders)
+        }
+        if (this.logHeaders) {
             stringBuilder.append(String.format("Headers:        %s", redactBlacklistedHeaders(request.headers().map())));
+        }
         return stringBuilder.toString();
     }
 

@@ -12,7 +12,7 @@ import static java.util.Objects.isNull;
 /**
  * @author Victor Cannestro
  */
-public class StringHelper {
+public final class StringHelper {
 
     private StringHelper(){}
 

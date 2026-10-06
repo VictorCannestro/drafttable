@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * @author Victor Cannestro
  */
-public class DraftTableAssumptions {
+public final class DraftTableAssumptions {
 
     private DraftTableAssumptions() {}
 
@@ -55,7 +55,8 @@ public class DraftTableAssumptions {
         long distinctKeyLists =  listOfRows.stream().map(Row::keys).distinct().count();
         if (1 != distinctKeyLists) {
             throw new IllegalArgumentException(String.format(
-                    "Assumption broken - The provided collection of rows must all use the same key set, but contained %s distinct key sets.",
+                    "Assumption broken - The provided collection of rows must all use the same key set, " +
+                                        "but contained %s distinct key sets.",
                     distinctKeyLists
             ));
         }

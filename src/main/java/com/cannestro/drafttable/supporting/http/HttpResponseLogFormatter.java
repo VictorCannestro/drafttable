@@ -52,29 +52,38 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
                                        @Nullable Boolean logHeaders,
                                        @Nullable Boolean logStatusCode,
                                        @Nullable Boolean logBody) {
-        if (!isNull(logLevel))
-            this.logLevel =  logLevel;
-        if (!isNull(logUri))
-            this.logUri =  logUri;
-        if (!isNull(logHeaders))
+        if (!isNull(logLevel)) {
+            this.logLevel = logLevel;
+        }
+        if (!isNull(logUri)) {
+            this.logUri = logUri;
+        }
+        if (!isNull(logHeaders)) {
             this.logHeaders = logHeaders;
-        if (!isNull(logStatusCode))
+        }
+        if (!isNull(logStatusCode)) {
             this.logStatusCode = logStatusCode;
-        if (!isNull(logBody))
+        }
+        if (!isNull(logBody)) {
             this.logBody = logBody;
+        }
     }
 
     @Override
     public String format(@NonNull HttpResponse<String> response) {
         StringBuilder stringBuilder = new StringBuilder("Response received.\n").append(String.format("Request method:   %s%n", response.request().method()));
-        if (this.logUri)
+        if (this.logUri) {
             stringBuilder.append(String.format("Request URI:      %s%n", response.request().uri()));
-        if (this.logHeaders)
+        }
+        if (this.logHeaders) {
             stringBuilder.append(String.format("Response headers: %s%n", redactBlacklistedHeaders(response.headers().map())));
-        if (this.logStatusCode)
+        }
+        if (this.logStatusCode) {
             stringBuilder.append(String.format("Response status:  %d%n", response.statusCode()));
-        if (this.logBody)
+        }
+        if (this.logBody) {
             stringBuilder.append(String.format("Response body:    %s", response.body()));
+        }
         return stringBuilder.toString();
     }
 

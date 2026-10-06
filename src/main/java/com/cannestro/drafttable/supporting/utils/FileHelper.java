@@ -26,7 +26,7 @@ import static org.apache.commons.io.FileUtils.copyURLToFile;
  * @author Victor Cannestro
  */
 @Slf4j
-public class FileHelper {
+public final class FileHelper {
 
     private FileHelper() {}
 
@@ -55,10 +55,11 @@ public class FileHelper {
     }
 
     public static File copyToTempDirectory(@NonNull URL fileUrl) {
+        final int defaultInMins = 10;
         return copyToTempDirectory(
                 fileUrl,
-                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(10),
-                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(10)
+                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(defaultInMins),
+                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(defaultInMins)
         );
     }
 

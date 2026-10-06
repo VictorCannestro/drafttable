@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author Victor Cannestro
  */
-public class JsonHelper {
+public final class JsonHelper {
 
     private JsonHelper() {}
 

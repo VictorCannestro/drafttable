@@ -18,7 +18,7 @@ import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeSi
 /**
  * @author Victor Cannestro
  */
-public class MapHelper {
+public final class MapHelper {
 
     private MapHelper() {}
 

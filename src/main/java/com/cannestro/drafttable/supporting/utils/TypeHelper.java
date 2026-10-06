@@ -9,7 +9,7 @@ import java.time.*;
 import java.util.*;
 
 
-public class TypeHelper {
+public final class TypeHelper {
 
     public static final Set<Class<?>> KNOWN_IMMUTABLE_TYPES = Set.of(
             BigDecimal.class,

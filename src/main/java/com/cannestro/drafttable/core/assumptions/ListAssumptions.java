@@ -11,7 +11,7 @@ import java.util.Set;
 /**
  * @author Victor Cannestro
  */
-public class ListAssumptions {
+public final class ListAssumptions {
 
     private ListAssumptions() {}
 
