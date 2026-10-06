@@ -31,23 +31,23 @@ public final class NetHelper {
         }
     }
 
-    public static URL url(@NonNull String fileUrl) {
-        return url(URI.create(fileUrl));
+    public static URL url(@NonNull String uriString) {
+        return url(URI.create(uriString));
     }
 
-    public static <T> boolean is5xx(HttpResponse<T> response) {
+    public static <T> boolean is5xx(@NonNull HttpResponse<T> response) {
         return statusCodeInRange(EXACTLY_500, EXACTLY_600, response);
     }
 
-    public static <T> boolean is4xx(HttpResponse<T> response) {
+    public static <T> boolean is4xx(@NonNull HttpResponse<T> response) {
         return statusCodeInRange(EXACTLY_400, EXACTLY_500, response);
     }
 
-    public static <T> boolean isRetryable4xx(HttpResponse<T> response) {
+    public static <T> boolean isRetryable4xx(@NonNull HttpResponse<T> response) {
         return RETRYABLE_CLIENT_STATUS_CODES.contains(response.statusCode());
     }
 
-    public static <T> boolean isNonRetryable4xx(HttpResponse<T> response) {
+    public static <T> boolean isNonRetryable4xx(@NonNull HttpResponse<T> response) {
         return is4xx(response) && !RETRYABLE_CLIENT_STATUS_CODES.contains(response.statusCode());
     }
 

@@ -19,8 +19,9 @@ public interface JsonLoader {
      * <p><b>Guarantees</b>: A new {@code DraftTable} instance will be created. Columns names will be mapped
      *                       to the root level JSON fields. It may be empty. </p>
      *
-     * @param path A valid path to the CSV resource, e.g., {@code "desktop/data.json"}
+     * @param path A valid path to the JSON resource, e.g., {@code "desktop/data.json"}
      * @param schema Constitutes type and name expectations
+     * @param <M> Any {@code Mappable} type
      * @return A new {@code DraftTable} instance with typed data
      */
     <M extends Mappable> DraftTable at(@NonNull Path path, @NonNull Class<M> schema);
@@ -31,8 +32,9 @@ public interface JsonLoader {
      * <p><b>Guarantees</b>: A new {@code DraftTable} instance will be created. Columns names will be mapped
      *                       to the root level JSON fields. It may be empty. </p>
      *
-     * @param uri A valid URI to the CSV resource, e.g., {@code "http://foo.com/bar/data.json"}
+     * @param uri A valid URI to the JSON resource, e.g., {@code "http://foo.com/bar/data.json"}
      * @param schema Constitutes type and name expectations
+     * @param <M> Any {@code Mappable} type
      * @return A new {@code DraftTable} instance with typed data
      */
     <M extends Mappable> DraftTable at(@NonNull URI uri, @NonNull Class<M> schema);

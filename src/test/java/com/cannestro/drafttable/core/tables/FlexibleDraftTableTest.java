@@ -91,6 +91,23 @@ public class FlexibleDraftTableTest {
     }
 
     @Test
+    public void whenCreatingFromRowsTheRowsMustHaveEquivalentKeySetsRegardlessOfOrder() {
+        DraftTable table = FlexibleDraftTable.create().fromRows(List.of(
+                new HashMapRow(Map.of("x", 1, "#", 2, "1z", 3)),
+                new HashMapRow(Map.of("1z", 1, "#", 2, "x", 3))
+        ));
+        assertThat(table.columnNames(), containsInAnyOrder("x", "#", "1z"));
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void whenCreatingFromRowsTheRowsMustHaveEquivalentKeySets() {
+        FlexibleDraftTable.create().fromRows(List.of(
+                new HashMapRow(Map.of("x", 1, "#", 2, "1z", 3)),
+                new HashMapRow(Map.of("x", 1, "#", 2, "z", 3))
+        ));
+    }
+
+    @Test
     public void fromEmptyRowsReturnsEmptyDraftTable() {
         Assert.assertEquals(
                 FlexibleDraftTable.create().fromRows(Collections.emptyList()),

@@ -60,8 +60,8 @@ public record HashMapRow(Map<String, ?> map) implements Row {
     }
 
     @Override
-    public List<String> keys() {
-        return new ArrayList<>(map.keySet());
+    public Set<String> keys() {
+        return map.keySet();
     }
 
     @Override

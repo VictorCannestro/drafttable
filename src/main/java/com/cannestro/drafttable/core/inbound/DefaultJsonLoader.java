@@ -35,6 +35,18 @@ public class DefaultJsonLoader implements JsonLoader {
         return draftTable;
     }
 
+    /**
+     * <p><b>Requires</b>: The File must exist and point to an accessible, well formed JSON resource. A schema class
+     * representing the type and field name expectations of the JSON must be provided. </p>
+     * <p><b>Guarantees</b>: A new {@code DraftTable} instance will be created. Columns names will be mapped
+     *                       to the root level JSON fields. It may be empty. </p>
+     *
+     * @param file A valid File representing the JSON resource
+     * @param schema Constitutes type and name expectations
+     * @param mapper User supplied object mapper
+     * @return A new {@code DraftTable} instance with typed data
+     * @param <M> Any {@code Mappable} type
+     */
     public <M extends Mappable> DraftTable load(@NonNull File file,
                                                 @NonNull Class<M> schema,
                                                 @NonNull ObjectMapper mapper) {
@@ -44,9 +56,17 @@ public class DefaultJsonLoader implements JsonLoader {
                     mapper.readValue(file, mapper.getTypeFactory().constructCollectionType(List.class, schema))
             );
         } catch (DatabindException databindException) {
-            throw new IllegalArgumentException("The input JSON structure does not match structure expected for result type (or has other mismatch).", databindException);
+            throw new IllegalArgumentException(
+                    "The input JSON structure does not match structure expected for result type (or has other mismatch).",
+                    databindException
+            );
         } catch (JacksonIOException ioException) {
-            throw new IllegalArgumentException("A low-level I/ O problem (unexpected end-of-input, network error) occurred (passed through as-is without additional wrapping -- note that this is one case where DeserializationFeature. WRAP_EXCEPTIONS does NOT result in wrapping of exception even if enabled).", ioException);
+            throw new IllegalArgumentException("""
+                    A low-level I/ O problem (unexpected end-of-input, network error) occurred (passed through as-is 
+                    without additional wrapping -- note that this is one case where DeserializationFeature. 
+                    WRAP_EXCEPTIONS does NOT result in wrapping of exception even if enabled).""",
+                    ioException
+            );
         }
     }
 

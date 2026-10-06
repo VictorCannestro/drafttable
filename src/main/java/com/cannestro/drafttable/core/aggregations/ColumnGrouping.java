@@ -98,6 +98,7 @@ public interface ColumnGrouping {
      * <br>
      * <p> Null values are handled, and will appear in the null count, if present. </p>
      *
+     * @param orderType Specifies ascending or descending order
      * @return A new {@code DraftTable}
      */
     default DraftTable byValueCounts(@NonNull SortingOrderType orderType) {

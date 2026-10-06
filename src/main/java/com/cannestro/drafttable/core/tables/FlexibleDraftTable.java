@@ -28,6 +28,7 @@ import java.util.function.*;
 import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.core.assumptions.DraftTableAssumptions.*;
+import static com.cannestro.drafttable.core.assumptions.ListAssumptions.assumeUniquenessOf;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.*;
 import static org.hamcrest.Matchers.*;
 
@@ -192,6 +193,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public DraftTable where(final @NonNull List<Integer> indices) {
+        assumeUniquenessOf(indices);
         assumeIndicesBoundedByRowCount(indices, this);
         return create().fromColumns(
                 tableName(),

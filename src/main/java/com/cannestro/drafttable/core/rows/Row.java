@@ -2,8 +2,8 @@ package com.cannestro.drafttable.core.rows;
 
 import org.jspecify.annotations.NonNull;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -45,7 +45,7 @@ public interface Row {
      *
      * @return The value associated with the provided key
      */
-    List<String> keys();
+    Set<String> keys();
 
     /**
      * <p> <b>Guarantees</b>: The map containing every key-value pairing associated with contents of the {@code Row} is

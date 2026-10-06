@@ -27,7 +27,9 @@ public final class ListHelper {
      * @return A new list of target length, padded with the provided fill value if necessary
      * @param <T> Any type
      */
-    public static <T> List<T> fillToTargetLength(@NonNull List<@Nullable T> list, int targetLength, @Nullable T fillValue) {
+    public static <T> List<T> fillToTargetLength(@NonNull List<@Nullable T> list,
+                                                 int targetLength,
+                                                 @Nullable T fillValue) {
         if (list.isEmpty()) {
             return Collections.nCopies(targetLength, fillValue);
         }
@@ -44,10 +46,30 @@ public final class ListHelper {
         return paddedList;
     }
 
+    /**
+     * <p> <b>Requires</b>: The list reference must not be null </p>
+     * <p> <b>Guarantees</b>: An answer to the question "Does this list contain elements of multiple types?". An empty
+     * list will return false. </p>
+     *
+     * @param list Any list
+     * @return true or false
+     * @param <T> Any object type
+     */
     public static <T> boolean containsMultipleTypes(@NonNull List<T> list) {
+        if (list.isEmpty()) {
+            return false;
+        }
         return 1L != list.stream().map(Object::getClass).distinct().count();
     }
 
+    /**
+     * <p> <b>Requires</b>: The list reference must not be null </p>
+     * <p> <b>Guarantees</b>: A copy of the list in which all nulls are filtered out </p>
+     *
+     * @param list A list containing objects of type T
+     * @return A new list
+     * @param <T> Any object type
+     */
     public static <T> List<@NonNull T> copyWithoutNulls(@NonNull List<@Nullable T> list) {
         return list.stream().filter(value -> !isNull(value)).toList();
     }
