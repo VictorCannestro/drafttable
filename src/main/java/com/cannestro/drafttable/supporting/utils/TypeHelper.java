@@ -43,8 +43,19 @@ public final class TypeHelper {
     private TypeHelper() {}
 
 
+    /**
+     * <p> <b>Requires</b>: The input type must not be null </p>
+     * <p> <b>Guarantees</b>: True if {@code type} is a known immutable representation or value-based class with respect
+     * to {@code TypeHelper} as a source of truth, and false otherwise. Makes no guarantee on being a comprehensive
+     * authority across internal and external Java libraries. See implementation for details. </p>
+     *
+     * @param type Any type
+     * @return true or false
+     * @apiNote Value based classes outside select core Java libraries, such as Lombok generated {@code @Value} classes, are
+     * not considered "known". A heuristic approach is taken to cast a wide net over commonly used types.
+     */
     public static boolean isKnownImmutable(@NonNull Class<?> type) {
-        return isKnownImmutable(type, new HashSet<>());
+        return isKnownImmutableImplementation(type, new HashSet<>());
     }
 
     /**
@@ -55,21 +66,21 @@ public final class TypeHelper {
      * @param inProgress grey set for DFS
      * @return Whether type is a known immutable
      */
-    static boolean isKnownImmutable(@NonNull Class<?> type, Set<Class<?>> inProgress) {
+    static boolean isKnownImmutableImplementation(@NonNull Class<?> type, Set<Class<?>> inProgress) {
         if (!type.isRecord()) {
-            return isBasicImmutable(type);
+            return isEffectivelyValueBased(type);
         }
         if (!inProgress.add(type)) {
             return false; // Was already grey -> Back edge = Cycle found
         }
         try {
-            return Arrays.stream(type.getRecordComponents()).allMatch(component -> isKnownImmutable(component.getType(), inProgress));
+            return Arrays.stream(type.getRecordComponents()).allMatch(component -> isKnownImmutableImplementation(component.getType(), inProgress));
         } finally {
             inProgress.remove(type); // Repaints a node black
         }
     }
 
-    static boolean isBasicImmutable(@NonNull Class<?> type) {
+    static boolean isEffectivelyValueBased(@NonNull Class<?> type) {
         if (type.isInterface()) {
             return false;
         }
