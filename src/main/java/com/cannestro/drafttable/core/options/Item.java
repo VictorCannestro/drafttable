@@ -1,13 +1,16 @@
 package com.cannestro.drafttable.core.options;
 
 import lombok.EqualsAndHashCode;
+import org.jspecify.annotations.Nullable;
 
 
 /**
+ * Wrapper class API used to simulate named parameters.
+ *
  * @author Victor Cannestro
  */
 @EqualsAndHashCode
-public class Item<T> {
+public final class Item<T> {
 
     private final T value;
 
@@ -16,15 +19,34 @@ public class Item<T> {
         this.value = value;
     }
 
-    public T value() {
+    /**
+     * Unwraps the underlying nullable value.
+     *
+     * @return The underlying value
+     */
+    public @Nullable T value() {
         return this.value;
     }
 
-    public static <T> Item<T> as(T value) {
+    /**
+     * Wrapper method to store a nullable value.
+     *
+     * @param value The value to be wrapped
+     * @return A new {@code Item}
+     * @param <T> Any type
+     */
+    public static <T> Item<T> as(@Nullable T value) {
         return new Item<>(value);
     }
 
-    public static <T> Item<T> into(T value) {
+    /**
+     * Wrapper method to store a nullable value.
+     *
+     * @param value The value to be wrapped
+     * @return A new {@code Item}
+     * @param <T> Any type
+     */
+    public static <T> Item<T> into(@Nullable T value) {
         return new Item<>(value);
     }
 

@@ -71,7 +71,8 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
 
     @Override
     public String format(@NonNull HttpResponse<String> response) {
-        StringBuilder stringBuilder = new StringBuilder("Response received.\n").append(String.format("Request method:   %s%n", response.request().method()));
+        StringBuilder stringBuilder = new StringBuilder("Response received.\n")
+                .append(String.format("Request method:   %s%n", response.request().method()));
         if (this.logUri) {
             stringBuilder.append(String.format("Request URI:      %s%n", response.request().uri()));
         }

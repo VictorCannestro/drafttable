@@ -311,7 +311,9 @@ public class FlexibleDraftTable implements DraftTable {
     public DraftTable orderBy(final @NonNull Items<String> columnNames, final @NonNull SortingOrderType sortingOrderType) {
         columnNames.params().forEach(columnName -> assumeColumnExists(columnName, this));
         List<Row> sortedRows = new ArrayList<>(rows());
-        Comparator<Row> comparator = Comparator.nullsFirst(Comparator.comparing((Row row) -> row.valueOf(firstElementOf(columnNames.params()))));
+        Comparator<Row> comparator = Comparator.nullsFirst(
+                Comparator.comparing((Row row) -> row.valueOf(firstElementOf(columnNames.params())))
+        );
         for (int i = 1; i < columnNames.params().size(); i++) {
             int finalI = i;
             comparator = Comparator.nullsFirst(comparator.thenComparing(
@@ -472,7 +474,10 @@ public class FlexibleDraftTable implements DraftTable {
     public <T> DraftTable gatherInto(final @NonNull Class<T> aggregate,
                                      final @NonNull Item<String> aggregateColumnName,
                                      final @NonNull Items<String> selectColumnNames) {
-        return add(select(selectColumnNames.paramsArray(String[]::new)).gatherInto(aggregate, aggregateColumnName), null).drop(selectColumnNames.paramsArray(String[]::new));
+        return add(
+                select(selectColumnNames.paramsArray(String[]::new)).gatherInto(aggregate, aggregateColumnName),
+                null
+        ).drop(selectColumnNames.paramsArray(String[]::new));
     }
 
     @Override

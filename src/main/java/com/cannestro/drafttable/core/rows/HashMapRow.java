@@ -27,10 +27,29 @@ public record HashMapRow(Map<String, ?> map) implements Row {
         }
     }
 
-    public static HashMapRow from(@NonNull List<String> keys, @NonNull List<?> values) {
+    /**
+     * <p><b>Requires</b>: This method assumes that the provided values may be of, arbitrary, possibly heterogeneous
+     * types. For example: {@code List.of(1, "x", true, new Pojo())} or {@code List.of(1.0, 2.5, 3.9)}. List values may
+     * be null. The values of {@code keys} effectively refer to column labels and must not be null. </p>
+     * <p><b>Guarantees</b>: A new instance of {@code HashMapRow} from the provided input </p>
+     *
+     * @param keys A list of non-null values
+     * @param values A list of an arbitrary, heterogeneous values and type
+     * @return A new instance of {@code HashMapRow}
+     */
+    public static HashMapRow from(@NonNull List<@NonNull String> keys, @NonNull List<?> values) {
         return new HashMapRow(zip(keys, values));
     }
 
+    /**
+     * <p><b>Requires</b>: This method assumes that the provided input object is not null and implements {@code Mappable}. </p>
+     * <p><b>Guarantees</b>: A new instance of {@code HashMapRow} from the provided input. Object fields defined through
+     * the {@code Mappable} implementation will be mapped into type-preserved, key-value pairs based on the specific
+     * instantiation provided. Field values may be null. </p>
+     *
+     * @param object Any {@code Mappable} object
+     * @return A new instance of {@code HashMapRow}
+     */
     public static HashMapRow from(@NonNull Mappable object) {
         return new HashMapRow(object.asMap());
     }

@@ -21,9 +21,9 @@ import tools.jackson.databind.json.JsonMapper;
  *
  * @author Victor Cannestro
  */
-public class ObjectMapperManager {
+public final class ObjectMapperManager {
 
-    private static class SingletonHelper {
+    private static final class SingletonHelper {
 
         private static final ObjectMapperManager INSTANCE = new ObjectMapperManager();
         private static final ObjectMapper MAPPER;
@@ -43,10 +43,21 @@ public class ObjectMapperManager {
 
     private ObjectMapperManager() {}
 
+    /**
+     * The single accessor method for an {@code ObjectMapperManager} instance.
+     *
+     * @return <i>The</i> {@code ObjectMapperManager} instance
+     */
     public static ObjectMapperManager getInstance() {
         return SingletonHelper.INSTANCE;
     }
 
+    /**
+     * The single accessor method for the default {@code ObjectMapper} instance. See {@code ObjectMapperManager} for
+     * settings.
+     *
+     * @return <i>The</i> default {@code ObjectMapper} instance
+     */
     public ObjectMapper defaultMapper() {
         return SingletonHelper.MAPPER;
     }

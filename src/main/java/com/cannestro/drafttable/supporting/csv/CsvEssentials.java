@@ -33,7 +33,8 @@ public interface CsvEssentials {
     Character escapeCharacter();
 
     /**
-     * <p><b>Guarantees</b>: The character representing the beginning/end of quotations will be returned. For example: {@code '\''} or {@code '\"'}.
+     * <p><b>Guarantees</b>: The character representing the beginning/end of quotations will be returned. For example:
+     * {@code '\''} or {@code '\"'}.
      *
      * @return A {@code Character}
      */

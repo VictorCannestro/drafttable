@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author Victor Cannestro
  */
-public class CsvDataParser {
+public final class CsvDataParser {
     
     private CsvDataParser() {}
 
@@ -80,6 +80,7 @@ public class CsvDataParser {
      *
      * @param resourceFilePath A valid resourceFilePath to the CSV resource file to be read
      * @param csvBeanClass The {@code CsvBean} type representation of the CSV file located at resourceFilePath
+     * @param <T> Any {@code CsvBean} type
      * @return A List of extracted {@code CsvBean} types where each bean maps to a row in the CSV
      */
     public static <T extends CsvBean> List<T> buildBeansFrom(@NonNull String resourceFilePath, @NonNull Class<T> csvBeanClass) {

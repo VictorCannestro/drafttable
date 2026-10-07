@@ -74,7 +74,8 @@ public final class TypeHelper {
             return false; // Was already grey -> Back edge = Cycle found
         }
         try {
-            return Arrays.stream(type.getRecordComponents()).allMatch(component -> isKnownImmutableImplementation(component.getType(), inProgress));
+            return Arrays.stream(type.getRecordComponents())
+                    .allMatch(component -> isKnownImmutableImplementation(component.getType(), inProgress));
         } finally {
             inProgress.remove(type); // Repaints a node black
         }

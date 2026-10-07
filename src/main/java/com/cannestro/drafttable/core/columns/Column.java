@@ -108,6 +108,7 @@ public interface Column {
      *
      * @param element A value to supply to the query
      * @return True if and only if the column contains the provided nullable value
+     * @param <T> Type of the underlying column data
      */
     <T> boolean has(@Nullable T element);
 
@@ -164,6 +165,7 @@ public interface Column {
      *
      * @param matcher Any matcher of compatible type
      * @return A new {@code Column} subset
+     * @param <T> Type of the underlying column data
      */
     <T> Column where(@NonNull Matcher<T> matcher);
 

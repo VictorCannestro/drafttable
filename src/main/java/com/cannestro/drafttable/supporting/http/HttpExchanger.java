@@ -41,8 +41,10 @@ public class HttpExchanger {
             }
             return response;
         } catch (SecurityException securityException) {
-            throw new IllegalArgumentException(
-                    "The request argument is not a request that could have been validly built as specified by HttpRequest.Builder, or a security manager has been installed and it has denied access to the URL in the given request (or proxy, if one is configured).",
+            throw new IllegalArgumentException("""
+                    The request argument is not a request that could have been validly built as specified by 
+                    HttpRequest.Builder, or a security manager has been installed and it has denied access to the URL 
+                    in the given request (or proxy, if one is configured).""",
                     securityException
             );
         }

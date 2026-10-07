@@ -15,7 +15,7 @@ public abstract class HttpLogFormatter<R> {
     protected final Set<String> blacklistedHeaders = Collections.synchronizedSet(
             new TreeSet<>(List.of("Authorization", "Proxy-Authorization", "Cookie"))
     );
-    public static final List<String> redactedHeaderStub = List.of("REDACTED VALUE");
+    public static final List<String> REDACTED_HEADER_STUB = List.of("REDACTED VALUE");
 
 
     public abstract String format(@NonNull R type);
@@ -37,7 +37,7 @@ public abstract class HttpLogFormatter<R> {
             String header = mapperator.next();
             List<String> headerValue = mapperator.getValue();
             if (blacklistedHeaders.stream().anyMatch(sensitiveHeader -> sensitiveHeader.equalsIgnoreCase(header))) {
-                headerValue = redactedHeaderStub;
+                headerValue = REDACTED_HEADER_STUB;
             }
             processedHeaders.putIfAbsent(mapperator.getKey(), headerValue);
         }

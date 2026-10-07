@@ -89,7 +89,10 @@ public record DefaultColumnOutput(Column column) implements ColumnOutput {
             return FlexibleDraftTable.create().fromRows(
                         String.format(DESCRIBE_LABEL_FORMATTER, column().label()),
                         entries.stream()
-                            .map(entry -> HashMapRow.from(new StatisticalDescription(entry.getKey().shortHand, entry.getValue().doubleValue())))
+                            .map(entry -> HashMapRow.from(new StatisticalDescription(
+                                    entry.getKey().shortHand,
+                                    entry.getValue().doubleValue())
+                            ))
                             .toList())
                     .write()
                     .prettyPrint();

@@ -20,7 +20,7 @@ import java.util.List;
  * @author Victor Cannestro
  */
 @Slf4j
-public class CsvDataWriter {
+public final class CsvDataWriter {
 
 
     private CsvDataWriter() {}

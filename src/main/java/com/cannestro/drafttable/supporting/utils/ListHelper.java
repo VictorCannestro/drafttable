@@ -34,7 +34,10 @@ public final class ListHelper {
             return Collections.nCopies(targetLength, fillValue);
         }
         if (list.size() > targetLength) {
-            throw new IllegalArgumentException(String.format("The length of the provided list must be less than or equal to the non-negative target length: %s", targetLength));
+            throw new IllegalArgumentException(String.format(
+                    "The length of the provided list must be less than or equal to the non-negative target length: %s",
+                    targetLength
+            ));
         }
         List<T> paddedList = new ArrayList<>(list);
         if (list.size() < targetLength) {
@@ -123,7 +126,7 @@ public final class ListHelper {
     }
 
     /**
-     * <p <b>Requires</b>: The array must not be empty </p>
+     * <p> <b>Requires</b>: The array must not be empty </p>
      * <p> <b>Guarantees</b>: The last element of the input array will be returned </p>
      *
      * @param array An array containing objects of type T

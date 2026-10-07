@@ -36,7 +36,10 @@ public final class NetHelper {
         try {
             return uri.toURL();
         } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Either no legal protocol could be found in a specification string or the string could not be parsed.", e);
+            throw new IllegalArgumentException(
+                    "Either no legal protocol could be found in a specification string or the string could not be parsed.",
+                    e
+            );
         }
     }
 
@@ -90,7 +93,8 @@ public final class NetHelper {
 
     /**
      * <p> <b>Requires</b>: Both {@code response} and {@code response.statusCode()} must not be null </p>
-     * <p> <b>Guarantees</b>: True if the status code of the response is within [400, 500) and is not 408, 425, or 429; and false otherwise  </p>
+     * <p> <b>Guarantees</b>: True if the status code of the response is within [400, 500) and is not 408, 425, or 429;
+     * and false otherwise  </p>
      *
      * @param response An HTTP response object
      * @return true or false

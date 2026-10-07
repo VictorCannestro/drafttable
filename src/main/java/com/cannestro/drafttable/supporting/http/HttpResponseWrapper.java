@@ -39,6 +39,8 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
     public static final long DELAY_CAP_IN_SECONDS = 20;
     public static final Duration DEFAULT_TIMEOUT = Duration.ofSeconds(10);
 
+    private static final int TOO_MANY_REQUESTS = 429;
+
 
     public static HttpResponseWrapper allDefaults() {
         return HttpResponseWrapper.builder().build();
@@ -68,7 +70,7 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
 
     private static ContextualSupplier<HttpResponse<String>, Duration> dynamicallyCalculatedDelay() {
         return context -> {
-            if (!isNull(context.getLastResult()) && context.getLastResult().statusCode() == 429) {
+            if (!isNull(context.getLastResult()) && context.getLastResult().statusCode() == TOO_MANY_REQUESTS) {
                 try {
                     OptionalLong retryAfter = context.getLastResult().headers().firstValueAsLong(RETRY_AFTER_HEADER);
                     if (retryAfter.isPresent()) {
@@ -80,7 +82,10 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
                     /* The 'Retry-After' header was provided, but is not parseable to a Long. */
                     String headerValue = context.getLastResult().headers().firstValue(RETRY_AFTER_HEADER).orElseThrow();
                     try {
-                        Instant retryInstant = ZonedDateTime.parse(headerValue, DateTimeFormatter.RFC_1123_DATE_TIME.withLocale(Locale.US)).toInstant();
+                        Instant retryInstant = ZonedDateTime.parse(
+                                headerValue,
+                                DateTimeFormatter.RFC_1123_DATE_TIME.withLocale(Locale.US)
+                        ).toInstant();
                         return Duration.ofSeconds(
                                 Math.min(
                                         DELAY_CAP_IN_SECONDS,

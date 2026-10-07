@@ -410,7 +410,11 @@ public interface DraftTable {
      * Creates a new column derived from the two specified columns via a mapping by the provided function. The specified
      * columns will be left intact and the derived column will be added. For example:
      * <pre>{@code
-     *         DraftTable df = exampleDraftTable().deriveFrom("dayModifier", "dates", as("modifiedDates"), (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd).getDayOfWeek());
+     *         DraftTable df = exampleDraftTable().deriveFrom("dayModifier", "dates",
+     *             as("modifiedDates"),
+     *             (Integer daysToAdd, LocalDate date) -> date.plusDays(daysToAdd)
+     *                                                        .getDayOfWeek()
+     *         );
      * }</pre>
      *
      * @param firstColumnName A string label
