@@ -8,7 +8,6 @@ import com.cannestro.drafttable.supporting.csv.assumptions.CsvAssumptions;
 import com.cannestro.drafttable.supporting.csv.CsvBean;
 import com.cannestro.drafttable.supporting.csv.CsvParsingOptions;
 import com.cannestro.drafttable.supporting.utils.FileHelper;
-import com.cannestro.drafttable.supporting.utils.NetHelper;
 import org.apache.commons.io.FilenameUtils;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -21,7 +20,6 @@ import java.util.stream.IntStream;
 
 import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.buildBeansFrom;
 import static com.cannestro.drafttable.supporting.csv.implementation.CsvDataParser.readAllLines;
-import static com.cannestro.drafttable.supporting.utils.FileHelper.copyToTempDirectory;
 import static com.cannestro.drafttable.supporting.utils.ListHelper.firstElementOf;
 import static com.cannestro.drafttable.supporting.utils.MapHelper.zip;
 import static java.util.Collections.emptyList;
@@ -58,7 +56,7 @@ public class DefaultCsvLoader implements CsvLoader {
     @Override
     public DraftTable at(@NonNull URI uri) {
         CsvAssumptions.assumeFilenameIsCsvCompatible(uri.toString());
-        File file = copyToTempDirectory(NetHelper.url(uri));
+        File file = FileHelper.opinionatedCopyToTempDirectory(uri);
         DraftTable draftTable = createWithoutSchema(file.getPath(), null);
         FileHelper.cleanUpTemporaryFiles(file);
         return draftTable;
@@ -67,7 +65,7 @@ public class DefaultCsvLoader implements CsvLoader {
     @Override
     public DraftTable at(@NonNull URI uri, @NonNull CsvParsingOptions loadingOptions) {
         CsvAssumptions.assumeFilenameIsCsvCompatible(uri.toString());
-        File file = copyToTempDirectory(NetHelper.url(uri));
+        File file = FileHelper.opinionatedCopyToTempDirectory(uri);
         DraftTable draftTable = isNull(loadingOptions.type())
                 ? createWithoutSchema(file.getPath(), loadingOptions)
                 : FlexibleDraftTable.create().fromObjects(

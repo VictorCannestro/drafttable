@@ -10,6 +10,15 @@ import static java.util.Objects.isNull;
 
 
 /**
+ * For example: <pre>{@code
+ *         ChunkingOptions chunkingOptions = ChunkingOptions.builder()
+ *                 .limitPerChunk(5)
+ *                 .parentDirectory(new File("./data/json"))
+ *                 .chunkRootName("sample")
+ *                 .extension(JSON)
+ *                 .build();
+ * }</pre>
+ *
  * @author Victor Cannestro
  */
 @Builder
@@ -37,6 +46,13 @@ public record ChunkingOptions(Integer limitPerChunk,
         }
     }
 
+    /**
+     * <p><b>Requires</b>: Input {@code chunkId} must be a non-negative integer </p>
+     * <p><b>Guarantees</b>: A file name will be created based on the initialized state of {@code ChunkingOptions} </p>
+     *
+     * @param chunkId A non-negative integer
+     * @return A string
+     */
     public String constructFilenameForChunk(int chunkId) {
         if (chunkId < 0) {
             throw new IllegalArgumentException("The chunk ID must be a non-negative integer: " + chunkId);

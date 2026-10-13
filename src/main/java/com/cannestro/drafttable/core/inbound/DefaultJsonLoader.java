@@ -5,7 +5,6 @@ import com.cannestro.drafttable.core.tables.DraftTable;
 import com.cannestro.drafttable.core.tables.FlexibleDraftTable;
 import com.cannestro.drafttable.supporting.utils.FileHelper;
 import com.cannestro.drafttable.supporting.json.ObjectMapperManager;
-import com.cannestro.drafttable.supporting.utils.NetHelper;
 import org.jspecify.annotations.NonNull;
 import tools.jackson.core.exc.JacksonIOException;
 import tools.jackson.databind.DatabindException;
@@ -29,7 +28,7 @@ public class DefaultJsonLoader implements JsonLoader {
 
     @Override
     public <M extends Mappable> DraftTable at(@NonNull URI uri, @NonNull Class<M> schema) {
-        File file = FileHelper.copyToTempDirectory(NetHelper.url(uri));
+        File file = FileHelper.opinionatedCopyToTempDirectory(uri);
         DraftTable draftTable = load(file, schema, ObjectMapperManager.getInstance().defaultMapper());
         FileHelper.cleanUpTemporaryFiles(file);
         return draftTable;
@@ -62,8 +61,8 @@ public class DefaultJsonLoader implements JsonLoader {
             );
         } catch (JacksonIOException ioException) {
             throw new IllegalArgumentException("""
-                    A low-level I/ O problem (unexpected end-of-input, network error) occurred (passed through as-is 
-                    without additional wrapping -- note that this is one case where DeserializationFeature. 
+                    A low-level I/ O problem (unexpected end-of-input, network error) occurred (passed through as-is
+                    without additional wrapping -- note that this is one case where DeserializationFeature.
                     WRAP_EXCEPTIONS does NOT result in wrapping of exception even if enabled).""",
                     ioException
             );

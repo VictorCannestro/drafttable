@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
-import java.net.URL;
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,9 +31,27 @@ public final class FileHelper {
     private FileHelper() {}
 
 
-    public static File copyToTempDirectory(@NonNull URL fileUrl,
+    /**
+     * <p><b>Requires</b>: The URI must not be null and represent a URL </p>
+     * <p><b>Guarantees</b>: The resource located at the remote URI will be copied byte-for-byte to a local file. The
+     * destination file will be located at {@code X/Y/Z} where:
+     * <items>
+     *     <li> {@code X} = Absolute path of the "java.io.tmpdir" </li>
+     *     <li> {@code Y} = UUID </li>
+     *     <li> {@code Z} = The text after the last forward or backslash of the path of the URI </li>
+     * </items> </p>
+     *
+     * @param fileUri e.g., {@code URI.create("https://people.sc.fsu.edu/~jburkardt/data/csv/faithful.csv")}
+     * @param connectionTimeoutInMillis A non-negative integer
+     * @param readTimeoutInMillis A non-negative integer
+     * @return A local {@code File}
+     */
+    public static File copyToTempDirectory(@NonNull URI fileUri,
                                            int connectionTimeoutInMillis,
                                            int readTimeoutInMillis) {
+        if (connectionTimeoutInMillis < 0 || readTimeoutInMillis < 0) {
+            throw new IllegalArgumentException("Time parameters must be non-negative integers");
+        }
         try {
             Path path = Paths.get(
                     new File(System.getProperty("java.io.tmpdir")).getAbsolutePath(),
@@ -44,22 +62,37 @@ public final class FileHelper {
                     "%s%s%s",
                     tempDirectory,
                     File.separator,
-                    FilenameUtils.getName(fileUrl.getPath())
+                    FilenameUtils.getName(fileUri.getPath())
             );
             File temp = new File(filePath);
-            copyURLToFile(fileUrl, temp, connectionTimeoutInMillis, readTimeoutInMillis);
+            copyURLToFile(NetHelper.url(fileUri), temp, connectionTimeoutInMillis, readTimeoutInMillis);
             return temp;
         } catch (IOException e) {
             throw new IllegalArgumentException("An IO error occurred during copying.", e);
         }
     }
 
-    public static File copyToTempDirectory(@NonNull URL fileUrl) {
-        final int defaultInMins = 10;
+    /**
+     * <p><b>Requires</b>: The URI must not be null and represent a URL </p>
+     * <p><b>Guarantees</b>: The resource located at the remote URI will be copied byte-for-byte to a local file. The
+     * destination file will be located at {@code X/Y/Z} where:
+     * <items>
+     *     <li> {@code X} = Absolute path of the "java.io.tmpdir" </li>
+     *     <li> {@code Y} = UUID </li>
+     *     <li> {@code Z} = The text after the last forward or backslash of the path of the URI </li>
+     * </items> </p>
+     *
+     * @param fileUri e.g., {@code URI.create("https://people.sc.fsu.edu/~jburkardt/data/csv/faithful.csv")}
+     * @return A local {@code File}
+     * @apiNote If no connection could be established to the source URI, then timeout will occur in 10 minutes. If no
+     * data could be read from the source URI, then timeout will occur in 10 minutes.
+     */
+    public static File opinionatedCopyToTempDirectory(@NonNull URI fileUri) {
+        final int defaultInMinutes = 10;
         return copyToTempDirectory(
-                fileUrl,
-                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(defaultInMins),
-                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(defaultInMins)
+                fileUri,
+                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(defaultInMinutes),
+                (int) TimeUnit.of(ChronoUnit.MINUTES).toMillis(defaultInMinutes)
         );
     }
 
@@ -105,6 +138,20 @@ public final class FileHelper {
         }
     }
 
+    /**
+     * <p> Attempts to create a {@code BufferedReader} from the target resource using the following, in order,
+     * short-circuiting upon success:
+     * <ol>
+     *     <li> {@code FileInputStream} </li>
+     *     <li> {@code ContextClassLoader} </li>
+     *     <li> File tree walk starting at {@code resourceFilePath} </li>
+     * </ol> </p>
+     *
+     * @param resourceFilePath The system-dependent file name
+     * @param charset To inform the {@code InputStreamReader}
+     * @return A {@code Reader}
+     * @throws IOException if an I/ O error occurs opening the file
+     */
     public static Reader createReaderFromResource(@NonNull String resourceFilePath, Charset charset) throws IOException {
         try {
             Reader reader = new BufferedReader(new InputStreamReader(
@@ -129,6 +176,14 @@ public final class FileHelper {
         return Files.newBufferedReader(walkFileTreeToFind(resourceFilePath), charset);
     }
 
+    /**
+     * Walks the file tree rooted at the given starting {@code filePath} to find the target path. Will only return the
+     * target file ifi it is a regular file with opaque content.
+     *
+     * @param filePath A non-null string
+     * @return A {@code Path}
+     * @throws IllegalArgumentException if the Path to the given URI could not be located
+     */
     public static Path walkFileTreeToFind(@NonNull String filePath) {
         try (Stream<Path> paths = Files.walk(Paths.get(filePath))) {
             return paths.filter(Files::isRegularFile).findAny().orElseThrow();
@@ -138,6 +193,11 @@ public final class FileHelper {
         }
     }
 
+    /**
+     * Deletes the {@code file} and it's parent directory
+     *
+     * @param file Any non-null {@code File}
+     */
     public static void cleanUpTemporaryFiles(@NonNull File file) {
         deleteFileIfPresent(file.getPath());
         deleteFileIfPresent(file.getParentFile().getPath());

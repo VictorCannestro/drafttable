@@ -14,6 +14,14 @@ public final class JsonHelper {
 
     private JsonHelper() {}
 
+    /**
+     * <p><b>Requires</b>: The input must be a valid JSON string </p>
+     * <p><b>Guarantees</b>: The {@code uglyJsonString} has been converted to a prettified JSON string. Changes are
+     * purely cosmetic. </p>
+     *
+     * @param uglyJsonString Any valid JSON string
+     * @return A well formatted JSON string
+     */
     public static String makePretty(@NonNull String uglyJsonString) {
         try {
             return ObjectMapperManager.getInstance().defaultMapper()

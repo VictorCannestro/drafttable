@@ -47,7 +47,15 @@ public class URIAssembler {
     private String baseUri;
     @Getter(AccessLevel.PRIVATE) private final Map<String, String> queryParams;
 
-    
+    /**
+     * <p><b>Requires</b>: The input {@code URI} must be valid and non-null </p>
+     * <p><b>Guarantees</b>: A new {@code URIAssemblerBuilder} will be created and initialized with the {@code scheme},
+     * {@code userInfo}, {@code host}, {@code port}, {@code path}, {@code query}, and {@code fragment} components (where
+     * they exist) of the input URI </p>
+     *
+     * @param uri Any non-null {@code URI}
+     * @return A {@code URIAssemblerBuilder}
+     */
     public static URIAssemblerBuilder modifyExisting(@NonNull URI uri) {
         return new URIAssemblerBuilder()
                 .scheme(uri.getScheme())
@@ -59,6 +67,17 @@ public class URIAssembler {
                 .fragment(uri.getFragment());
     }
 
+    /**
+     * <p><b>Requires</b>: The state of the {@code URIAssembler} to contain the components of a valid URI </p>
+     * <p><b>Guarantees</b>: A new {@code URI} will be created from the {@code scheme}, {@code userInfo}, {@code host},
+     * {@code port}, {@code path}, {@code query}, and {@code fragment} components (whichever exist) of the
+     * {@code URIAssembler}. If an invalid URI is constructed, then an exception will be thrown. </p>
+     *
+     * @return A {@code URI} object
+     * @throws IllegalArgumentException If both a scheme and a path are given but the path is relative, if the URI
+     * string constructed from the given components violates RFC 2396, or if the authority component of the string is
+     * present but cannot be parsed as a server-based authority
+     */
     public URI toURI() {
         try {
             String queryComponent = resolveQueryComponents();
@@ -77,18 +96,39 @@ public class URIAssembler {
         }
     }
 
+    /**
+     * <p><b>Guarantees</b>: A answer to the query "Does the current state of the {@code URIAssembler} contain a base URI?" </p>
+     *
+     * @return true or false
+     */
     public boolean hasBaseUri() {
         return !isNull(this.baseUri);
     }
 
+    /**
+     * <p><b>Guarantees</b>: A answer to the query "Does the current state of the {@code URIAssembler} contain a path?" </p>
+     *
+     * @return true or false
+     */
     public boolean hasPath() {
         return !isNull(path());
     }
 
+    /**
+     * <p><b>Guarantees</b>: A answer to the query "Does the current state of the {@code URIAssembler} contain one or
+     * more query components?" </p>
+     *
+     * @return true or false
+     */
     public boolean hasQueryComponent() {
         return !this.queryParams.isEmpty() || !isNull(this.query);
     }
 
+    /**
+     * <p><b>Guarantees</b>: A answer to the query "Does the current state of the {@code URIAssembler} contain a fragment?" </p>
+     *
+     * @return true or false
+     */
     public boolean hasFragment() {
         return !isNull(fragment());
     }
@@ -97,6 +137,7 @@ public class URIAssembler {
     public String toString() {
         return toURI().toString();
     }
+
 
     String resolveQueryComponents() {
         StringBuilder queryComponent = new StringBuilder();
@@ -142,6 +183,14 @@ public class URIAssembler {
             return this;
         }
 
+        /**
+         * Will bulk assign query parameters to the URI based on the provided map. If modifying an existing URI, be
+         * aware that these values will be disconnected from any existing query components until URI creation. In such
+         * cases, the bulk assignment will be appended to the existing query components.
+         *
+         * @param params a map of query parameters that need to be encoded
+         * @return A chainable builder instance
+         */
         public URIAssemblerBuilder queryParams(@NonNull Map<String, String> params) {
             return queryParams(params, true);
         }
