@@ -11,6 +11,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.event.Level;
 
 import java.net.http.HttpResponse;
+import java.util.Set;
 
 import static java.util.Objects.isNull;
 
@@ -34,7 +35,8 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
                                        @Nullable Boolean logUri,
                                        @Nullable Boolean logHeaders,
                                        @Nullable Boolean logStatusCode,
-                                       @Nullable Boolean logBody) {
+                                       @Nullable Boolean logBody,
+                                       @Nullable Set<String> additionalBlacklistedHeaders) {
         if (!isNull(logLevel)) {
             this.logLevel = logLevel;
         }
@@ -50,6 +52,10 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
         if (!isNull(logBody)) {
             this.logBody = logBody;
         }
+        if (!isNull(additionalBlacklistedHeaders)) {
+            this.blacklistedHeaders.addAll(additionalBlacklistedHeaders);
+        }
+        this.blacklistedHeaders.addAll(DEFAULT_BLACKLISTED_HEADERS);
     }
 
     /**

@@ -54,10 +54,10 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
                     .build();
         }
         if (isNull(timeoutPolicy)) {
-            timeoutPolicy = Timeout.of(DEFAULT_TIMEOUT);
+            timeoutPolicy = Timeout.<HttpResponse<String>>builder(DEFAULT_TIMEOUT).withInterrupt().build();
         }
         if (isNull(circuitBreakerPolicy)) {
-            circuitBreakerPolicy = CircuitBreaker.ofDefaults();
+            circuitBreakerPolicy = CircuitBreaker.<HttpResponse<String>>builder().handleResultIf(NetHelper::is5xx).build();
         }
         if (isNull(logFormatter)) {
             logFormatter = HttpResponseLogFormatter.allDefaults();
@@ -74,7 +74,7 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
      *        code is another retryable value, then the default policy is utilized: a <b>500 millisecond</b> backoff
      *        with a max delay of <b>10 seconds</b> and jitter of <b> 200 milliseconds</b> will be used. Retry will abort
      *        upon a non-retryable status code. </li>
-     *     <li> {@link Timeout}: Cancels and fails an execution with a {@link TimeoutExceededException} if the
+     *     <li> {@link Timeout}: Cancels, interrupts, and fails an execution with a {@link TimeoutExceededException} if the
      *        <b>10 second</b> default timeout is exceeded </li>
      *     <li> {@link CircuitBreaker}: Opens after one failure, half-opens after a one minute delay, and closes after
      *        one success </li>

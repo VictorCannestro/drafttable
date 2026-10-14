@@ -212,6 +212,9 @@ public class FlexibleColumn implements Column {
 
     @Override
     public Column randomDraw(final int n) {
+        if (isEmpty()) {
+            return new FlexibleColumn(label(), Collections.emptyList());
+        }
         return where(
                 ThreadLocalRandom.current()
                         .ints(0, size())
@@ -383,8 +386,8 @@ public class FlexibleColumn implements Column {
             return Collections.emptyMap();
         }
         final int TWENTY_FIFTH = 25;
-        final int FIFTIETH = 25;
-        final int SEVENTY_FIFTH = 25;
+        final int FIFTIETH = 50;
+        final int SEVENTY_FIFTH = 75;
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
         values.forEach(value -> descriptiveStatistics.addValue(Double.parseDouble(value.toString())));
         return Map.of(

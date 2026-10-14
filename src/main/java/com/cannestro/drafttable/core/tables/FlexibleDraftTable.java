@@ -40,7 +40,7 @@ import static org.hamcrest.Matchers.*;
 public class FlexibleDraftTable implements DraftTable {
 
     private final List<Column> listOfColumns;
-    private String tableName;
+    private final String tableName;
 
 
     FlexibleDraftTable(final String tableName, final List<Column> listOfColumns) {
@@ -77,8 +77,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public DraftTable nameTable(final @NonNull String newTableName) {
-        this.tableName = newTableName;
-        return this;
+        return new FlexibleDraftTable(newTableName, List.copyOf(listOfColumns));
     }
 
     @Override
@@ -281,6 +280,9 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public DraftTable randomDraw(final int nRows) {
+        if (isEmpty()) {
+            return this;
+        }
         return where(
                 ThreadLocalRandom.current()
                         .ints(0, rowCount())

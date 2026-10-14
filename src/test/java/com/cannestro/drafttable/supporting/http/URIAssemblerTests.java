@@ -36,6 +36,13 @@ public class URIAssemblerTests {
         Assert.assertTrue(assembled.toString().contains(URIAssembler.FRAGMENT_JOINER));
     }
 
+    @Test
+    public void modifyExistingCallWithoutModificationOfSimpleUrlRemainsSame() {
+        URI original = URI.create("http://wikipedia.com/api");
+
+        Assert.assertEquals(URIAssembler.modifyExisting(original).build().toURI(), original);
+    }
+
 
     @Test
     public void modifyExistingPreservesExplicitPorts() {

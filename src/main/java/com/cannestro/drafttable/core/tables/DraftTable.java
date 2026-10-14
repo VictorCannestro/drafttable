@@ -259,7 +259,7 @@ public interface DraftTable {
 
     /**
      * Produces a new {@code DraftTable} by selecting entries at random, up to {@code nRows} or the total row count,
-     * whichever is smaller.
+     * whichever is smaller. If empty, the calling table will just be passed along.
      *
      * @param nRows A non-negative integer
      * @return A new {@code DraftTable} subset

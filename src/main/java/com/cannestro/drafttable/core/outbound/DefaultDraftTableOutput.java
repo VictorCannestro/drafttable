@@ -74,7 +74,7 @@ public class DefaultDraftTableOutput implements DraftTableOutput {
     public void toCsv(@NonNull ChunkingOptions chunkingOptions, @NonNull CsvWritingOptions options) {
         CsvAssumptions.assumeExtensionIsCsvCompatible(chunkingOptions.extension());
         List<List<Integer>> partitionedIndices = partitionIndicesAccordingTo(chunkingOptions);
-        for (int i = 1; i <= partitionedIndices.size(); i++) {
+        for (int i = 0; i < partitionedIndices.size(); i++) {
             draftTable().where(partitionedIndices.get(i))
                     .write()
                     .toCsv(new File(chunkingOptions.constructFilenameForChunk(i)), options);

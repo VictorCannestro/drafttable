@@ -10,6 +10,8 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import java.net.http.HttpRequest;
+import java.util.Set;
+
 import org.slf4j.event.Level;
 
 import static java.util.Objects.isNull;
@@ -36,7 +38,8 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
                                       @Nullable Boolean logPath,
                                       @Nullable Boolean logQueryParams,
                                       @Nullable Boolean logFragment,
-                                      @Nullable Boolean logHeaders) {
+                                      @Nullable Boolean logHeaders,
+                                      @Nullable Set<String> additionalBlacklistedHeaders) {
         if (!isNull(logLevel)) {
             this.logLevel = logLevel;
         }
@@ -55,6 +58,10 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
         if (!isNull(logHeaders)) {
             this.logHeaders = logHeaders;
         }
+        if (!isNull(additionalBlacklistedHeaders)) {
+            this.blacklistedHeaders.addAll(additionalBlacklistedHeaders);
+        }
+        this.blacklistedHeaders.addAll(DEFAULT_BLACKLISTED_HEADERS);
     }
 
     /**

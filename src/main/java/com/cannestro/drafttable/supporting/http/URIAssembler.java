@@ -85,8 +85,7 @@ public class URIAssembler {
                 return URI.create(
                         baseUri() +
                         nullToEmpty(path()) +
-                        QUERY_JOINER +
-                        queryComponent +
+                        passWhen(hasQueryComponent(), safeConcat(QUERY_JOINER, queryComponent)) +
                         passWhen(hasFragment(), safeConcat(FRAGMENT_JOINER, fragment()))
                 );
             }
