@@ -24,7 +24,16 @@ public class HttpExchanger {
         this.responseWrapper = responseWrapper;
     }
 
-    public HttpResponse<String> sendSynchronouslyUsing(@NonNull HttpClient httpClient) {
+    /**
+     * <p><b>Required</b>: A non-null {@code HttpClient} input. Users are responsible for supplying any necessary
+     * authentication, proxy settings, etc. </p>
+     * <p><b>Guarantees</b>: A synchronous HTTP GET request will be made using the {@code HttpClient} as specified by the
+     * {@link HttpRequestWrapper}. The response will be handled and curated according to the {@link HttpResponseWrapper}. </p>
+     *
+     * @param httpClient A {@code HttpClient} object
+     * @return A {@code HttpResponse} with a string {@code BodyHandler}
+     */
+    public HttpResponse<String> sendGetRequestSynchronouslyUsing(@NonNull HttpClient httpClient) {
         HttpRequest httpRequest = this.requestWrapper.constructGetRequest();
         try {
             if (this.requestWrapper.logFormatter().loggingEnabled()) {

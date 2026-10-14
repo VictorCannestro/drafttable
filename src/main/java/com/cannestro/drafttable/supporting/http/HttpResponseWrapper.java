@@ -42,10 +42,6 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
     private static final int TOO_MANY_REQUESTS = 429;
 
 
-    public static HttpResponseWrapper allDefaults() {
-        return HttpResponseWrapper.builder().build();
-    }
-
     public HttpResponseWrapper {
         if (isNull(retryPolicy)) {
             retryPolicy = RetryPolicy.<HttpResponse<String>>builder()
@@ -66,6 +62,29 @@ public record HttpResponseWrapper(RetryPolicy<HttpResponse<String>> retryPolicy,
         if (isNull(logFormatter)) {
             logFormatter = HttpResponseLogFormatter.allDefaults();
         }
+    }
+
+    /**
+     * <p><b>Guarantees</b>: A new {@code HttpResponseWrapper} will be instantiated with the following defaults:
+     * <items>
+     *     <li> {@link RetryPolicy}: Allows <b>3 execution attempts max</b> upon receiving a retryable status code (i.e.,
+     *        408, 425, 429 or 5xx) with a dynamically calculated delay policy: if a 429 status code is received and the
+     *        {@code "Retry-After"} header is provided in either absolute or relative format, then either the header
+     *        value will be used or a ceiling of <b>20 seconds</b>, whichever is shorter. When not provided or the status
+     *        code is another retryable value, then the default policy is utilized: a <b>500 millisecond</b> backoff
+     *        with a max delay of <b>10 seconds</b> and jitter of <b> 200 milliseconds</b> will be used. Retry will abort
+     *        upon a non-retryable status code. </li>
+     *     <li> {@link Timeout}: Cancels and fails an execution with a {@link TimeoutExceededException} if the
+     *        <b>10 second</b> default timeout is exceeded </li>
+     *     <li> {@link CircuitBreaker}: Opens after one failure, half-opens after a one minute delay, and closes after
+     *        one success </li>
+     *     <li> {@link HttpResponseLogFormatter}: See the class for details on defaults </li>
+     * </items> </p>
+     *
+     * @return The default {@code HttpResponseWrapper}
+     */
+    public static HttpResponseWrapper allDefaults() {
+        return HttpResponseWrapper.builder().build();
     }
 
     private static ContextualSupplier<HttpResponse<String>, Duration> dynamicallyCalculatedDelay() {

@@ -32,7 +32,7 @@ public class DefaultHttpLoader implements HttpLoader {
                                                         @NonNull HttpRequestWrapper requestWrapper,
                                                         @NonNull HttpResponseWrapper responseWrapper) {
         HttpExchanger requestSender = new HttpExchanger(requestWrapper, responseWrapper);
-        HttpResponse<String> response = requestSender.sendSynchronouslyUsing(this.client);
+        HttpResponse<String> response = requestSender.sendGetRequestSynchronouslyUsing(this.client);
         return FlexibleDraftTable.create().fromObjects(
                 ObjectMapperManager.getInstance()
                         .defaultMapper()
@@ -47,7 +47,7 @@ public class DefaultHttpLoader implements HttpLoader {
                                                     @NonNull HttpRequestWrapper requestWrapper,
                                                     @NonNull HttpResponseWrapper responseWrapper) {
         HttpExchanger requestSender = new HttpExchanger(requestWrapper, responseWrapper);
-        HttpResponse<String> response = requestSender.sendSynchronouslyUsing(this.client);
+        HttpResponse<String> response = requestSender.sendGetRequestSynchronouslyUsing(this.client);
         return FlexibleDraftTable.create().fromObjects(
                 selector.apply(ObjectMapperManager.getInstance().defaultMapper().readValue(response.body(), schema))
         );

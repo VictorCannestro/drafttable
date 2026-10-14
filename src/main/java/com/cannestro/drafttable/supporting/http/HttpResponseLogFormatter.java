@@ -30,23 +30,6 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
     @Builder.Default private Boolean logBody = false;
 
 
-    public static HttpResponseLogFormatter logEverything() {
-        return HttpResponseLogFormatter.builder().logBody(true).build();
-    }
-
-    public static HttpResponseLogFormatter allDefaults() {
-        return HttpResponseLogFormatter.builder().build();
-    }
-
-    public static HttpResponseLogFormatter logNothing() {
-        return HttpResponseLogFormatter.builder()
-                .logUri(false)
-                .logHeaders(false)
-                .logStatusCode(false)
-                .logBody(false)
-                .build();
-    }
-
     protected HttpResponseLogFormatter(@Nullable Level logLevel,
                                        @Nullable Boolean logUri,
                                        @Nullable Boolean logHeaders,
@@ -67,6 +50,45 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
         if (!isNull(logBody)) {
             this.logBody = logBody;
         }
+    }
+
+    /**
+     * <p><b>Guarantees</b>: Initialization such that every toggleable logging field is set to {@code true} </p>
+     *
+     * @return A {@code HttpResponseLogFormatter}
+     */
+    public static HttpResponseLogFormatter logEverything() {
+        return HttpResponseLogFormatter.builder().logBody(true).build();
+    }
+
+    /**
+     * <p><b>Guarantees</b>: Initialization such that the following defaults are applied:
+     * <items>
+     *     <li> {@code logLevel = Level.INFO} </li>
+     *     <li> {@code logUri = true} </li>
+     *     <li> {@code logHeaders = true} </li>
+     *     <li> {@code logStatusCode = true} </li>
+     *     <li> {@code logBody = false} </li>
+     * </items></p>
+     *
+     * @return A {@code HttpResponseLogFormatter}
+     */
+    public static HttpResponseLogFormatter allDefaults() {
+        return HttpResponseLogFormatter.builder().build();
+    }
+
+    /**
+     * <p><b>Guarantees</b>: Initialization such that {@code loggingEnabled()} is false </p>
+     *
+     * @return A {@code HttpResponseLogFormatter}
+     */
+    public static HttpResponseLogFormatter logNothing() {
+        return HttpResponseLogFormatter.builder()
+                .logUri(false)
+                .logHeaders(false)
+                .logStatusCode(false)
+                .logBody(false)
+                .build();
     }
 
     @Override

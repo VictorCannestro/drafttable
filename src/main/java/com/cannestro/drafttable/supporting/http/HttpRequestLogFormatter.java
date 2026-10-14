@@ -31,20 +31,6 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
     @Builder.Default private Boolean logHeaders = true;
 
 
-    public static HttpRequestLogFormatter allDefaults() {
-        return HttpRequestLogFormatter.builder().build();
-    }
-
-    public static HttpRequestLogFormatter logNothing() {
-        return HttpRequestLogFormatter.builder()
-                .logUri(false)
-                .logPath(false)
-                .logQueryParams(false)
-                .logFragment(false)
-                .logHeaders(false)
-                .build();
-    }
-
     protected HttpRequestLogFormatter(@Nullable Level logLevel,
                                       @Nullable Boolean logUri,
                                       @Nullable Boolean logPath,
@@ -69,6 +55,38 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
         if (!isNull(logHeaders)) {
             this.logHeaders = logHeaders;
         }
+    }
+
+    /**
+     * <p><b>Guarantees</b>: Initialization such that the following defaults are applied:
+     * <items>
+     *     <li> {@code logLevel = Level.INFO} </li>
+     *     <li> {@code logUri = true} </li>
+     *     <li> {@code logPath = true} </li>
+     *     <li> {@code logQueryParams = true} </li>
+     *     <li> {@code logFragment = true} </li>
+     *     <li> {@code logHeaders = true} </li>
+     * </items></p>
+     *
+     * @return A {@code HttpRequestLogFormatter}
+     */
+    public static HttpRequestLogFormatter allDefaults() {
+        return HttpRequestLogFormatter.builder().build();
+    }
+
+    /**
+     * <p><b>Guarantees</b>: Initialization such that {@code loggingEnabled()} is false </p>
+     *
+     * @return A {@code HttpRequestLogFormatter}
+     */
+    public static HttpRequestLogFormatter logNothing() {
+        return HttpRequestLogFormatter.builder()
+                .logUri(false)
+                .logPath(false)
+                .logQueryParams(false)
+                .logFragment(false)
+                .logHeaders(false)
+                .build();
     }
 
     @Override
