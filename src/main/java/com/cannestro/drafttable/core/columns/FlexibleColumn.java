@@ -389,7 +389,7 @@ public class FlexibleColumn implements Column {
         final int FIFTIETH = 50;
         final int SEVENTY_FIFTH = 75;
         DescriptiveStatistics descriptiveStatistics = new DescriptiveStatistics();
-        values.forEach(value -> descriptiveStatistics.addValue(Double.parseDouble(value.toString())));
+        values.forEach(value -> descriptiveStatistics.addValue(((Number) value).doubleValue()));
         return Map.of(
                 N, descriptiveStatistics.getN(),
                 MIN, descriptiveStatistics.getMin(),

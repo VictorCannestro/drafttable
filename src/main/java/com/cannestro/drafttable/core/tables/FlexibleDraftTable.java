@@ -203,8 +203,9 @@ public class FlexibleDraftTable implements DraftTable {
     @Override
     public DraftTable where(final @NonNull String columnName, final @NonNull Matcher<?> matcher) {
         assumeColumnExists(columnName, this);
-        List<?> columnValues = select(columnName).values();
-        List<Integer> matchingIndices = DraftTableHelper.findMatchingIndices(rowCount(), columnValues::get, matcher);
+        List<Integer> matchingIndices = DraftTableHelper.streamMatchingIndices(rowCount(), select(columnName)::valueAt, matcher)
+                .boxed()
+                .toList();
         return create().fromColumns(
                 tableName(),
                 columns().stream().map(column -> column.where(matchingIndices)).toList()
@@ -216,9 +217,10 @@ public class FlexibleDraftTable implements DraftTable {
                                    final @NonNull Function<T, R> columnAspect,
                                    final @NonNull Matcher<R> matcher) {
         assumeColumnExists(columnName, this);
-        List<T> columnValues = select(columnName).values();
         return where(
-                DraftTableHelper.findMatchingIndices(rowCount(), idx -> columnAspect.apply(columnValues.get(idx)), matcher)
+                DraftTableHelper.streamMatchingIndices(rowCount(), idx -> columnAspect.apply(select(columnName).valueAt(idx)), matcher)
+                        .boxed()
+                        .toList()
         );
     }
 
@@ -226,7 +228,9 @@ public class FlexibleDraftTable implements DraftTable {
     public <R> DraftTable where(final @NonNull Function<Row, R> rowAspect, final @NonNull Matcher<R> matcher) {
         List<Row> row = rows();
         return where(
-                DraftTableHelper.findMatchingIndices(rowCount(), idx -> rowAspect.apply(row.get(idx)), matcher)
+                DraftTableHelper.streamMatchingIndices(rowCount(), idx -> rowAspect.apply(row.get(idx)), matcher)
+                        .boxed()
+                        .toList()
         );
     }
 
@@ -335,10 +339,9 @@ public class FlexibleDraftTable implements DraftTable {
             return this;
         }
         assumeColumnNamesAreExactMatchesOf(otherDraftTable.columnNames(), this);
-        List<Column> copyOfCurrentState = listOfColumns();
         return new FlexibleDraftTable(
                 tableName(),
-                copyOfCurrentState.stream()
+                listOfColumns().stream()
                         .map(column -> column.append(otherDraftTable.select(column.label())))
                         .toList()
         );

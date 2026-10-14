@@ -26,7 +26,7 @@ import java.util.Set;
  * The header used here is deliberately NOT one of {@code DEFAULT_BLACKLISTED_HEADERS}: a default header is redacted
  * no matter what, which is how the original defect went unnoticed.
  */
-@Test(groups = {"component"})
+@Test(groups = {"network"})
 public class HttpLogFormatterRedactionTest {
 
     private static final String CUSTOM_HEADER = "X-Tenant-Token";

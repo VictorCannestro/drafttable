@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Exercises the real HttpClient against a local JDK HttpServer (module jdk.httpserver, no extra dependency).
  * Each test serves on its own random port, so each gets its own origin and its own shared circuit breaker.
  */
-@Test(groups = {"component"})
+@Test(groups = {"network"})
 public class HttpExchangerResilienceTest {
 
     private static final int MAX_CALLS_TO_OPEN_BREAKER = 20;

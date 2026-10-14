@@ -114,12 +114,10 @@ test {
     useTestNG() {
         useDefaultListeners = true
         outputDirectory = file("$buildRoot/test-output")
-        includeGroups 'component'
         includeGroups 'unit'
+        includeGroups 'component'
+        includeGroups 'network'
     }
-    // NOTE: tests carrying neither group are silently skipped. That currently
-    // includes FlexibleDraftTablePerformanceTest. Should either tag it or run it in a
-    // dedicated task.
     finalizedBy jacocoTestReport
 }
 
@@ -138,7 +136,7 @@ checkstyle {
     showViolations = true
 
     ignoreFailures = false
-    maxWarnings = 250
+    maxErrors = 0
 }
 
 // Test-source style never blocks a correctness fix.
