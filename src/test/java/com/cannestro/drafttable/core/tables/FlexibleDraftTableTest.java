@@ -20,6 +20,7 @@ import static com.cannestro.drafttable.core.options.Item.*;
 import static com.cannestro.drafttable.core.options.Items.*;
 import static com.cannestro.drafttable.core.options.SortingOrderType.*;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -65,10 +66,38 @@ public class FlexibleDraftTableTest {
     }
 
     @Test
+    public void emptyFromColumnsKeepsTheRequestedName() {
+        DraftTable table = FlexibleDraftTable.create().fromColumns("expected", List.of());
+
+        Assert.assertTrue(table.isCompletelyEmpty());
+        Assert.assertEquals(table.tableName(), "expected");
+    }
+
+    @Test
+    public void emptyFromRowsKeepsTheRequestedName() {
+        DraftTable table = FlexibleDraftTable.create().fromRows("expected", List.<Row>of());
+
+        Assert.assertTrue(table.isCompletelyEmpty());
+        Assert.assertEquals(table.tableName(), "expected");
+    }
+
+    @Test
     public void renamingEmptyDraftTableDoesNotProduceChanges() {
         DraftTable dt = FlexibleDraftTable.create().emptyDraftTable().rename(from("nonExisting"), to("newName"));
 
         Assert.assertEquals(dt.columnNames(), Collections.emptyList());
+    }
+
+    @Test
+    public void tableDoesNotAliasTheCallersColumnList() {
+        List<Column> cols = new ArrayList<>(List.of(
+                FlexibleColumn.from("x", List.of(1,2,3))
+        ));
+        DraftTable table = FlexibleDraftTable.create().fromColumns(cols);
+        cols.add(FlexibleColumn.from("y", List.of(0)));
+
+        Assert.assertEquals(table.columnNames(), List.of("x"));
+        Assert.assertEquals(table.rowCount(), 3);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
     @Builder.Default private Boolean logHeaders = true;
     @Builder.Default private Boolean logStatusCode = true;
     @Builder.Default private Boolean logBody = false;
-    private Set<String> additionalBlacklistedHeaders;
+    @Builder.Default private Set<String> additionalBlacklistedHeaders = Set.of();
 
 
     protected HttpResponseLogFormatter(@Nullable Level logLevel,
@@ -38,6 +38,7 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
                                        @Nullable Boolean logStatusCode,
                                        @Nullable Boolean logBody,
                                        @Nullable Set<String> additionalBlacklistedHeaders) {
+        super(additionalBlacklistedHeaders);
         if (!isNull(logLevel)) {
             this.logLevel = logLevel;
         }
@@ -54,9 +55,8 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
             this.logBody = logBody;
         }
         if (!isNull(additionalBlacklistedHeaders)) {
-            this.blacklistedHeaders.addAll(additionalBlacklistedHeaders);
+            this.additionalBlacklistedHeaders = Set.copyOf(additionalBlacklistedHeaders);
         }
-        this.blacklistedHeaders.addAll(DEFAULT_BLACKLISTED_HEADERS);
     }
 
     /**

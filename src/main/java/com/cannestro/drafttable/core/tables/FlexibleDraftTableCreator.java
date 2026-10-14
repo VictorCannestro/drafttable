@@ -34,18 +34,19 @@ public class FlexibleDraftTableCreator implements TableCreator {
 
     @Override
     public DraftTable fromColumns(@NonNull String tableName, @NonNull List<Column> columns) {
-        if(columns.isEmpty()) {
-            return emptyDraftTable();
+        if (columns.isEmpty()) {
+            return new FlexibleDraftTable(tableName, emptyList());
         }
-        assumeUniquenessOf(columns.stream().map(Column::label).toList());
-        assumeColumnsHaveUniformSize(columns);
-        return new FlexibleDraftTable(tableName, columns);
+        List<Column> snapshot = List.copyOf(columns);
+        assumeUniquenessOf(snapshot.stream().map(Column::label).toList());
+        assumeColumnsHaveUniformSize(snapshot);
+        return new FlexibleDraftTable(tableName, snapshot);
     }
 
     @Override
     public <R extends Row> DraftTable fromRows(@NonNull String tableName, @NonNull List<R> listOfRows) {
         if(listOfRows.isEmpty()) {
-            return emptyDraftTable();
+            return new FlexibleDraftTable(tableName, emptyList());
         }
         assumeRowsHaveEquivalentKeySets(listOfRows);
         return new FlexibleDraftTable(

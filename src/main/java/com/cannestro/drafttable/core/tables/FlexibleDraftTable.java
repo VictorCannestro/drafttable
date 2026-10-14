@@ -77,7 +77,7 @@ public class FlexibleDraftTable implements DraftTable {
 
     @Override
     public DraftTable nameTable(final @NonNull String newTableName) {
-        return new FlexibleDraftTable(newTableName, List.copyOf(listOfColumns));
+        return new FlexibleDraftTable(newTableName, this.listOfColumns);
     }
 
     @Override

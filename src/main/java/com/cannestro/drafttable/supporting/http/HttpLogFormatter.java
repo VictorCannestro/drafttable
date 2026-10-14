@@ -3,9 +3,12 @@ package com.cannestro.drafttable.supporting.http;
 import org.apache.commons.collections4.MapIterator;
 import org.apache.commons.collections4.MapUtils;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
+
+import static java.util.Objects.isNull;
 
 
 /**
@@ -18,6 +21,14 @@ public abstract class HttpLogFormatter<R> {
 
     protected final Set<String> blacklistedHeaders = new ConcurrentSkipListSet<>(String.CASE_INSENSITIVE_ORDER);
 
+
+    protected HttpLogFormatter(@Nullable Set<String> blacklistedHeaders) {
+        this.blacklistedHeaders.addAll(isNull(blacklistedHeaders)
+                ? Set.of()
+                : Set.copyOf(blacklistedHeaders)
+        );
+        this.blacklistedHeaders.addAll(DEFAULT_BLACKLISTED_HEADERS);
+    }
 
     /**
      * <p><b>Guarantees</b>: The actual format string as defined by the implementing class based on the provided

@@ -31,7 +31,7 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
     @Builder.Default private Boolean logQueryParams = true;
     @Builder.Default private Boolean logFragment = true;
     @Builder.Default private Boolean logHeaders = true;
-    private Set<String> additionalBlacklistedHeaders;
+    @Builder.Default private Set<String> additionalBlacklistedHeaders = Set.of();
 
 
     protected HttpRequestLogFormatter(@Nullable Level logLevel,
@@ -41,6 +41,7 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
                                       @Nullable Boolean logFragment,
                                       @Nullable Boolean logHeaders,
                                       @Nullable Set<String> additionalBlacklistedHeaders) {
+        super(additionalBlacklistedHeaders);
         if (!isNull(logLevel)) {
             this.logLevel = logLevel;
         }
@@ -60,9 +61,8 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
             this.logHeaders = logHeaders;
         }
         if (!isNull(additionalBlacklistedHeaders)) {
-            this.blacklistedHeaders.addAll(additionalBlacklistedHeaders);
+            this.additionalBlacklistedHeaders = Set.copyOf(additionalBlacklistedHeaders);
         }
-        this.blacklistedHeaders.addAll(DEFAULT_BLACKLISTED_HEADERS);
     }
 
     /**
