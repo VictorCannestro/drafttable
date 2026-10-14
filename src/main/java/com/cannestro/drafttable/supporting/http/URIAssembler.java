@@ -138,7 +138,7 @@ public class URIAssembler {
     }
 
 
-    String resolveQueryComponents() {
+    @Nullable String resolveQueryComponents() {
         StringBuilder queryComponent = new StringBuilder();
         if (hasQueryComponent()) {
             MapIterator<String, String> paramerator = MapUtils.iterableMap(this.queryParams).mapIterator();
@@ -155,7 +155,8 @@ public class URIAssembler {
                 }
             }
         }
-        return queryComponent.toString();
+        String result = queryComponent.toString();
+        return result.isEmpty() ? null : result;
     }
 
 

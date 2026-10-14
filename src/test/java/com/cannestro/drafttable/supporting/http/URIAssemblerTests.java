@@ -39,16 +39,28 @@ public class URIAssemblerTests {
     @Test
     public void modifyExistingCallWithoutModificationOfSimpleUrlRemainsSame() {
         URI original = URI.create("http://wikipedia.com/api");
+        URIAssembler assembler = URIAssembler.modifyExisting(original).build();
 
-        Assert.assertEquals(URIAssembler.modifyExisting(original).build().toURI(), original);
+        Assert.assertFalse(assembler.hasQueryComponent());
+        Assert.assertNull(assembler.query());
+
+        URI modified = assembler.toURI();
+
+        Assert.assertEquals(modified, original);
     }
 
 
     @Test
     public void modifyExistingPreservesExplicitPorts() {
         URI original = URI.create("http://localhost:8080/api?x=1");
+        URIAssembler assembler = URIAssembler.modifyExisting(original).build();
 
-        Assert.assertEquals(URIAssembler.modifyExisting(original).build().toURI(), original);
+        Assert.assertTrue(assembler.hasQueryComponent());
+        Assert.assertNotNull(assembler.query());
+
+        URI modified = assembler.toURI();
+
+        Assert.assertEquals(modified, original);
     }
 
     @Test

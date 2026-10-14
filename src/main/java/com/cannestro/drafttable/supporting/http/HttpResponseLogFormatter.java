@@ -29,6 +29,7 @@ public class HttpResponseLogFormatter extends HttpLogFormatter<HttpResponse<Stri
     @Builder.Default private Boolean logHeaders = true;
     @Builder.Default private Boolean logStatusCode = true;
     @Builder.Default private Boolean logBody = false;
+    private Set<String> additionalBlacklistedHeaders;
 
 
     protected HttpResponseLogFormatter(@Nullable Level logLevel,

@@ -31,6 +31,7 @@ public class HttpRequestLogFormatter extends HttpLogFormatter<HttpRequest> {
     @Builder.Default private Boolean logQueryParams = true;
     @Builder.Default private Boolean logFragment = true;
     @Builder.Default private Boolean logHeaders = true;
+    private Set<String> additionalBlacklistedHeaders;
 
 
     protected HttpRequestLogFormatter(@Nullable Level logLevel,
